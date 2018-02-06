@@ -1,0 +1,484 @@
+/***********************/
+/* Declaration Section */
+/***********************/
+
+VERSION {
+    KOIL = "2.1";
+    OSSEMANTICS = "ORTI", "2.1";
+};
+
+IMPLEMENTATION OSTEST1_ORTI {
+    OS {
+
+	/* here for each task a small description and its index */
+        ENUM [
+            "NO_TASK" = "-1",
+            "thread0" = 0,
+            "thread1" = 1,
+            "thread2" = 2,
+            "thread3" = 3,
+        ] RUNNINGTASK, "Running Task Id";
+
+        ENUM "int" [
+            "Not Running (0)" = 0
+            "0x1" = 0x1
+            "0x2" = 0x2
+            "0x4" = 0x4
+            "0x8" = 0x8
+        ] RUNNINGTASKPRIORITY, "Priority of Running Task";
+
+        ENUM "unsigned char" [
+            "NO_ISR"    = 0,
+            "Timer2Int" = Timer2Int,
+            "CanRxInt"  = CanRxInt,
+            "CanTxInt"  = CanTxInt
+        ] RUNNINGISR2, "Running ISR2";
+
+        TOTRACE ENUM "unsigned char" [
+            "ActivateTask" = 2,
+            "TerminateTask" = 4,
+            "ChainTask" = 6,
+            "Schedule" = 8,
+            "GetTaskID" = 10,
+            "GetTaskState" = 12,
+            "DisableAllInterrupts" = 14,
+            "EnableAllInterrupts" = 16,
+            "SuspendAllInterrupts" = 18,
+            "ResumeAllInterrupts" = 20,
+            "SuspendOSInterrupts" = 22,
+            "ResumeOSInterrupts" = 24,
+            "GetResource" = 26,
+            "ReleaseResource" = 28,
+            "SetEvent" = 30,
+            "ClearEvent" = 32,
+            "GetEvent" = 34,
+            "WaitEvent"	= 36,
+            "GetAlarmBase" = 38,
+            "GetAlarm" = 40,
+            "SetRelAlarm" = 42,
+            "SetAbsAlarm" = 44,
+            "CancelAlarm" = 46,
+            "GetActiveApplicationMode" = 48,
+            "StartOS" = 50,
+            "ShutdownOS" = 52,
+            "ForceSchedule" = 54
+        ] SERVICETRACE, "OS Services Watch";
+
+	/* please note int and not unsigned char */
+        ENUM "int" [
+            "E_OK" = 0,
+            "E_OS_ACCESS" = 1,
+            "E_OS_CALLEVEL" = 2,
+            "E_OS_ID" = 3,
+            "E_OS_LIMIT" = 4,
+            "E_OS_NOFUNC" = 5,
+            "E_OS_RESOURCE" = 6,
+            "E_OS_STATE" = 7,
+            "E_OS_VALUE" = 8
+        ] LASTERROR, "Last OSEK error";
+
+        ENUM "unsigned char" [
+            "OSDEFAULTAPPMODE" = 0,
+            "DIAGNIOSTIC_MODE" = 1
+        ] CURRENTAPPMODE, "Current application mode";
+
+        /* EE specific data structures */
+        CTYPE "unsigned int" vs_EE_SYSCEILING, "EE system ceiling";
+    }, "OS";
+
+    TASK {
+        ENUM "int" [
+            "Not Running (0)" = 0
+            "0x1" = 0x1
+            "0x2" = 0x2
+            "0x4" = 0x4
+            "0x8" = 0x8
+        ] PRIORITY , "Actual Prio";
+ 
+        ENUM "unsigned char" [
+            "RUNNING"=0,
+            "WAITING"=1,
+            "READY"=2,
+            "SUSPENDED"=3
+        ] STATE, "Task State";
+
+	/*
+	  These are the various stacks that exists into a typical EE
+	  Configuration with __ARM7GNU__ __MULTI__. 
+	  With mono, there would have been only one task stack and
+	  only one IRQ stack (how can we tell that to an ORTI debugger?.
+
+	  NOTE: The number of stacks IS NOT EQUAL to the number of tasks.
+	        It is true just in this example where there is no stack
+	         sharing!
+
+	  Here we put all the different values contained into 
+	  EE_arm7_thread_tos in a typical inithal.c file.
+	*/
+
+        ENUM "unsigned int" [
+            "DummyStk" : DummyStack = 0,
+            "Stack1"   : taskStack1 = 1,
+            "Stack2"   : taskStack2 = 2,
+            "Stack3"   : taskStack3 = 3,
+            "Stack4"   : taskStack4 = 4,
+        ] STACK, "Task Stack";
+
+        CTYPE "int" CURRENTACTIVATIONS, "Current activations";
+
+/*        ENUM "unsigned short *" [
+            "Context 0" : Context_0 = 0,
+            "Context 1" : Context_1 = 1,
+            "Context 2" : Context_2 = 2
+        ] CONTEXT, "Task Context";
+
+
+        STRING vs_Home_Priority, "Home Priority";
+        STRING vs_Task_Type, "Task Type"; /* BASIC / EXTENDED * /
+        STRING vs_Schedule, "Schedule"; /* non preemptive, full preemptive * /
+        CTYPE "unsigned short" vs_Event_Mask, "Wait Mask";
+        CTYPE "unsigned short" vs_Event_Flags, "Event Flags";
+        STRING vs_max_Activations, "max. Activations";*/
+        CTYPE "int" vs_REMAININGACTIVATIONS, "Remaining task activations";
+    }, "Tasks";
+
+    STACK {
+        CTYPE SIZE, "Stack Size (Byte)";
+        CTYPE "unsigned int *" BASEADDRESS, "Base Address";
+        STRING STACKDIRECTION, "Stack Direction";
+	CTYPE "unsigned int" FILLPATTERN, "Stack Fill Pattern";
+    }, "Stacks";
+
+/*
+    ALARM {
+        CTYPE "unsigned long" ALARMTIME, "Alarm Time";
+        CTYPE "unsigned long" CYCLETIME, "Cycle Time";
+        ENUM [
+            "STOPPED" = 0,
+            "RUNNING" = 1
+        ] STATE, "Alarm state";
+        STRING ACTION, "Action";
+        STRING COUNTER, "Counter";
+    }, "Alarms";
+
+    CONTEXT {
+        CTYPE "unsigned long" _CPU_R0, "CPU register R0";
+        CTYPE "unsigned long" _CPU_R1, "CPU register R1";
+        CTYPE "unsigned long" _CPU_R2, "CPU register R2";
+        CTYPE "unsigned long" _CPU_R3, "CPU register R3";
+        CTYPE "unsigned long" _CPU_PC, "CPU register PC";
+        CTYPE "unsigned long" _CPU_SR, "CPU register SR";
+        CTYPE "unsigned char" VALID;
+    }, "Task Context";
+
+
+    RESOURCE {
+        ENUM "unsigned char" [
+            "UNLOCKED" = 0,
+            "LOCKED" = 1
+        ] STATE, "Resource State";
+        ENUM "unsigned char" [
+            "Task basicTaskFirst" = 0,
+            "Task extendedTaskSecond" = 1,
+            "ISR Timer2Int" = 2
+        ] LOCKER, "Resource Locker";
+        STRING PRIORITY, "Ceiling priority";
+    }, "Resources";
+ 
+    MESSAGECONTAINER {
+        STRING MSGNAME, "Message Name";
+        STRING MSGTYPE, "MessageType";
+        CTYPE QUEUESIZE, "Queue Size";
+        CTYPE QUEUECOUNT, "Entry Count";
+        
+        ENUM [
+            "E_OK" = 0,
+            "E_COM_BUSY" = 32,
+            "E_COM_ID" = 33,
+            "E_COM_LIMIT" = 34,
+            "E_COM_LOCKED" = 35,
+            "E_COM_NO_MSG" = 36,
+            "E_COM_RX_ON" = 37
+        ] STATE, "Message State";
+        
+        CTYPE FIRSTELEMENT, "First Message";
+        STRING ACTION, "Notification";
+        
+        ENUM [
+            "Task basicTaskFirst" : basicTaskFirst = 0,
+            "ISR Timer2Int" : Timer2Int = 1
+        ] SENDER, "Sender";
+        
+        ENUM [
+            "Task basicTaskFirst" : basicTaskFirst = 0,
+            "Task extendedTaskFirst" : extendedTaskFirst = 3,
+            "Task extendedTaskSecond" : extendedTaskSecond = 4
+        ] RECEIVER, "Receiver";
+    }, "Messages";
+
+    vs_ISR {
+        STRING vs_Priority, "Priority";
+    }, "ISRs";
+*/
+}; /* END OF IMPLEMENTATION */
+
+/***********************/
+/* Information Section */
+/***********************/
+
+OS EE_arch {
+    RUNNINGTASK = "EE_stkfirst";
+    RUNNINGTASKPRIORITY = "(EE_stkfirst == -1) ? 0 : EE_ORTI_th_priority[EE_stkfirst]";
+    RUNNINGISR2 = "EE_ORTI_runningisr2";
+    SERVICETRACE = "EE_ORTI_servicetrace";
+    LASTERROR = "EE_ORTI_lasterror";
+    CURRENTAPPMODE = "EE_ApplicationMode";
+    vs_EE_SYSCEILING = "EE_sys_ceiling";
+};
+
+TASK thread0 {
+    PRIORITY = "(EE_ORTI_th_priority[0])";
+    STATE = "(EE_th_status[0])";
+    CURRENTACTIVATIONS = "(1 - EE_th_rnact[0])";  /* 1 = max activations */
+    STACK = "(EE_arm7_thread_tos[1])";
+    //CONTEXT = "0";
+    //vs_Home_Priority = "10";
+    //vs_Task_Type = "BASIC";
+    //vs_Schedule = "FULL Preemptive";
+    //vs_Event_Mask = "0";
+    //vs_Event_Flags = "0";
+    //vs_max_Activations = "1";
+    vs_REMAININGACTIVATIONS = "(EE_th_rnact[0])";
+};
+
+TASK thread1 {
+    PRIORITY = "(EE_ORTI_th_priority[1])";
+    STATE = "(EE_th_status[1])";
+    CURRENTACTIVATIONS = "(3 - EE_th_rnact[1])";  /* 1 = max activations */
+    STACK = "(EE_arm7_thread_tos[2])";
+    //CONTEXT = "0";
+    //vs_Home_Priority = "10";
+    //vs_Task_Type = "BASIC";
+    //vs_Schedule = "FULL Preemptive";
+    //vs_Event_Mask = "0";
+    //vs_Event_Flags = "0";
+    //vs_max_Activations = "1";
+    vs_REMAININGACTIVATIONS = "(EE_th_rnact[1])";
+};
+
+TASK thread2 {
+    PRIORITY = "(EE_ORTI_th_priority[2])";
+    STATE = "(EE_th_status[2])";
+    STACK = "(EE_arm7_thread_tos[3])";
+    CURRENTACTIVATIONS = "(1 - EE_th_rnact[2])";  /* 1 = max activations */
+    //CONTEXT = "0";
+    //vs_Home_Priority = "10";
+    //vs_Task_Type = "BASIC";
+    //vs_Schedule = "FULL Preemptive";
+    //vs_Event_Mask = "0";
+    //vs_Event_Flags = "0";
+    //vs_max_Activations = "3";
+    vs_REMAININGACTIVATIONS = "(EE_th_rnact[2])";
+};
+
+TASK thread3 {
+    PRIORITY = "(EE_ORTI_th_priority[3])";
+    STATE = "(EE_th_status[3])";
+    STACK = "(EE_arm7_thread_tos[4])";
+    CURRENTACTIVATIONS = "(1 - EE_th_rnact[3])";  /* 1 = max activations */
+    //CONTEXT = "0";
+    //vs_Home_Priority = "10";
+    //vs_Task_Type = "BASIC";
+    //vs_Schedule = "FULL Preemptive";
+    //vs_Event_Mask = "0";
+    //vs_Event_Flags = "0";
+    //vs_max_Activations = "1";
+    vs_REMAININGACTIVATIONS = "(EE_th_rnact[3])";
+};
+
+STACK DummyStk {
+    SIZE = "512";
+    STACKDIRECTION = "DOWN";
+    BASEADDRESS = "(unsigned int *)(0x00070000-512)"; /* that is __SYS_STACK_ADDRESS is the initialization value, -512 the dimension of the stack */
+    FILLPATTERN = "0xA5A5A5A5";
+};
+
+STACK IRQDummyStk {
+    SIZE = "512";
+    STACKDIRECTION = "DOWN";
+    BASEADDRESS = "(unsigned int *)(0x00080000-512)";
+    FILLPATTERN = "0xA5A5A5A5";
+};
+
+STACK Stack1 {
+    SIZE = "512";
+    STACKDIRECTION = "DOWN";
+    BASEADDRESS = "0x00070000-1024";
+    FILLPATTERN = "0xA5A5A5A5";
+};
+
+STACK IRQStack1 {
+    SIZE = "512";
+    STACKDIRECTION = "DOWN";
+    BASEADDRESS = "0x00080000-1024";
+    FILLPATTERN = "0xA5A5A5A5";
+};
+
+STACK Stack2 {
+    SIZE = "512";
+    STACKDIRECTION = "DOWN";
+    BASEADDRESS = "0x00070000-1536";
+    FILLPATTERN = "0xA5A5A5A5";
+};
+
+STACK IRQStack2 {
+    SIZE = "512";
+    STACKDIRECTION = "DOWN";
+    BASEADDRESS = "0x00080000-1536";
+    FILLPATTERN = "0xA5A5A5A5";
+};
+
+STACK Stack3 {
+    SIZE = "512";
+    STACKDIRECTION = "DOWN";
+    BASEADDRESS = "0x00070000-2048";
+    FILLPATTERN = "0xA5A5A5A5";
+};
+
+STACK IRQStack3 {
+    SIZE = "512";
+    STACKDIRECTION = "DOWN";
+    BASEADDRESS = "0x00080000-2048";
+    FILLPATTERN = "0xA5A5A5A5";
+};
+
+STACK Stack4 {
+    SIZE = "512";
+    STACKDIRECTION = "DOWN";
+    BASEADDRESS = "0x00070000-2560";
+    FILLPATTERN = "0xA5A5A5A5";
+};
+
+STACK IRQStack4 {
+    SIZE = "512";
+    STACKDIRECTION = "DOWN";
+    BASEADDRESS = "0x00080000-2560";
+    FILLPATTERN = "0xA5A5A5A5";
+};
+
+STACK GblIRQ_Hand {
+    SIZE = "512";
+    STACKDIRECTION = "DOWN";
+    BASEADDRESS = "0x00070000-3072";
+    FILLPATTERN = "0xA5A5A5A5";
+};
+
+STACK GblIRQ_IRQ {
+    SIZE = "512";
+    STACKDIRECTION = "DOWN";
+    BASEADDRESS = "0x00080000-3072";
+    FILLPATTERN = "0xA5A5A5A5";
+};
+
+/*
+ALARM myFirstAlarm {
+    ALARMTIME = "gAlarm[0].alarmTime";
+    CYCLETIME = "gAlarm[0].cycleTime";
+    STATE = "(gAlarm[0].alarmTime = 0) ? 0 : 1";
+    ACTION = "ActivateTask basicTaskFirst";
+    COUNTER = "SystemTimer";
+};
+
+RESOURCE resBasic {
+    STATE = "(gResource[0].resourceCounter != 0) ? 1 : 0";
+    LOCKER = "gResource[0].owner";
+    PRIORITY = "TASK: 51";
+};
+
+RESOURCE resTimerData {
+    STATE = "(gResource[1].resourceCounter != 0) ? 1 : 0";
+    LOCKER = "gResource[1].owner";
+    PRIORITY = "ISR: 3";
+};
+
+CONTEXT Context_0 {
+    _CPU_R0 = "((unsigned long *)(gTaskControlBlocks[0].sp))[5]";
+    _CPU_R1 = "((unsigned long *)(gTaskControlBlocks[0].sp))[4]";
+    _CPU_R2 = "((unsigned long *)(gTaskControlBlocks[0].sp))[3]";
+    _CPU_R3 = "((unsigned long *)(gTaskControlBlocks[0].sp))[2]";
+    _CPU_PC = "((unsigned long *)(gTaskControlBlocks[0].sp))[1]";
+    _CPU_SR = "((unsigned long *)(gTaskControlBlocks[0].sp))[0]";
+    VALID = "(gTaskControlBlocks[0].taskState != 1) &&
+        (gTaskControlBlocks[0].taskState != 4)";
+}
+ 
+CONTEXT Context_1 {
+    _CPU_R0 = "((unsigned long *)(gTaskControlBlocks[1].sp))[5]";
+    _CPU_R1 = "((unsigned long *)(gTaskControlBlocks[1].sp))[4]";
+    _CPU_R2 = "((unsigned long *)(gTaskControlBlocks[1].sp))[3]";
+    _CPU_R3 = "((unsigned long *)(gTaskControlBlocks[1].sp))[2]";
+    _CPU_PC = "((unsigned long *)(gTaskControlBlocks[1].sp))[1]";
+    _CPU_SR = "((unsigned long *)(gTaskControlBlocks[1].sp))[0]";
+    VALID = "(gTaskControlBlocks[1].taskState != 1) &&
+        (gTaskControlBlocks[1].taskState != 4)";
+}
+
+CONTEXT Context_2 {
+    _CPU_R0 = "((unsigned long *)(gTaskControlBlocks[2].sp))[5]";
+    _CPU_R1 = "((unsigned long *)(gTaskControlBlocks[2].sp))[4]";
+    _CPU_R2 = "((unsigned long *)(gTaskControlBlocks[2].sp))[3]";
+    _CPU_R3 = "((unsigned long *)(gTaskControlBlocks[2].sp))[2]";
+    _CPU_PC = "((unsigned long *)(gTaskControlBlocks[2].sp))[1]";
+    _CPU_SR = "((unsigned long *)(gTaskControlBlocks[2].sp))[0]";
+    VALID = "(gTaskControlBlocks[2].taskState != 1) &&
+        (gTaskControlBlocks[2].taskState != 4)";
+}
+
+MESSAGECONTAINER DrvTx_Msg_0_3 {
+    MSGNAME = "DrvTx";
+    MSGTYPE = "QUEUED";
+    QUEUESIZE = "5";
+    QUEUECOUNT = "osQMsg[0].msgCount";
+    STATE = "osQMsg[0].state";
+    FIRSTELEMENT = "osQMsg[0].rdPtr";
+    ACTION = "SetEvent extendedTaskFirst";
+    SENDER = "0";
+    RECEIVER = "3";
+};
+
+MESSAGECONTAINER DataA_Msg_1_3 {
+    MSGNAME = "DataA";
+    MSGTYPE = "UNQUEUED";
+    QUEUESIZE = "1";
+    QUEUECOUNT = "1";
+    STATE = "0";
+    FIRSTELEMENT = "osUnqMsg[0].msgPtr";
+    ACTION = "SetEvent extendedTaskFirst";
+    SENDER = "1";
+    RECEIVER = "3";
+};
+
+MESSAGECONTAINER DataA_Msg_1_4 {
+    MSGNAME = "DataA";
+    MSGTYPE = "UNQUEUED";
+    QUEUESIZE = "1";
+    QUEUECOUNT = "1";
+    STATE = "0";
+    FIRSTELEMENT = "osUnqMsg[0].msgPtr";
+    ACTION = "SetEvent extendedTaskSecond";
+    SENDER = "1";
+    RECEIVER = "4";
+};
+
+vs_ISR Timer2Int {
+    vs_Priority = "3";
+}
+
+vs_ISR CanRxInt {
+    vs_Priority = "1";
+}
+
+vs_ISR CanTxInt {
+    vs_Priority = "7";
+}
+*/

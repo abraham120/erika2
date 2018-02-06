@@ -1,0 +1,27 @@
+; Load FPGA Design with Nios II core
+print "Load FPGA JAM File"
+
+sys.reset
+sys.d
+
+; Take the JAM name from the environment 
+; if not specified, try to use the EE_NIOS2_JAM_FILE variable.
+&my_jam=OS.ENV(EE_NIOS2_JAM_FILE)
+if "&my_jam"==""
+  &my_jam="&EE_NIOS2_JAM_FILE"
+  
+; if needed, load the JAM file
+if "&my_jam"!="NOJAM"
+  jtag.loadjam &my_jam /A "CONFIGURE"
+else
+  print "JAM File not loaded!"
+
+enddo
+
+
+
+
+
+
+
+

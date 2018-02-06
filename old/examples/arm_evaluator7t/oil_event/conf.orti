@@ -1,0 +1,227 @@
+/***********************/
+/* Declaration Section */
+/***********************/
+
+VERSION {
+    KOIL = "2.1";
+    OSSEMANTICS = "ORTI", "2.1";
+};
+
+IMPLEMENTATION OSTEST1_ORTI {
+    OS {
+
+	/* here for each task a small description and its index */
+        ENUM [
+            "NO_TASK" = "-1",
+            "Task1" = 0,
+            "Task2" = 1
+        ] RUNNINGTASK, "Running Task Id";
+
+        ENUM "int" [
+            "Not Running (0)" = 0
+            "0x1" = 0x1
+            "0x2" = 0x2
+        ] RUNNINGTASKPRIORITY, "Priority of Running Task";
+
+        ENUM "unsigned char" [
+            "NO_ISR"    = 0,
+            "ISR_Button" = ISR_Button,
+            "ISR_Timer"  = ISR_Timer,
+        ] RUNNINGISR2, "Running ISR2";
+
+        TOTRACE ENUM "unsigned char" [
+            "ActivateTask" = 2,
+            "TerminateTask" = 4,
+            "ChainTask" = 6,
+            "Schedule" = 8,
+            "GetTaskID" = 10,
+            "GetTaskState" = 12,
+            "DisableAllInterrupts" = 14,
+            "EnableAllInterrupts" = 16,
+            "SuspendAllInterrupts" = 18,
+            "ResumeAllInterrupts" = 20,
+            "SuspendOSInterrupts" = 22,
+            "ResumeOSInterrupts" = 24,
+            "GetResource" = 26,
+            "ReleaseResource" = 28,
+            "SetEvent" = 30,
+            "ClearEvent" = 32,
+            "GetEvent" = 34,
+            "WaitEvent"	= 36,
+            "GetAlarmBase" = 38,
+            "GetAlarm" = 40,
+            "SetRelAlarm" = 42,
+            "SetAbsAlarm" = 44,
+            "CancelAlarm" = 46,
+            "GetActiveApplicationMode" = 48,
+            "StartOS" = 50,
+            "ShutdownOS" = 52,
+            "ForceSchedule" = 54
+        ] SERVICETRACE, "OS Services Watch";
+
+	/* please note int and not unsigned char */
+        ENUM "int" [
+            "E_OK" = 0,
+            "E_OS_ACCESS" = 1,
+            "E_OS_CALLEVEL" = 2,
+            "E_OS_ID" = 3,
+            "E_OS_LIMIT" = 4,
+            "E_OS_NOFUNC" = 5,
+            "E_OS_RESOURCE" = 6,
+            "E_OS_STATE" = 7,
+            "E_OS_VALUE" = 8
+        ] LASTERROR, "Last OO error";
+
+        ENUM "unsigned char" [
+            "OSDEFAULTAPPMODE" = 0
+        ] CURRENTAPPMODE, "Current application mode";
+
+        /* EE specific data structures */
+        CTYPE "unsigned int" vs_EE_SYSCEILING, "EE system ceiling";
+    }, "OS";
+
+    TASK {
+        ENUM "int" [
+            "Not Running (0)" = 0,
+            "0x1" = 0x1,
+            "0x2" = 0x2
+        ] PRIORITY , "Actual Prio";
+ 
+        ENUM "unsigned char" [
+            "RUNNING"=0,
+            "WAITING"=1,
+            "READY"=2,
+            "SUSPENDED"=3
+        ] STATE, "Task State";
+
+        ENUM "unsigned int" [
+            "DummyStk" : DummyStack = 0,
+            "Task1Stk" : Task1Stk   = 1,
+        ] STACK, "Task Stack";
+
+        CTYPE "int" CURRENTACTIVATIONS, "Current activations";
+    }, "Tasks";
+
+    STACK {
+        CTYPE SIZE, "Stack Size (Byte)";
+        CTYPE "unsigned int *" BASEADDRESS, "Base Address";
+        STRING STACKDIRECTION, "Stack Direction";
+	CTYPE "unsigned int" FILLPATTERN, "Stack Fill Pattern";
+    }, "Stacks";
+
+    ALARM {
+        CTYPE "unsigned int" ALARMTIME, "Alarm Time"; /* EE_TYPETICK */
+        CTYPE "unsigned int" CYCLETIME, "Cycle Time"; /* EE_TYPETICK */
+        ENUM [
+            "STOPPED" = 0,
+            "RUNNING" = 1
+        ] STATE, "Alarm state";
+        STRING ACTION, "Action";
+        STRING COUNTER, "Counter";
+	CTYPE "unsigned int" COUNTERVALUE, "Counter Value";
+    }, "Alarms";
+
+
+
+    RESOURCE {
+        ENUM "unsigned char" [
+            "UNLOCKED" = 0,
+            "LOCKED" = 1
+        ] STATE, "Resource State";
+        ENUM "int" [
+            "Task1" = 0,
+            "Task2" = 1,
+            "No task" = "-1"
+        ] LOCKER, "Resource Locker";
+        STRING PRIORITY, "Ceiling priority";
+    }, "Resources";
+
+}; /* END OF IMPLEMENTATION */
+
+/***********************/
+/* Information Section */
+/***********************/
+
+OS EE_arch {
+    RUNNINGTASK = "EE_stkfirst";
+    RUNNINGTASKPRIORITY = "(EE_stkfirst == -1) ? 0 : EE_ORTI_th_priority[EE_stkfirst]";
+    RUNNINGISR2 = "EE_ORTI_runningisr2";
+    SERVICETRACE = "EE_ORTI_servicetrace";
+    LASTERROR = "EE_ORTI_lasterror";
+    CURRENTAPPMODE = "EE_ApplicationMode";
+    vs_EE_SYSCEILING = "EE_sys_ceiling";
+};
+
+TASK Task1 {
+    PRIORITY = "(EE_ORTI_th_priority[0])";
+    STATE = "(EE_th_status[0])";
+    CURRENTACTIVATIONS = "(1 - EE_th_rnact[0])";  /* 1 = max activations */
+    STACK = "(EE_arm7_thread_tos[1])";
+};
+
+TASK Task2 {
+    PRIORITY = "(EE_ORTI_th_priority[1])";
+    STATE = "(EE_th_status[1])";
+    CURRENTACTIVATIONS = "(1 - EE_th_rnact[1])";  /* 1 = max activations */
+    STACK = "(EE_arm7_thread_tos[2])";
+};
+
+STACK DummyStk {
+    SIZE = "14848";
+    STACKDIRECTION = "DOWN";
+    BASEADDRESS = "(unsigned int *)(0x7C000-14848)";
+    FILLPATTERN = "0xA5A5A5A5";
+};
+
+STACK IRQDummyStk {
+    SIZE = "14848";
+    STACKDIRECTION = "DOWN";
+    BASEADDRESS = "(unsigned int *)(0x80000-14848)";
+    FILLPATTERN = "0xA5A5A5A5";
+};
+
+STACK Stack1 {
+    SIZE = "1024";
+    STACKDIRECTION = "DOWN";
+    BASEADDRESS = "0x78600-1024";
+    FILLPATTERN = "0xA5A5A5A5";
+};
+
+STACK IRQStack1 {
+    SIZE = "1024";
+    STACKDIRECTION = "DOWN";
+    BASEADDRESS = "0x7C600-1024";
+    FILLPATTERN = "0xA5A5A5A5";
+};
+
+STACK ISR_Stack {
+    SIZE = "512";
+    STACKDIRECTION = "DOWN";
+    BASEADDRESS = "0x78200-512";
+    FILLPATTERN = "0xA5A5A5A5";
+};
+
+STACK IRQ_ISR_Stack {
+    SIZE = "512";
+    STACKDIRECTION = "DOWN";
+    BASEADDRESS = "0x7C200-512";
+    FILLPATTERN = "0xA5A5A5A5";
+};
+
+ALARM Alarm0 {
+    ALARMTIME = "EE_ORTI_alarmtime[0]";
+    CYCLETIME = "EE_alarm_RAM[0].cycle";
+    STATE = "(EE_alarm_RAM[0].used == 0) ? 0 : 1";
+    ACTION = "Set TimerEvent on Task1";
+    COUNTER = "Counter1";
+    COUNTERVALUE = "EE_counter_RAM[EE_alarm_ROM[0].c].value";
+};
+
+ALARM Alarm1 {
+    ALARMTIME = "EE_ORTI_alarmtime[1]";
+    CYCLETIME = "EE_alarm_RAM[1].cycle";
+    STATE = "(EE_alarm_RAM[1].used == 0) ? 0 : 1";
+    ACTION = "ActivateTask Task2";
+    COUNTER = "Counter1";
+    COUNTERVALUE = "EE_counter_RAM[EE_alarm_ROM[1].c].value";
+};

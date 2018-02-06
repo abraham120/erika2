@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<evidence_example version="1" ID="board_flex_proto">
+
+ <category>pic30/Empty</category>
+ <title>Scicos Flex application with demo prototype daughter board</title>
+   
+ <small_descr>
+ This is the skeleton of a Scicos-EEB demo configured for the EE_FLEX
+ board plus the first demoboard developed in the context of the
+ Scilab/Scicos integration.
+ </small_descr>
+
+ <long_descr>
+ This is the skeleton of a Scicos-EEB demo configured for the EE_FLEX
+ board plus the first demoboard developed in the context of the
+ Scilab/Scicos integration.
+ This is not a complete demo but works as an empty template to be used
+ as a starting point for a new Scicos application.
+ </long_descr>
+
+ <file_section>
+  <file     name="dspic_main.c"/>
+  <file     name="memory.h"/>
+  <file     name="conf_scicos.oil"/>
+ </file_section>
+
+</evidence_example>

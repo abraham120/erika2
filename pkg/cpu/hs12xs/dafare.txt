@@ -1,0 +1,25 @@
+capire se le funzioni nested funzionano
+vedere negli esempi il file cfg_pic30.h
+decidere come includere i .gld (linker scripts... .T p30fxxxx.gld da passare al linker
+
+
+
+- monostack
+  - verifica isr2 che ritorna stacked   ok
+  - verifica isr2 che ritorna ready     ok
+  - verifica thread che ritorna stacked ok
+  - verifica thread che ritorna ready   ok
+
+- integrazione eclipse
+  - generazione makefile
+  - verifica osek.S
+
+- verifica IRQ nested
+
+- Multistack
+  - verifica isr2 che ritorna stacked
+  - verifica isr2 che ritorna ready
+  - verifica thread che ritorna stacked
+  - verifica thread che ritorna ready
+  - verifica isr2 con cambio di stack
+  - verifica mappatura stack e stklim

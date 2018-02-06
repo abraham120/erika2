@@ -1,0 +1,1069 @@
+<!-- ###*B*###
+     ERIKA Enterprise - a tiny RTOS for small microcontrollers
+     
+     Copyright (C) 2002-2011  Evidence Srl
+     
+     This file is part of ERIKA Enterprise.
+     
+     ERIKA Enterprise is free software; you can redistribute it
+     and/or modify it under the terms of the GNU General Public License
+     version 2 as published by the Free Software Foundation, 
+     (with a special exception described below).
+     
+     Linking this code statically or dynamically with other modules is
+     making a combined work based on this code.  Thus, the terms and
+     conditions of the GNU General Public License cover the whole
+     combination.
+     
+     As a special exception, the copyright holders of this library give you
+     permission to link this code with independent modules to produce an
+     executable, regardless of the license terms of these independent
+     modules, and to copy and distribute the resulting executable under
+     terms of your choice, provided that you also meet, for each linked
+     independent module, the terms and conditions of the license of that
+     module.  An independent module is a module which is not derived from
+     or based on this library.  If you modify this code, you may extend
+     this exception to your version of the code, but you are not
+     obligated to do so.  If you do not wish to do so, delete this
+     exception statement from your version.
+     
+     ERIKA Enterprise is distributed in the hope that it will be
+     useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+     of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+     GNU General Public License version 2 for more details.
+     
+     You should have received a copy of the GNU General Public License
+     version 2 along with ERIKA Enterprise; if not, write to the
+     Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+     Boston, MA 02110-1301 USA.
+     ###*E*### */
+     
+     Simple AUTOSAR XML Configuration for TI Stellaris LM4F232XXXX.
+     Author: 2011  Giuseppe Serano
+  -->
+<?xml version="1.0" encoding="UTF-8"?>
+<AUTOSAR
+  xmlns="http://autosar.org/3.1.5"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://autosar.org/3.1.5 autosar_3-1-5.xsd"
+>
+  <TOP-LEVEL-PACKAGES>
+    <AR-PACKAGE>
+      <SHORT-NAME>Erika</SHORT-NAME>
+      <ELEMENTS>
+	<ECU-CONFIGURATION UUID="23a29ffd-1687-4efe-abe9-b2ec989d46d5">
+	<SHORT-NAME>/Erika/Autosar</SHORT-NAME>
+	<ECU-SW-COMPOSITION-REF DEST="ECU-SW-COMPOSITION">
+	  /Erika/Autosar/SwComposition
+	</ECU-SW-COMPOSITION-REF>
+	<MODULE-REFS>
+	  <MODULE-REF DEST="MODULE-CONFIGURATION">
+	    /Erika/Autosar/Mcu
+	  </MODULE-REF>
+	  <MODULE-REF DEST="MODULE-CONFIGURATION">
+	    /Erika/Autosar/Port
+	  </MODULE-REF>
+	  <MODULE-REF DEST="MODULE-CONFIGURATION">
+	    /Erika/Autosar/Dio
+	  </MODULE-REF>
+	  <MODULE-REF DEST="MODULE-CONFIGURATION">
+	    /Erika/Autosar/Sci
+	  </MODULE-REF>
+	  <MODULE-REF DEST="MODULE-CONFIGURATION">
+	    /Erika/Autosar/Gpt
+	  </MODULE-REF>
+	</MODULE-REFS>
+	</ECU-CONFIGURATION>
+	<ECU-SW-COMPOSITION UUID="222a7882-dfe3-4682-a89e-863fae593b4d"> <!-- ?!? -->
+	<SHORT-NAME>SwComposition</SHORT-NAME>
+	</ECU-SW-COMPOSITION>
+	<MODULE-CONFIGURATION UUID="ea4995d7-ecc5-487b-b712-55bf93a851af">
+	  <SHORT-NAME>Mcu</SHORT-NAME>
+	  <DEFINITION-REF DEST="MODULE-DEF">/Erika/Autosar/Mcu</DEFINITION-REF>
+	  <CONTAINERS>
+	    <CONTAINER UUID="65852ba6-162d-436f-afb2-1283f94b0883">
+	      <SHORT-NAME>McuGeneralConfiguration</SHORT-NAME>
+	      <DEFINITION-REF DEST="PARAM-CONF-CONTAINER-DEF">
+		McuGeneralConfiguration
+	      </DEFINITION-REF>
+	      <PARAMETER-VALUES>
+		<BOOLEAN-VALUE>
+		  <DEFINITION-REF DEST="BOOLEAN-PARAM-DEF">
+		    McuDevErrorDetect
+		  </DEFINITION-REF>
+		  <VALUE>false</VALUE>
+		</BOOLEAN-VALUE>
+		<BOOLEAN-VALUE>
+		  <DEFINITION-REF DEST="BOOLEAN-PARAM-DEF">
+		    McuGetRamStateApi
+		  </DEFINITION-REF>
+		  <VALUE>false</VALUE>
+		</BOOLEAN-VALUE>
+		<BOOLEAN-VALUE>
+		  <DEFINITION-REF DEST="BOOLEAN-PARAM-DEF">
+		    McuInitClock
+		  </DEFINITION-REF>
+		  <VALUE>true</VALUE>
+		</BOOLEAN-VALUE>
+		<BOOLEAN-VALUE>
+		  <DEFINITION-REF DEST="BOOLEAN-PARAM-DEF">
+		    McuNoPll
+		  </DEFINITION-REF>
+		  <VALUE>false</VALUE>
+		</BOOLEAN-VALUE>
+		<BOOLEAN-VALUE>
+		  <DEFINITION-REF DEST="BOOLEAN-PARAM-DEF">
+		    McuPerformResetApi
+		  </DEFINITION-REF>
+		  <VALUE>true</VALUE>
+		</BOOLEAN-VALUE>
+		<BOOLEAN-VALUE>
+		  <DEFINITION-REF DEST="BOOLEAN-PARAM-DEF">
+		    McuVersionInfoApi
+		  </DEFINITION-REF>
+		  <VALUE>true</VALUE>
+		</BOOLEAN-VALUE>
+	      </PARAMETER-VALUES>
+	    </CONTAINER>
+	    <CONTAINER UUID="481b3cf5-28fe-4f60-9037-3fbe166b5f6f">
+	      <SHORT-NAME>McuModuleConfiguration</SHORT-NAME>
+	      <DEFINITION-REF DEST="PARAM-CONF-CONTAINER-DEF">
+		McuModuleConfiguration
+	      </DEFINITION-REF>
+	      <PARAMETER-VALUES>
+		<ENUMERATION-VALUE>
+		  <DEFINITION-REF DEST="ENUMERATION-PARAM-DEF">
+		    McuClockSrcFailureNotification
+		  </DEFINITION-REF>
+		  <VALUE>DISABLED</VALUE>
+		</ENUMERATION-VALUE>
+		<INTEGER-VALUE>
+		  <DEFINITION-REF DEST="DERIVED-INTEGER-PARAM-DEF">
+		    McuNumberOfMcuModes
+		  </DEFINITION-REF>
+		  <VALUE>1</VALUE>
+		</INTEGER-VALUE>
+		<INTEGER-VALUE>
+		  <DEFINITION-REF DEST="DERIVED-INTEGER-PARAM-DEF">
+		    McuRamSectors
+		  </DEFINITION-REF>
+		  <VALUE>1</VALUE>
+		</INTEGER-VALUE>
+		<!--
+		<INTEGER-VALUE>
+		  <DEFINITION-REF DEST="INTEGER-PARAM-DEF">
+		    McuResetSetting
+		  </DEFINITION-REF>
+		  <VALUE>1</VALUE>
+		</INTEGER-VALUE>
+		-->
+	      </PARAMETER-VALUES>
+	      <SUB-CONTAINERS>
+		<CONTAINER UUID="610937b5-ffd5-4a50-bf88-ebc08913a3cb">
+		  <SHORT-NAME>McuClockSettingConfig</SHORT-NAME>
+		  <DEFINITION-REF DEST="PARAM-CONF-CONTAINER-DEF">
+		    McuClockSettingConfig
+		  </DEFINITION-REF>
+		  <REFERENCE-VALUES>
+		    <REFERENCE-VALUE>
+		      <DEFINITION-REF DEST="REFERENCE-PARAM-DEF">
+			McuDefaultClockReference
+		      </DEFINITION-REF>
+		      <VALUE-REF DEST="CONTAINER">
+			Clock
+		      </VALUE-REF>
+		    </REFERENCE-VALUE>
+		  </REFERENCE-VALUES>
+		  <SUB-CONTAINERS>
+		    <CONTAINER UUID="68157c32-0739-4116-8cb2-c5a53b8ce0f0">
+		      <SHORT-NAME>Clock</SHORT-NAME>
+		      <ADMIN-DATA>
+			<SDGS>
+			  <SDG GID="Erika::IdentifiableOptions" />
+			</SDGS>
+		      </ADMIN-DATA>
+		      <DEFINITION-REF DEST="PARAM-CONF-CONTAINER-DEF">
+			McuClockReferencePoint
+		      </DEFINITION-REF>
+		      <PARAMETER-VALUES>
+			<FLOAT-VALUE>
+			  <DEFINITION-REF DEST="FLOAT-PARAM-DEF">
+			    McuClockReferencePointFrequency
+			  </DEFINITION-REF>
+			  <VALUE>1.6E7</VALUE>
+			</FLOAT-VALUE>
+			<!-- TODO: Clock configuration -->
+		      </PARAMETER-VALUES>
+		    </CONTAINER>
+		  </SUB-CONTAINERS>
+		</CONTAINER>
+		<CONTAINER UUID="62617d05-cc2e-4c4d-b4b1-9202e9455fc2">
+		  <SHORT-NAME>McuModeSettingConf</SHORT-NAME>
+		  <DEFINITION-REF DEST="PARAM-CONF-CONTAINER-DEF">
+		    McuModeSettingConf
+		  </DEFINITION-REF>
+		  <PARAMETER-VALUES>
+		    <INTEGER-VALUE>
+		      <DEFINITION-REF DEST="INTEGER-PARAM-DEF">
+			McuMode
+		      </DEFINITION-REF>
+		      <VALUE>0</VALUE>
+		    </INTEGER-VALUE>
+		  </PARAMETER-VALUES>
+		</CONTAINER>
+		<CONTAINER UUID="62234d05-bb3e-1a5z-e4c1-7365e9678fc4">
+		  <SHORT-NAME>McuRamSectorSettingConf</SHORT-NAME>
+		  <DEFINITION-REF DEST="PARAM-CONF-CONTAINER-DEF">
+		    McuRamSectorSettingConf
+		  </DEFINITION-REF>
+		  <PARAMETER-VALUES>
+		    <INTEGER-VALUE>
+		      <DEFINITION-REF DEST="INTEGER-PARAM-DEF">
+			McuRamDefaultValue
+		      </DEFINITION-REF>
+		      <VALUE>0</VALUE>
+		    </INTEGER-VALUE>
+		    <INTEGER-VALUE>
+		      <DEFINITION-REF DEST="INTEGER-PARAM-DEF">
+			McuRamSectionBaseAddress
+		      </DEFINITION-REF>
+		      <VALUE>0x20000000</VALUE>
+		    </INTEGER-VALUE>
+		    <INTEGER-VALUE>
+		      <DEFINITION-REF DEST="INTEGER-PARAM-DEF">
+			McuRamSectionSize
+		      </DEFINITION-REF>
+		      <VALUE>0x00008000</VALUE>
+		    </INTEGER-VALUE>
+		  </PARAMETER-VALUES>
+		</CONTAINER>
+	      </SUB-CONTAINERS>
+	    </CONTAINER>
+	  </CONTAINERS>
+	</MODULE-CONFIGURATION>
+	<MODULE-CONFIGURATION UUID="b1d98deb-a2d2-4bc5-8e2b-f4fa2dc9af07">
+	  <SHORT-NAME>Port</SHORT-NAME>
+	  <DEFINITION-REF DEST="MODULE-DEF">/Erika/Autosar/Port</DEFINITION-REF>
+	  <CONTAINERS>
+	    <CONTAINER UUID="fd6bd784-9b66-4ba8-8cc9-b7c58084117a">
+	      <SHORT-NAME>PortConfigSet</SHORT-NAME>
+	      <DEFINITION-REF DEST="PARAM-CONF-CONTAINER-DEF">
+		PortConfigSet
+	      </DEFINITION-REF>
+	      <SUB-CONTAINERS>
+		<CONTAINER UUID="dcb99435-1cec-4582-bab3-2ab23f8b457a">
+		  <SHORT-NAME>DIOPorts</SHORT-NAME>
+		  <DEFINITION-REF DEST="PARAM-CONF-CONTAINER-DEF">
+		    PortContainer
+		  </DEFINITION-REF>
+		  <SUB-CONTAINERS>
+		    <CONTAINER UUID="c774319d-ac5e-4e60-9f47-9a2a83c0af49">
+		      <SHORT-NAME>PORT_M_PIN_0</SHORT-NAME>
+		      <DEFINITION-REF DEST="PARAM-CONF-CONTAINER-DEF">
+			PortPin
+		      </DEFINITION-REF>
+		      <PARAMETER-VALUES>
+			<ENUMERATION-VALUE>
+			  <DEFINITION-REF DEST="ENUMERATION-PARAM-DEF">
+			    PortPinDirection
+			  </DEFINITION-REF>
+			  <VALUE>PORT_PIN_IN</VALUE>
+			</ENUMERATION-VALUE>
+			<INTEGER-VALUE>
+			  <DEFINITION-REF DEST="INTEGER-PARAM-DEF">
+			    PortPinId
+			  </DEFINITION-REF>
+			  <VALUE>0x00000058</VALUE>
+			</INTEGER-VALUE>
+			<ENUMERATION-VALUE>
+			  <DEFINITION-REF DEST="ENUMERATION-PARAM-DEF">
+			    PortPinInitialMode
+			  </DEFINITION-REF>
+			  <VALUE>PORT_PIN_MODE_DIO</VALUE>
+			</ENUMERATION-VALUE>
+			<ENUMERATION-VALUE>
+			  <DEFINITION-REF DEST="ENUMERATION-PARAM-DEF">
+			    PortPinLevelValue
+			  </DEFINITION-REF>
+			  <VALUE>PORT_PIN_LEVEL_LOW</VALUE>
+			</ENUMERATION-VALUE>
+			<ENUMERATION-VALUE>
+			  <DEFINITION-REF DEST="ENUMERATION-PARAM-DEF">
+			    PortPinMode
+			  </DEFINITION-REF>
+			  <VALUE>PORT_PIN_MODE_DIO</VALUE>
+			</ENUMERATION-VALUE>
+			<BOOLEAN-VALUE>
+			  <DEFINITION-REF DEST="BOOLEAN-PARAM-DEF">
+			    PortPinModeChangeable
+			  </DEFINITION-REF>
+			  <VALUE>false</VALUE>
+			</BOOLEAN-VALUE>
+		      </PARAMETER-VALUES>
+		      <SUB-CONTAINERS>
+			<CONTAINER UUID="c774319d-ac5e-4e60-9f47-9a2a83c0af49">
+			  <SHORT-NAME>PORT_PIN_MODE_DIO</SHORT-NAME>
+			  <DEFINITION-REF DEST="PARAM-CONF-CONTAINER-DEF">
+			    PortPinMode
+			  </DEFINITION-REF>
+			  <PARAMETER-VALUES>
+			    <INTEGER-VALUE>
+			      <DEFINITION-REF DEST="ENUMERATION-PARAM-DEF">
+				PortPinModeHWConfig
+			      </DEFINITION-REF>
+			      <VALUE>
+				PORT_PIN_HW_CFG_DEN | PORT_PIN_HW_CFG_DEN
+			      </VALUE>
+			    </INTEGER-VALUE>
+			  </PARAMETER-VALUES>
+			</CONTAINER>
+		      </SUB-CONTAINERS>
+		    </CONTAINER>
+		    <CONTAINER UUID="c774319d-ac5e-4e60-9f47-9a2a83c0af49">
+		      <SHORT-NAME>PORT_M_PIN_1</SHORT-NAME>
+		      <DEFINITION-REF DEST="PARAM-CONF-CONTAINER-DEF">
+			PortPin
+		      </DEFINITION-REF>
+		      <PARAMETER-VALUES>
+			<ENUMERATION-VALUE>
+			  <DEFINITION-REF DEST="ENUMERATION-PARAM-DEF">
+			    PortPinDirection
+			  </DEFINITION-REF>
+			  <VALUE>PORT_PIN_IN</VALUE>
+			</ENUMERATION-VALUE>
+			<INTEGER-VALUE>
+			  <DEFINITION-REF DEST="INTEGER-PARAM-DEF">
+			    PortPinId
+			  </DEFINITION-REF>
+			  <VALUE>0x00000059</VALUE>
+			</INTEGER-VALUE>
+			<ENUMERATION-VALUE>
+			  <DEFINITION-REF DEST="ENUMERATION-PARAM-DEF">
+			    PortPinInitialMode
+			  </DEFINITION-REF>
+			  <VALUE>PORT_PIN_MODE_DIO</VALUE>
+			</ENUMERATION-VALUE>
+			<ENUMERATION-VALUE>
+			  <DEFINITION-REF DEST="ENUMERATION-PARAM-DEF">
+			    PortPinLevelValue
+			  </DEFINITION-REF>
+			  <VALUE>PORT_PIN_LEVEL_LOW</VALUE>
+			</ENUMERATION-VALUE>
+			<ENUMERATION-VALUE>
+			  <DEFINITION-REF DEST="ENUMERATION-PARAM-DEF">
+			    PortPinMode
+			  </DEFINITION-REF>
+			  <VALUE>PORT_PIN_MODE_DIO</VALUE>
+			</ENUMERATION-VALUE>
+			<BOOLEAN-VALUE>
+			  <DEFINITION-REF DEST="BOOLEAN-PARAM-DEF">
+			    PortPinModeChangeable
+			  </DEFINITION-REF>
+			  <VALUE>false</VALUE>
+			</BOOLEAN-VALUE>
+		      </PARAMETER-VALUES>
+		      <SUB-CONTAINERS>
+			<CONTAINER UUID="c774319d-ac5e-4e60-9f47-9a2a83c0af49">
+			  <SHORT-NAME>PORT_PIN_MODE_DIO</SHORT-NAME>
+			  <DEFINITION-REF DEST="PARAM-CONF-CONTAINER-DEF">
+			    PortPinMode
+			  </DEFINITION-REF>
+			  <PARAMETER-VALUES>
+			    <INTEGER-VALUE>
+			      <DEFINITION-REF DEST="ENUMERATION-PARAM-DEF">
+				PortPinModeHWConfig
+			      </DEFINITION-REF>
+			      <VALUE>
+				PORT_PIN_HW_CFG_DEN | PORT_PIN_HW_CFG_DEN
+			      </VALUE>
+			    </INTEGER-VALUE>
+			  </PARAMETER-VALUES>
+			</CONTAINER>
+		      </SUB-CONTAINERS>
+		    </CONTAINER>
+		    <CONTAINER UUID="c774319d-ac5e-4e60-9f47-9a2a83c0af49">
+		      <SHORT-NAME>PORT_M_PIN_2</SHORT-NAME>
+		      <DEFINITION-REF DEST="PARAM-CONF-CONTAINER-DEF">
+			PortPin
+		      </DEFINITION-REF>
+		      <PARAMETER-VALUES>
+			<ENUMERATION-VALUE>
+			  <DEFINITION-REF DEST="ENUMERATION-PARAM-DEF">
+			    PortPinDirection
+			  </DEFINITION-REF>
+			  <VALUE>PORT_PIN_IN</VALUE>
+			</ENUMERATION-VALUE>
+			<INTEGER-VALUE>
+			  <DEFINITION-REF DEST="INTEGER-PARAM-DEF">
+			    PortPinId
+			  </DEFINITION-REF>
+			  <VALUE>0x0000005A</VALUE>
+			</INTEGER-VALUE>
+			<ENUMERATION-VALUE>
+			  <DEFINITION-REF DEST="ENUMERATION-PARAM-DEF">
+			    PortPinInitialMode
+			  </DEFINITION-REF>
+			  <VALUE>PORT_PIN_MODE_DIO</VALUE>
+			</ENUMERATION-VALUE>
+			<ENUMERATION-VALUE>
+			  <DEFINITION-REF DEST="ENUMERATION-PARAM-DEF">
+			    PortPinLevelValue
+			  </DEFINITION-REF>
+			  <VALUE>PORT_PIN_LEVEL_LOW</VALUE>
+			</ENUMERATION-VALUE>
+			<ENUMERATION-VALUE>
+			  <DEFINITION-REF DEST="ENUMERATION-PARAM-DEF">
+			    PortPinMode
+			  </DEFINITION-REF>
+			  <VALUE>PORT_PIN_MODE_DIO</VALUE>
+			</ENUMERATION-VALUE>
+			<BOOLEAN-VALUE>
+			  <DEFINITION-REF DEST="BOOLEAN-PARAM-DEF">
+			    PortPinModeChangeable
+			  </DEFINITION-REF>
+			  <VALUE>false</VALUE>
+			</BOOLEAN-VALUE>
+		      </PARAMETER-VALUES>
+		      <SUB-CONTAINERS>
+			<CONTAINER UUID="c774319d-ac5e-4e60-9f47-9a2a83c0af49">
+			  <SHORT-NAME>PORT_PIN_MODE_DIO</SHORT-NAME>
+			  <DEFINITION-REF DEST="PARAM-CONF-CONTAINER-DEF">
+			    PortPinMode
+			  </DEFINITION-REF>
+			  <PARAMETER-VALUES>
+			    <INTEGER-VALUE>
+			      <DEFINITION-REF DEST="ENUMERATION-PARAM-DEF">
+				PortPinModeHWConfig
+			      </DEFINITION-REF>
+			      <VALUE>
+				PORT_PIN_HW_CFG_DEN | PORT_PIN_HW_CFG_DEN
+			      </VALUE>
+			    </INTEGER-VALUE>
+			  </PARAMETER-VALUES>
+			</CONTAINER>
+		      </SUB-CONTAINERS>
+		    </CONTAINER>
+		    <CONTAINER UUID="c774319d-ac5e-4e60-9f47-9a2a83c0af49">
+		      <SHORT-NAME>PORT_M_PIN_3</SHORT-NAME>
+		      <DEFINITION-REF DEST="PARAM-CONF-CONTAINER-DEF">
+			PortPin
+		      </DEFINITION-REF>
+		      <PARAMETER-VALUES>
+			<ENUMERATION-VALUE>
+			  <DEFINITION-REF DEST="ENUMERATION-PARAM-DEF">
+			    PortPinDirection
+			  </DEFINITION-REF>
+			  <VALUE>PORT_PIN_IN</VALUE>
+			</ENUMERATION-VALUE>
+			<INTEGER-VALUE>
+			  <DEFINITION-REF DEST="INTEGER-PARAM-DEF">
+			    PortPinId
+			  </DEFINITION-REF>
+			  <VALUE>0x0000005B</VALUE>
+			</INTEGER-VALUE>
+			<ENUMERATION-VALUE>
+			  <DEFINITION-REF DEST="ENUMERATION-PARAM-DEF">
+			    PortPinInitialMode
+			  </DEFINITION-REF>
+			  <VALUE>PORT_PIN_MODE_DIO</VALUE>
+			</ENUMERATION-VALUE>
+			<ENUMERATION-VALUE>
+			  <DEFINITION-REF DEST="ENUMERATION-PARAM-DEF">
+			    PortPinLevelValue
+			  </DEFINITION-REF>
+			  <VALUE>PORT_PIN_LEVEL_LOW</VALUE>
+			</ENUMERATION-VALUE>
+			<ENUMERATION-VALUE>
+			  <DEFINITION-REF DEST="ENUMERATION-PARAM-DEF">
+			    PortPinMode
+			  </DEFINITION-REF>
+			  <VALUE>PORT_PIN_MODE_DIO</VALUE>
+			</ENUMERATION-VALUE>
+			<BOOLEAN-VALUE>
+			  <DEFINITION-REF DEST="BOOLEAN-PARAM-DEF">
+			    PortPinModeChangeable
+			  </DEFINITION-REF>
+			  <VALUE>false</VALUE>
+			</BOOLEAN-VALUE>
+		      </PARAMETER-VALUES>
+		      <SUB-CONTAINERS>
+			<CONTAINER UUID="c774319d-ac5e-4e60-9f47-9a2a83c0af49">
+			  <SHORT-NAME>PORT_PIN_MODE_DIO</SHORT-NAME>
+			  <DEFINITION-REF DEST="PARAM-CONF-CONTAINER-DEF">
+			    PortPinMode
+			  </DEFINITION-REF>
+			  <PARAMETER-VALUES>
+			    <INTEGER-VALUE>
+			      <DEFINITION-REF DEST="ENUMERATION-PARAM-DEF">
+				PortPinModeHWConfig
+			      </DEFINITION-REF>
+			      <VALUE>
+				PORT_PIN_HW_CFG_DEN | PORT_PIN_HW_CFG_DEN
+			      </VALUE>
+			    </INTEGER-VALUE>
+			  </PARAMETER-VALUES>
+			</CONTAINER>
+		      </SUB-CONTAINERS>
+		    </CONTAINER>
+		    <CONTAINER UUID="c774319d-ac5e-4e60-9f47-9a2a83c0af49">
+		      <SHORT-NAME>PORT_M_PIN_4</SHORT-NAME>
+		      <DEFINITION-REF DEST="PARAM-CONF-CONTAINER-DEF">
+			PortPin
+		      </DEFINITION-REF>
+		      <PARAMETER-VALUES>
+			<ENUMERATION-VALUE>
+			  <DEFINITION-REF DEST="ENUMERATION-PARAM-DEF">
+			    PortPinDirection
+			  </DEFINITION-REF>
+			  <VALUE>PORT_PIN_IN</VALUE>
+			</ENUMERATION-VALUE>
+			<INTEGER-VALUE>
+			  <DEFINITION-REF DEST="INTEGER-PARAM-DEF">
+			    PortPinId
+			  </DEFINITION-REF>
+			  <VALUE>0x0000005C</VALUE>
+			</INTEGER-VALUE>
+			<ENUMERATION-VALUE>
+			  <DEFINITION-REF DEST="ENUMERATION-PARAM-DEF">
+			    PortPinInitialMode
+			  </DEFINITION-REF>
+			  <VALUE>PORT_PIN_MODE_DIO</VALUE>
+			</ENUMERATION-VALUE>
+			<ENUMERATION-VALUE>
+			  <DEFINITION-REF DEST="ENUMERATION-PARAM-DEF">
+			    PortPinLevelValue
+			  </DEFINITION-REF>
+			  <VALUE>PORT_PIN_LEVEL_LOW</VALUE>
+			</ENUMERATION-VALUE>
+			<ENUMERATION-VALUE>
+			  <DEFINITION-REF DEST="ENUMERATION-PARAM-DEF">
+			    PortPinMode
+			  </DEFINITION-REF>
+			  <VALUE>PORT_PIN_MODE_DIO</VALUE>
+			</ENUMERATION-VALUE>
+			<BOOLEAN-VALUE>
+			  <DEFINITION-REF DEST="BOOLEAN-PARAM-DEF">
+			    PortPinModeChangeable
+			  </DEFINITION-REF>
+			  <VALUE>false</VALUE>
+			</BOOLEAN-VALUE>
+		      </PARAMETER-VALUES>
+		      <SUB-CONTAINERS>
+			<CONTAINER UUID="c774319d-ac5e-4e60-9f47-9a2a83c0af49">
+			  <SHORT-NAME>PORT_PIN_MODE_DIO</SHORT-NAME>
+			  <DEFINITION-REF DEST="PARAM-CONF-CONTAINER-DEF">
+			    PortPinMode
+			  </DEFINITION-REF>
+			  <PARAMETER-VALUES>
+			    <INTEGER-VALUE>
+			      <DEFINITION-REF DEST="ENUMERATION-PARAM-DEF">
+				PortPinModeHWConfig
+			      </DEFINITION-REF>
+			      <VALUE>
+				PORT_PIN_HW_CFG_DEN | PORT_PIN_HW_CFG_DEN
+			      </VALUE>
+			    </INTEGER-VALUE>
+			  </PARAMETER-VALUES>
+			</CONTAINER>
+		      </SUB-CONTAINERS>
+		    </CONTAINER>
+		    <CONTAINER UUID="c774319d-ac5e-4e60-9f47-9a2a83c0af49">
+		      <SHORT-NAME>PORT_G_PIN_2</SHORT-NAME>
+		      <DEFINITION-REF DEST="PARAM-CONF-CONTAINER-DEF">
+			PortPin
+		      </DEFINITION-REF>
+		      <PARAMETER-VALUES>
+			<ENUMERATION-VALUE>
+			  <DEFINITION-REF DEST="ENUMERATION-PARAM-DEF">
+			    PortPinDirection
+			  </DEFINITION-REF>
+			  <VALUE>PORT_PIN_OUT</VALUE>
+			</ENUMERATION-VALUE>
+			<INTEGER-VALUE>
+			  <DEFINITION-REF DEST="INTEGER-PARAM-DEF">
+			    PortPinId
+			  </DEFINITION-REF>
+			  <VALUE>0x00000032</VALUE>
+			</INTEGER-VALUE>
+			<ENUMERATION-VALUE>
+			  <DEFINITION-REF DEST="ENUMERATION-PARAM-DEF">
+			    PortPinInitialMode
+			  </DEFINITION-REF>
+			  <VALUE>PORT_PIN_MODE_DIO</VALUE>
+			</ENUMERATION-VALUE>
+			<ENUMERATION-VALUE>
+			  <DEFINITION-REF DEST="ENUMERATION-PARAM-DEF">
+			    PortPinLevelValue
+			  </DEFINITION-REF>
+			  <VALUE>PORT_PIN_LEVEL_LOW</VALUE>
+			</ENUMERATION-VALUE>
+			<ENUMERATION-VALUE>
+			  <DEFINITION-REF DEST="ENUMERATION-PARAM-DEF">
+			    PortPinMode
+			  </DEFINITION-REF>
+			  <VALUE>PORT_PIN_MODE_DIO</VALUE>
+			</ENUMERATION-VALUE>
+			<BOOLEAN-VALUE>
+			  <DEFINITION-REF DEST="BOOLEAN-PARAM-DEF">
+			    PortPinModeChangeable
+			  </DEFINITION-REF>
+			  <VALUE>false</VALUE>
+			</BOOLEAN-VALUE>
+		      </PARAMETER-VALUES>
+		      <SUB-CONTAINERS>
+			<CONTAINER UUID="c774319d-ac5e-4e60-9f47-9a2a83c0af49">
+			  <SHORT-NAME>PORT_PIN_MODE_DIO</SHORT-NAME>
+			  <DEFINITION-REF DEST="PARAM-CONF-CONTAINER-DEF">
+			    PortPinMode
+			  </DEFINITION-REF>
+			  <PARAMETER-VALUES>
+			    <INTEGER-VALUE>
+			      <DEFINITION-REF DEST="ENUMERATION-PARAM-DEF">
+				PortPinModeHWConfig
+			      </DEFINITION-REF>
+			      <VALUE>
+				PORT_PIN_HW_CFG_DEN
+			      </VALUE>
+			    </INTEGER-VALUE>
+			  </PARAMETER-VALUES>
+			</CONTAINER>
+		      </SUB-CONTAINERS>
+		    </CONTAINER>
+		  </SUB-CONTAINERS>
+		</CONTAINER>
+	      </SUB-CONTAINERS>
+	    </CONTAINER>
+	    <CONTAINER UUID="a09cbf3a-de2a-4152-8b86-2a62e8777a3f">
+	      <SHORT-NAME>PortGeneral</SHORT-NAME>
+	      <DEFINITION-REF DEST="PARAM-CONF-CONTAINER-DEF">
+		PortGeneral
+	      </DEFINITION-REF>
+	      <PARAMETER-VALUES>
+		<BOOLEAN-VALUE>
+		  <DEFINITION-REF DEST="BOOLEAN-PARAM-DEF">
+		    PortDevErrorDetect
+		  </DEFINITION-REF>
+		  <VALUE>false</VALUE>
+		</BOOLEAN-VALUE>
+		<BOOLEAN-VALUE>
+		  <DEFINITION-REF DEST="BOOLEAN-PARAM-DEF">
+		    PortSetPinDirectionApi
+		  </DEFINITION-REF>
+		  <VALUE>false</VALUE>
+		</BOOLEAN-VALUE>
+		<BOOLEAN-VALUE>
+		  <DEFINITION-REF DEST="BOOLEAN-PARAM-DEF">
+		    PortSetPinModeApi
+		  </DEFINITION-REF>
+		  <VALUE>false</VALUE>
+		</BOOLEAN-VALUE>
+		<BOOLEAN-VALUE>
+		  <DEFINITION-REF DEST="BOOLEAN-PARAM-DEF">
+		    PortVersionInfoApi
+		  </DEFINITION-REF>
+		  <VALUE>true</VALUE>
+		</BOOLEAN-VALUE>
+	      </PARAMETER-VALUES>
+	    </CONTAINER>
+	  </CONTAINERS>
+	</MODULE-CONFIGURATION>
+	<MODULE-CONFIGURATION UUID="397101ac-c65b-452f-bc0b-ca3aed0dd477">
+	  <SHORT-NAME>Dio</SHORT-NAME>
+	  <DEFINITION-REF DEST="MODULE-DEF">/Erika/Autosar/Dio</DEFINITION-REF>
+	  <CONTAINERS>
+	    <CONTAINER UUID="510bda5e-33db-41d6-b4ac-1300a313580c">
+	      <SHORT-NAME>DioGeneral</SHORT-NAME>
+	      <DEFINITION-REF DEST="PARAM-CONF-CONTAINER-DEF">
+	        DioGeneral
+	      </DEFINITION-REF>
+	      <PARAMETER-VALUES>
+		<BOOLEAN-VALUE>
+		  <DEFINITION-REF DEST="BOOLEAN-PARAM-DEF">
+		    DioDevErrorDetect
+		  </DEFINITION-REF>
+		  <VALUE>false</VALUE>
+		</BOOLEAN-VALUE>
+		<BOOLEAN-VALUE>
+		  <DEFINITION-REF DEST="BOOLEAN-PARAM-DEF">
+		    DioFlipChannelApi
+		  </DEFINITION-REF>
+		  <VALUE>true</VALUE>
+		</BOOLEAN-VALUE>
+		<BOOLEAN-VALUE>
+		  <DEFINITION-REF DEST="BOOLEAN-PARAM-DEF">
+		    DioVersionInfoApi
+		  </DEFINITION-REF>
+		  <VALUE>true</VALUE>
+		</BOOLEAN-VALUE>
+	      </PARAMETER-VALUES>
+	    </CONTAINER>
+	    <CONTAINER UUID="fca4fd0c-40f8-47af-b749-2f4f39090c89">
+	      <SHORT-NAME>USER_LED</SHORT-NAME>
+	      <DEFINITION-REF DEST="PARAM-CONF-CONTAINER-DEF">
+	        DioPort
+	      </DEFINITION-REF>
+	      <PARAMETER-VALUES>
+		<INTEGER-VALUE>
+		  <DEFINITION-REF DEST="INTEGER-PARAM-DEF">
+		    DioPortId
+		  </DEFINITION-REF>
+		  <VALUE>0x00000000</VALUE>
+		</INTEGER-VALUE>
+		<STRING-VALUE>
+		  <DEFINITION-REF DEST="STRING-PARAM-DEF">
+		    DioPhysicalPort
+		  </DEFINITION-REF>
+		  <VALUE>DIO_PORT_G</VALUE>
+		</STRING-VALUE>
+	      </PARAMETER-VALUES>
+	      <SUB-CONTAINERS>
+		<CONTAINER UUID="7db79dd3-9f88-43d2-bc9a-5f4f9f06fe93">
+		  <SHORT-NAME>CHANNEL_USER_LED</SHORT-NAME>
+		  <DEFINITION-REF DEST="PARAM-CONF-CONTAINER-DEF">
+		    DioChannel
+		  </DEFINITION-REF>
+		  <PARAMETER-VALUES>
+		    <INTEGER-VALUE>
+		      <DEFINITION-REF DEST="INTEGER-PARAM-DEF">
+		        DioChannelId
+		      </DEFINITION-REF>
+		      <VALUE>DIO_CHANNEL_G_2</VALUE>
+		    </INTEGER-VALUE>
+		  </PARAMETER-VALUES>
+		</CONTAINER>
+		<CONTAINER UUID="7db79dd3-9f88-43d2-bc9a-5f4f9f06fe93">
+		  <SHORT-NAME>CHANNEL_GROUP_USER_LED</SHORT-NAME>
+		  <DEFINITION-REF DEST="PARAM-CONF-CONTAINER-DEF">
+		    DioChannelGroup
+		  </DEFINITION-REF>
+		  <PARAMETER-VALUES>
+		    <INTEGER-VALUE>
+		      <DEFINITION-REF DEST="INTEGER-PARAM-DEF">
+		        DioPortMask
+		      </DEFINITION-REF>
+		      <VALUE>0x00000004</VALUE>
+		    </INTEGER-VALUE>
+		    <INTEGER-VALUE>
+		      <DEFINITION-REF DEST="INTEGER-PARAM-DEF">
+		        DioPortOffset
+		      </DEFINITION-REF>
+		      <VALUE>0x00000002</VALUE>
+		    </INTEGER-VALUE>
+		  </PARAMETER-VALUES>
+		</CONTAINER>
+	      </SUB-CONTAINERS>
+	    </CONTAINER>
+	    <CONTAINER UUID="fca4fd0c-40f8-47af-b749-2f4f39090c89">
+	      <SHORT-NAME>SWITCHES</SHORT-NAME>
+	      <DEFINITION-REF DEST="PARAM-CONF-CONTAINER-DEF">
+	        DioPort
+	      </DEFINITION-REF>
+	      <PARAMETER-VALUES>
+		<INTEGER-VALUE>
+		  <DEFINITION-REF DEST="INTEGER-PARAM-DEF">
+		    DioPortId
+		  </DEFINITION-REF>
+		  <VALUE>0x00000001</VALUE>
+		</INTEGER-VALUE>
+		<STRING-VALUE>
+		  <DEFINITION-REF DEST="STRING-PARAM-DEF">
+		    DioPhysicalPort
+		  </DEFINITION-REF>
+		  <VALUE>DIO_PORT_M</VALUE>
+		</STRING-VALUE>
+	      </PARAMETER-VALUES>
+	      <SUB-CONTAINERS>
+		<CONTAINER UUID="7db79dd3-9f88-43d2-bc9a-5f4f9f06fe93">
+		  <SHORT-NAME>CHANNEL_SWITCHES</SHORT-NAME>
+		  <DEFINITION-REF DEST="PARAM-CONF-CONTAINER-DEF">
+		    DioChannel
+		  </DEFINITION-REF>
+		  <PARAMETER-VALUES>
+		    <INTEGER-VALUE>
+		      <DEFINITION-REF DEST="INTEGER-PARAM-DEF">
+		        DioChannelId
+		      </DEFINITION-REF>
+		      <VALUE>DIO_CHANNEL_M_0</VALUE>
+		    </INTEGER-VALUE>
+		    <INTEGER-VALUE>
+		      <DEFINITION-REF DEST="INTEGER-PARAM-DEF">
+		        DioChannelId
+		      </DEFINITION-REF>
+		      <VALUE>DIO_CHANNEL_M_1</VALUE>
+		    </INTEGER-VALUE>
+		    <INTEGER-VALUE>
+		      <DEFINITION-REF DEST="INTEGER-PARAM-DEF">
+		        DioChannelId
+		      </DEFINITION-REF>
+		      <VALUE>DIO_CHANNEL_M_2</VALUE>
+		    </INTEGER-VALUE>
+		    <INTEGER-VALUE>
+		      <DEFINITION-REF DEST="INTEGER-PARAM-DEF">
+		        DioChannelId
+		      </DEFINITION-REF>
+		      <VALUE>DIO_CHANNEL_M_3</VALUE>
+		    </INTEGER-VALUE>
+		    <INTEGER-VALUE>
+		      <DEFINITION-REF DEST="INTEGER-PARAM-DEF">
+		        DioChannelId
+		      </DEFINITION-REF>
+		      <VALUE>DIO_CHANNEL_M_4</VALUE>
+		    </INTEGER-VALUE>
+		  </PARAMETER-VALUES>
+		</CONTAINER>
+		<CONTAINER UUID="7db79dd3-9f88-43d2-bc9a-5f4f9f06fe93">
+		  <SHORT-NAME>CHANNEL_GROUP_SWITCHES</SHORT-NAME>
+		  <DEFINITION-REF DEST="PARAM-CONF-CONTAINER-DEF">
+		    DioChannelGroup
+		  </DEFINITION-REF>
+		  <PARAMETER-VALUES>
+		    <INTEGER-VALUE>
+		      <DEFINITION-REF DEST="INTEGER-PARAM-DEF">
+		        DioPortMask
+		      </DEFINITION-REF>
+		      <VALUE>0x0000001F</VALUE>
+		    </INTEGER-VALUE>
+		    <INTEGER-VALUE>
+		      <DEFINITION-REF DEST="INTEGER-PARAM-DEF">
+		        DioPortOffset
+		      </DEFINITION-REF>
+		      <VALUE>0x00000000</VALUE>
+		    </INTEGER-VALUE>
+		  </PARAMETER-VALUES>
+		</CONTAINER>
+	      </SUB-CONTAINERS>
+	    </CONTAINER>
+	  </CONTAINERS>
+	</MODULE-CONFIGURATION>
+	<MODULE-CONFIGURATION UUID="397101ac-c65b-452f-bc0b-ca3aed0dd477">
+	  <SHORT-NAME>Sci</SHORT-NAME>
+	  <DEFINITION-REF DEST="MODULE-DEF">/Erika/Autosar/Sci</DEFINITION-REF>
+	  <CONTAINERS>
+	    <CONTAINER UUID="510bda5e-33db-41d6-b4ac-1300a313580c">
+	      <SHORT-NAME>SciGeneral</SHORT-NAME>
+	      <DEFINITION-REF DEST="PARAM-CONF-CONTAINER-DEF">
+	        SciGeneral
+	      </DEFINITION-REF>
+	      <PARAMETER-VALUES>
+		<BOOLEAN-VALUE>
+		  <DEFINITION-REF DEST="BOOLEAN-PARAM-DEF">
+		    SciDevErrorDetect
+		  </DEFINITION-REF>
+		  <VALUE>false</VALUE>
+		</BOOLEAN-VALUE>
+		<BOOLEAN-VALUE>
+		  <DEFINITION-REF DEST="BOOLEAN-PARAM-DEF">
+		    SciVersionInfoApi
+		  </DEFINITION-REF>
+		  <VALUE>true</VALUE>
+		</BOOLEAN-VALUE>
+		<BOOLEAN-VALUE>
+		  <DEFINITION-REF DEST="BOOLEAN-PARAM-DEF">
+		    SciWakeupFunctionalityApi
+		  </DEFINITION-REF>
+		  <VALUE>true</VALUE>
+		</BOOLEAN-VALUE>
+		<BOOLEAN-VALUE>
+		  <DEFINITION-REF DEST="BOOLEAN-PARAM-DEF">
+		    SciDeInitApi
+		  </DEFINITION-REF>
+		  <VALUE>true</VALUE>
+		</BOOLEAN-VALUE>
+		<BOOLEAN-VALUE>
+		  <DEFINITION-REF DEST="BOOLEAN-PARAM-DEF">
+		    SciNotificationsApi
+		  </DEFINITION-REF>
+		  <VALUE>true</VALUE>
+		</BOOLEAN-VALUE>
+	      </PARAMETER-VALUES>
+	    </CONTAINER>
+	    <CONTAINER UUID="fca4fd0c-40f8-47af-b749-2f4f39090c89">
+	      <SHORT-NAME>SCI_CONFIG_DEFAULT</SHORT-NAME>
+	      <DEFINITION-REF DEST="PARAM-CONF-CONTAINER-DEF">
+	        SciGlobalConfig
+	      </DEFINITION-REF>
+	      <SUB-CONTAINERS>
+		<CONTAINER UUID="7db79dd3-9f88-43d2-bc9a-5f4f9f06fe93">
+		  <SHORT-NAME>SCI_CHANNEL_0</SHORT-NAME>
+		  <DEFINITION-REF DEST="PARAM-CONF-CONTAINER-DEF">
+		    SciChannel
+		  </DEFINITION-REF>
+		  <PARAMETER-VALUES>
+		    <INTEGER-VALUE>
+		      <DEFINITION-REF DEST="INTEGER-PARAM-DEF">
+		        SciChannelId
+		      </DEFINITION-REF>
+		      <VALUE>SCI_CHANNEL_0</VALUE>
+		    </INTEGER-VALUE>
+		    <INTEGER-VALUE>
+		      <DEFINITION-REF DEST="INTEGER-PARAM-DEF">
+		        SciChannelBaudRate
+		      </DEFINITION-REF>
+		      <VALUE>2400</VALUE>
+		    </INTEGER-VALUE>
+		    <BOOLEAN-VALUE>
+		      <DEFINITION-REF DEST="BOOLEAN-PARAM-DEF">
+			SciChannelWakeupSupport
+		      </DEFINITION-REF>
+		      <VALUE>true</VALUE>
+		    </BOOLEAN-VALUE>
+		    <BOOLEAN-VALUE>
+		      <DEFINITION-REF DEST="BOOLEAN-PARAM-DEF">
+			SciChannelSystemClock
+		      </DEFINITION-REF>
+		      <VALUE>true</VALUE>
+		    </BOOLEAN-VALUE>
+		    <INTEGER-VALUE>
+		      <DEFINITION-REF DEST="INTEGER-PARAM-DEF">
+		        SciChannelSystemControl
+		      </DEFINITION-REF>
+		      <VALUE>
+			SCI_CH_HW_LOOP_BACK |
+			SCI_CH_HW_RX |
+			SCI_CH_HW_TX |
+			SCI_CH_HW_ENABLE
+		      </VALUE>
+		    </INTEGER-VALUE>
+		    <INTEGER-VALUE>
+		      <DEFINITION-REF DEST="INTEGER-PARAM-DEF">
+		        SciChannelLineControl
+		      </DEFINITION-REF>
+		      <VALUE>
+			SCI_CH_HW_8_BITS
+		      </VALUE>
+		    </INTEGER-VALUE>
+		    <!-- Notifications -->
+		  </PARAMETER-VALUES>
+		</CONTAINER>
+	      </SUB-CONTAINERS>
+	    </CONTAINER>
+	  </CONTAINERS>
+	</MODULE-CONFIGURATION>
+	<MODULE-CONFIGURATION UUID="397101ac-c65b-452f-bc0b-ca3aed0dd477">
+	  <SHORT-NAME>Gpt</SHORT-NAME>
+	  <DEFINITION-REF DEST="MODULE-DEF">/Erika/Autosar/Gpt</DEFINITION-REF>
+	  <CONTAINERS>
+	    <CONTAINER UUID="510bda5e-33db-41d6-b4ac-1300a313580c"> <!-- ?!? -->
+	      <SHORT-NAME>GptDriverConfiguration</SHORT-NAME>
+	      <DEFINITION-REF DEST="PARAM-CONF-CONTAINER-DEF">
+	        GptDriverConfiguration
+	      </DEFINITION-REF>
+	      <PARAMETER-VALUES>
+		<BOOLEAN-VALUE>
+		  <DEFINITION-REF DEST="BOOLEAN-PARAM-DEF">
+		    GptDevErrorDetect
+		  </DEFINITION-REF>
+		  <VALUE>false</VALUE>
+		</BOOLEAN-VALUE>
+		<BOOLEAN-VALUE>
+		  <DEFINITION-REF DEST="BOOLEAN-PARAM-DEF">
+		    GptReportWakeupSource
+		  </DEFINITION-REF>
+		  <VALUE>false</VALUE>
+		</BOOLEAN-VALUE>
+		<!-- GptClockReferencePoint Container -->
+	      </PARAMETER-VALUES>
+	    </CONTAINER>
+	    <CONTAINER UUID="510bda5e-33db-41d6-b4ac-1300a313580c"> <!-- ?!? -->
+	      <SHORT-NAME>GptConfigurationOfOptApiServices</SHORT-NAME>
+	      <DEFINITION-REF DEST="PARAM-CONF-CONTAINER-DEF">
+	        GptConfigurationOfOptApiServices
+	      </DEFINITION-REF>
+	      <PARAMETER-VALUES>
+		<BOOLEAN-VALUE>
+		  <DEFINITION-REF DEST="BOOLEAN-PARAM-DEF">
+		    GptDeinitApi
+		  </DEFINITION-REF>
+		  <VALUE>true</VALUE>
+		</BOOLEAN-VALUE>
+		<BOOLEAN-VALUE>
+		  <DEFINITION-REF DEST="BOOLEAN-PARAM-DEF">
+		    GptEnableDisableNotificationApi
+		  </DEFINITION-REF>
+		  <VALUE>true</VALUE>
+		</BOOLEAN-VALUE>
+		<BOOLEAN-VALUE>
+		  <DEFINITION-REF DEST="BOOLEAN-PARAM-DEF">
+		    GptTimeElapsedApi
+		  </DEFINITION-REF>
+		  <VALUE>true</VALUE>
+		</BOOLEAN-VALUE>
+		<BOOLEAN-VALUE>
+		  <DEFINITION-REF DEST="BOOLEAN-PARAM-DEF">
+		    GptTimeRemainingApi
+		  </DEFINITION-REF>
+		  <VALUE>true</VALUE>
+		</BOOLEAN-VALUE>
+		<BOOLEAN-VALUE>
+		  <DEFINITION-REF DEST="BOOLEAN-PARAM-DEF">
+		    GptVersionInfoApi
+		  </DEFINITION-REF>
+		  <VALUE>true</VALUE>
+		</BOOLEAN-VALUE>
+		<BOOLEAN-VALUE>
+		  <DEFINITION-REF DEST="BOOLEAN-PARAM-DEF">
+		   GptWakeupFunctionalityApi
+		  </DEFINITION-REF>
+		  <VALUE>false</VALUE>
+		</BOOLEAN-VALUE>
+		<BOOLEAN-VALUE>
+		  <DEFINITION-REF DEST="BOOLEAN-PARAM-DEF">
+		   GptChannelWakeupFunctionalityApi
+		  </DEFINITION-REF>
+		  <VALUE>true</VALUE>
+		</BOOLEAN-VALUE>
+	      </PARAMETER-VALUES>
+	    </CONTAINER>
+	    <CONTAINER UUID="fca4fd0c-40f8-47af-b749-2f4f39090c89"> <!-- ?!? -->
+	      <SHORT-NAME>GPT_CONFIG_DEFAULT</SHORT-NAME>
+	      <DEFINITION-REF DEST="PARAM-CONF-CONTAINER-DEF">
+	        GptChannelConfiguration
+	      </DEFINITION-REF>
+	      <SUB-CONTAINERS>
+		<CONTAINER UUID="7db79dd3-9f88-43d2-bc9a-5f4f9f06fe93">
+		  <SHORT-NAME>GPT_CHANNEL_0_A</SHORT-NAME>
+		  <DEFINITION-REF DEST="PARAM-CONF-CONTAINER-DEF">
+		    GptChannel
+		  </DEFINITION-REF>
+		  <PARAMETER-VALUES>
+		    <INTEGER-VALUE>
+		      <DEFINITION-REF DEST="INTEGER-PARAM-DEF">
+		        GptChannelId
+		      </DEFINITION-REF>
+		      <VALUE>GPT_CHANNEL_0_A</VALUE>
+		    </INTEGER-VALUE>
+		    <BOOLEAN-VALUE>
+		      <DEFINITION-REF DEST="BOOLEAN-PARAM-DEF">
+			GptChannelWakeupSupport
+		      </DEFINITION-REF>
+		      <VALUE>true</VALUE>
+		    </BOOLEAN-VALUE>
+		    <INTEGER-VALUE>
+		      <DEFINITION-REF DEST="INTEGER-PARAM-DEF">
+		        GptChannelMode
+		      </DEFINITION-REF>
+		      <VALUE>
+			GPT_CH_MODE_CONTINUOUS
+		      </VALUE>
+		    </INTEGER-VALUE>
+		    <!-- GptChannelTickFrequency -->
+		    <!-- GptChannelTickValueMax -->
+		    <BOOLEAN-VALUE>
+		      <DEFINITION-REF DEST="BOOLEAN-PARAM-DEF">
+			GptEnableWakeup
+		      </DEFINITION-REF>
+		      <VALUE>false</VALUE>
+		    </BOOLEAN-VALUE>
+		    <!-- GptNotification -->
+		    <!-- GptChannelClkSrcRef -->
+		  </PARAMETER-VALUES>
+		</CONTAINER>
+	      </SUB-CONTAINERS>
+	    </CONTAINER>
+	  </CONTAINERS>
+	</MODULE-CONFIGURATION>
+      </ELEMENTS>
+    </AR-PACKAGE>
+  </TOP-LEVEL-PACKAGES>
+</AUTOSAR>
+

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<evidence_example version="1" ID="S12XS_COSMIC_EE_TEST3">
+
+ <category>s12xs/cosmic/porting_examples/monostack</category>
+ <title>test3</title>
+   
+ <small_descr>
+ A minimal EE demo that demostrates how to create two TASKs with different priorities.
+ </small_descr>
+
+ <long_descr>
+ A minimal EE demo that demostrates how to create two TASKs with different priorities.
+ This demo can be used to test the preemption mechanism. In this case Task2 preempts Task1.
+ The compilation uses the conf.oil file to create Debug folder. 
+ Debug folder contains:
+ &lt;ul&gt;
+ &lt;li&gt;the makefile; &lt;/li&gt;
+ &lt;li&gt;the obj folder that contains the object files organized in a EE-like tree; &lt;/li&gt;
+ &lt;li&gt;the executable file (.elf); &lt;/li&gt;
+ &lt;li&gt;other files useful for debug; &lt;/li&gt;
+ &lt;/ul&gt;
+ </long_descr>
+
+ <file_section>
+  <file     name="mc9s12xs128.lkf"/> 
+  <file     name="conf.oil"/>
+  <file     name="crtsx.S"/>
+  
+  <file     name="main.c"/>
+  <file     name="vector_s12x.c"/>
+  <file     name="Full_Chip_Simulation.ini"/>
+  <file     name="SofTec_HCS12.ini"/>
+  <file     name="C_Layout.hwl"/>
+ </file_section>
+
+</evidence_example>

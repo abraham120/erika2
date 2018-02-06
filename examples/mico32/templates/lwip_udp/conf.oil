@@ -1,0 +1,93 @@
+//	LWIP UDP TEMPLATE
+
+CPU test_application {
+
+	#include "conf.oil.lwip"
+	#include "conf.oil.enc28j60"
+
+	OS EE {		
+		CFLAGS = "-I. -g2";
+		ASFLAGS = "";
+		LDFLAGS = ""; 
+
+		CPU_DATA = LM32 {
+			APP_SRC = "main.c";
+			MULTI_STACK = FALSE;
+			USESTANDALONEPRINTF = FALSE; // Optional, default is FALSE
+			USESMALLC = FALSE; // Optional, defautl is FALSE
+		};
+		
+		MCU_DATA = LATTICE_PLATFORM {
+   			MODEL = LIBRARY {
+				PLATFORM_LIB_PATH = "../../demo/sw_projects/test_sram_lib";
+				PLATFORM_NAME = "test_base";
+				PLATFORM_BLD_CFG = "Release"; // Optional, default is ""
+   			};
+   			
+   			DEVICE = TIMER{						
+					NAME = "freetimer";										
+			};
+			
+			DEVICE = TIMER{						
+					NAME = "timer_uwl";										
+			};
+  		};
+  		
+  		BOARD_DATA = XP2_CAMERA_BOARD {
+
+			OPTIONS = TIMER;				
+			OPTIONS = TIMER_IRQ_SUPPORT;			
+			OPTIONS = RS232;	
+			OPTIONS = ETHERNET;
+			OPTIONS = ETHERNET_IRQ_SUPPORT;
+		};
+		
+		KERNEL_TYPE = FP;
+		
+		/* ********************************************************** */
+		/*                Contrib Library Inlcusion                   */
+		/* ********************************************************** */
+		EE_OPT = "__ADD_LIBS__";
+
+		/* CONSOLE */
+		LIB = ENABLE { NAME = "CONSOLE"; };	
+		EE_OPT = "USE_CONSOLE";
+		EE_OPT = "USE_CONSOLE_SERIAL";
+
+	};
+	
+	/* ****************************************************************** */
+	/*                      ISR Handler setup                             */
+	/* ****************************************************************** */
+	ISR Timer {
+		CATEGORY = 2;
+		LEVEL = "TIMER_IRQ";
+		HANDLER = "EE_timer_common_handler";
+	};
+	
+	/* ****************************************************************** */
+	/*                      Application TASKs                             */
+	/* ****************************************************************** */
+	TASK myTask {
+		PRIORITY = 2;
+		STACK = SHARED;
+		SCHEDULE = FULL;
+		RESOURCE = LwipMutex;
+	};
+	
+	COUNTER myCounter;
+
+ 	ALARM myAlarm {
+  		COUNTER = myCounter;
+    	ACTION = ACTIVATETASK { TASK = myTask; };
+    };
+    
+};
+
+
+    
+    
+    
+    
+    
+   

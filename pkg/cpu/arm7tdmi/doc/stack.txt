@@ -1,0 +1,16 @@
+Stack computation for ARM7
+---------------------------
+
+Example board: ARM Evaluator7T
+
+register saved by a context change WITH STACK CHANGE: (r4-r11 = 32 bytes)
+(1 for each stack)
+
+register saved by the IRQ: 8 (r0-r3, r12, lr, lr_irq, spsr_irq = 32 bytes)
+(1 for each task that can be at the same time on the stack)
+
+space needed for the IRQ stub: 8 registers = 32 bytes
+(1 system-wide)
+
+space needed for the IRQ stack: stack needed by each function + 8 registers for each IRQ that can be stacked
+(1 for each IRQ nesting level)

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SYSLIB>
+<MSB_FILE name="camera_test.msb" path="../../platforms/test_camera/soc"/>
+<MemorySections Deployflag="false" UCflag="true">
+<Section DEPLOY="yes" Load="false" Name=".text" Value="sram"/>
+<Section Load="false" Name=".rodata" Value="sram"/>
+<Section Load="false" Name=".data" Value="sram"/>
+</MemorySections>
+<LinkerSettings>
+<Param Name="UserDefinedLinkerFile" Value=""/>
+</LinkerSettings>
+<STDIO_Redirection>
+<Param InstanceName="LM32" Name="stdin" Text="JTAG UART"/>
+<Param InstanceName="LM32" Name="stdout" Text="JTAG UART"/>
+<Param InstanceName="LM32" Name="stderr" Text="JTAG UART"/>
+</STDIO_Redirection>
+<LibSettings>
+<Param Name="SyslibOption" Value="on"/>
+<Param Name="USE_SMALL_LIBC" Value="FALSE"/>
+<Param Name="USE_STANDALONE_SMALL_PRINTF" Value="TRUE"/>
+</LibSettings>
+</SYSLIB>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<evidence_example version="1" ID="avr5_serial">
+
+ <category>avr5/XBOW MIB5X0</category>
+ <title>Serial demo</title>
+   
+ <small_descr>
+ This is a simple demo showing the serial communication.
+ </small_descr>
+
+ <long_descr>
+ This is a simple demo sending a character periodically using the UART.
+ </long_descr>
+
+ <file_section>
+  <file     name="code.c"/>
+  <file     name="conf.oil"/>
+ </file_section>
+
+</evidence_example>

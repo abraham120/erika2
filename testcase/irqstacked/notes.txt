@@ -1,0 +1,10 @@
+This test case test that the IRQ handler behaves in the correct way
+when calling EE_hal_IRQ_stacked at the end of an ISR2.
+
+To test this condition, I used the FP kernel and the semaphores.
+
+Basically a thread starts and then stops on a semaphore. when the IRQ
+arrives, the thread is unlocked, and must execute.
+
+On old arm7tdmi kernels, the stack change did not work in the proper
+way, and the main was dispatched instead of the unlocked thread.

@@ -1,0 +1,130 @@
+/* ###*B*###
+ * ERIKA Enterprise - a tiny RTOS for small microcontrollers
+ *
+ * Copyright (C) 2002-2011  Evidence Srl
+ *
+ * This file is part of ERIKA Enterprise.  ERIKA Enterprise is free software;
+ * you can redistribute it and/or modify it under the terms of the
+ * GPLv2 + Linking Exception license (contained in the file `ee/LICENSE').
+ *
+ * ERIKA Enterprise is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE.  See the license for more details.
+ *
+ * ###*E*### */
+
+CPU example {
+  OS EE {
+    EE_OPT = "DEBUG";
+    EE_OPT = "__USE_LEDS__";
+    EE_OPT = "__E200ZX_EXECUTE_FROM_RAM__";
+    EE_OPT = "__CODEWARRIOR__";
+	EE_OPT = "EE_SYSTEM_TIMER_DEVICE_DECREMENTER";
+
+    CPU_DATA = PPCE200ZX {
+      MODEL = E200Z7;
+      /* Needed by system timer */
+      CPU_CLOCK = 60.0;
+      APP_SRC = "main.c";
+    };
+
+    MCU_DATA = PPCE200ZX {
+      MODEL = MPC5674F;
+    };
+
+    STATUS = EXTENDED;
+    STARTUPHOOK = FALSE;
+    ERRORHOOK = FALSE;
+    SHUTDOWNHOOK = FALSE;
+    PRETASKHOOK = FALSE;
+    POSTTASKHOOK = FALSE;
+    USEGETSERVICEID = FALSE;
+    USEPARAMETERACCESS = FALSE;
+    USERESSCHEDULER = FALSE;
+
+    KERNEL_TYPE = BCC1;
+
+    ORTI_SECTIONS = ALL;
+  };
+
+  TASK time_slow {
+    PRIORITY = 10;
+    ACTIVATION = 1;
+    SCHEDULE = FULL;
+    AUTOSTART = FALSE;
+    STACK = SHARED;
+  };
+
+  TASK time_fast {
+    PRIORITY = 5;
+    ACTIVATION = 1;
+    SCHEDULE = FULL;
+    AUTOSTART = FALSE;
+    STACK = SHARED;
+  };
+
+  TASK fixed_interval {
+    PRIORITY = 1;
+    ACTIVATION = 1;
+    SCHEDULE = FULL;
+    AUTOSTART = FALSE;
+    STACK = SHARED;
+  };
+
+  COUNTER system_timer {
+    MINCYCLE = 1;
+    MAXALLOWEDVALUE = 2147483647;
+    TICKSPERBASE = 1;
+    TYPE = HARDWARE {
+      DEVICE = "DECREMENTER";
+      SYSTEM_TIMER = TRUE;
+    };
+    SECONDSPERTICK = 0.001;
+    CPU_ID = "default_cpu";
+  };
+
+  COUNTER fixed_interval_timer {
+    MINCYCLE = 1;
+    MAXALLOWEDVALUE = 2147483647;
+    TICKSPERBASE = 1;
+    CPU_ID = "default_cpu";
+  };
+
+  ALARM OSAlarm_2400ms {
+      COUNTER = system_timer;
+      ACTION = ACTIVATETASK {
+          TASK = time_slow;
+      };
+      AUTOSTART = TRUE {
+          ALARMTIME = 2400;
+          CYCLETIME = 2400;
+      };
+  };
+  ALARM OSAlarm_400ms {
+      COUNTER = system_timer;
+      ACTION = ACTIVATETASK {
+          TASK = time_fast;
+      };
+      AUTOSTART = TRUE {
+          ALARMTIME = 400;
+          CYCLETIME = 400;
+      };
+  };
+
+  ALARM OSAlarm_fixed_intv {
+      COUNTER = fixed_interval_timer;
+      ACTION = ACTIVATETASK {
+          TASK = fixed_interval;
+      };
+      AUTOSTART = TRUE {
+          ALARMTIME = 1;
+          CYCLETIME = 1;
+      };
+  };
+
+  ISR FixedIntvIsr {
+      CATEGORY = 2;
+      ENTRY = "FIXED_INTV";
+      HANDLER = "fixed_intv_handler";
+  };
+};

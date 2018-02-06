@@ -1,0 +1,37 @@
+sys.d
+sys.cpu 566
+sys.u
+
+; Enable write to external SRAM
+d.s sd:0x2fc100 %long 0x00800002
+d.s sd:0x2fc108 %long 0xfff00003
+
+; Unlock RTCSC
+d.s sd:0x2fc320 %long 0x55ccaa33
+
+; Unlock RTC
+d.s sd:0x2fc324 %long 0x55ccaa33
+
+; Unlock RTCAL
+d.s sd:0x2fc32c %long 0x55ccaa33
+
+; Reset RT-clock
+d.s sd:0x2fc220 %word 0x0000
+
+; Setting Alarm
+d.s sd:0x2fc22c %long 0x100
+
+; Unmask level1
+d.s sd:0x2fc014 %long 0x10000000
+
+; Enable External Interrupt
+;r.s EE 1
+
+; SettingUp RT-clock
+d.s sd:0x2fc220 %word 0x4085
+
+d.load.elf mpc566evb.elf
+
+d.l
+go
+

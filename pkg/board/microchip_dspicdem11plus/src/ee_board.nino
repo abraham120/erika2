@@ -1,0 +1,126 @@
+/*
+ * Author: 2005 Paolo Gai
+ * CVS: $Id: ee_board.nino,v 1.1 2007/03/16 15:20:19 nino Exp $
+ */
+
+#include "ee_internal.h"
+#include "cpu/pic30/inc/ee_irqstub.h"
+#include "mcu/microchip_dspic/inc/ee_mcu.h"
+#include "board/microchip_dspicdem11plus/inc/ee_board.h"
+
+/* /\************************************************************************* */
+/*  Buttons */
+/*  *************************************************************************\/ */
+
+#ifdef __USE_BUTTONS__
+
+void (*EE_button_callback)(void);
+EE_UINT8 EE_button_mask;
+
+void EE_buttons_init( void(*isr_callback)(void), EE_UINT8 mask ) {
+	/* set BUTTON pins as inputs */
+	TRISAbits.TRISA12 = 1; 
+	TRISAbits.TRISA13 = 1; 
+	TRISAbits.TRISA14 = 1; 
+	TRISAbits.TRISA15 = 1; 
+	
+	/* Enable Interrupt */
+	if (isr_callback != NULL) {
+		/* Clear Interrupt flags */
+		IFS1bits.INT1IF = 0;
+		IFS1bits.INT2IF = 0;
+		IFS2bits.INT3IF = 0;
+		IFS2bits.INT4IF = 0;
+		
+		/* Set Edge Polarity */
+		INTCON2bits.INT1EP = 1;
+		INTCON2bits.INT2EP = 1;
+		INTCON2bits.INT3EP = 1;
+		INTCON2bits.INT4EP = 1;
+	
+		if (mask & 0x01)
+			IEC1bits.INT1IE = 1;	// S1/RA12
+		if (mask & 0x02)
+			IEC1bits.INT2IE = 1;	// S2/RA13
+		if (mask & 0x04)
+			IEC2bits.INT3IE = 1;	// S3/RA14
+		if (mask & 0x08)
+			IEC2bits.INT4IE = 1;	// S4/RA15
+	}
+	
+	/* Save callback */
+	EE_button_callback = isr_callback;	
+} 
+
+ISR2(_INT1Interrupt)
+{
+	// Execute callback function
+	if (EE_button_callback != NULL) {
+		EE_button_callback();
+	}
+		
+	/* reset interrupt flag */
+	IFS1bits.INT1IF = 0;           
+}
+
+ISR2(_INT2Interrupt)
+{
+	// Execute callback function
+	if (EE_button_callback != NULL) {
+		EE_button_callback();
+	}
+		
+	/* reset interrupt flag */
+	IFS1bits.INT2IF = 0;           
+}
+
+ISR2(_INT3Interrupt)
+{
+	// Execute callback function
+	if (EE_button_callback != NULL) {
+		EE_button_callback();
+	}
+		
+	/* reset interrupt flag */
+	IFS2bits.INT3IF = 0;           
+}
+
+ISR2(_INT4Interrupt)
+{
+	// Execute callback function
+	if (EE_button_callback != NULL) {
+		EE_button_callback();
+	}
+		
+	/* reset interrupt flag */
+	IFS2bits.INT4IF = 0;           
+}
+#endif
+
+/* /\************************************************************************* */
+/*  Analog input */
+/*  *************************************************************************\/ */
+#ifdef __USE_ANALOG__
+
+EE_UINT16 EE_analog_raw_temperature = 0;
+EE_UINT16 EE_analog_raw_potentiometer_1 = 0;
+EE_UINT16 EE_analog_raw_potentiometer_2 = 0;
+EE_UINT16 EE_analog_raw_potentiometer_3 = 0;
+EE_UINT16 EE_analog_raw_potentiometer_dig = 0;
+
+ISR2(_ADCInterrupt)
+{
+	/* Store acquired data */
+	EE_analog_raw_potentiometer_1   = ADCBUF4;
+	EE_analog_raw_potentiometer_2   = ADCBUF0;
+	EE_analog_raw_potentiometer_3   = ADCBUF2;
+	EE_analog_raw_temperature       = ADCBUF6;
+	EE_analog_raw_potentiometer_dig = ADCBUF1;
+	
+	/* reset ADC interrupt flag */
+	IFS0bits.ADIF = 0;           
+}
+
+#endif
+
+/* ************************************************************************* */

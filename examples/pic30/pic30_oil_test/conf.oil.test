@@ -1,0 +1,5 @@
+	OS myOs {
+		EE_OPT = "VERBOSE";
+	};
+
+

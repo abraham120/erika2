@@ -1,0 +1,255 @@
+CPU mySystem {
+
+	OS myOs {
+		EE_OPT = "DEBUG";
+		
+		CPU_DATA = CORTEX_MX {
+			MODEL = M4;
+			APP_SRC = "code.c";
+			//COMPILER_TYPE = KEIL; 
+			COMPILER_TYPE = GNU;
+			MULTI_STACK = FALSE;
+		};
+
+		MCU_DATA = STM32 {
+			MODEL = STM32F4xx;
+		};
+		
+		STATUS = EXTENDED;
+		STARTUPHOOK = FALSE;
+		ERRORHOOK = FALSE;
+		SHUTDOWNHOOK = FALSE;
+		PRETASKHOOK = FALSE;
+		POSTTASKHOOK = FALSE;
+		USEGETSERVICEID = FALSE;
+		USEPARAMETERACCESS = FALSE;
+		USERESSCHEDULER = FALSE;
+
+		KERNEL_TYPE = FP;
+		
+
+/* ********************************************************** */
+/*                Contrib Library Inlcusion                   */
+/* ********************************************************** */	
+	
+		EE_OPT = "__ADD_LIBS__";
+		
+		/* NOTE: with the current radio adapter board, the CCA pin of the 
+		 * CC2420 transceiver is connected to a MCU pin also used to control
+		 * the LCD, hence, we must disable the CCA pin, otherwise
+		 * the LCD does not work. 
+		 *
+		 */
+		EE_OPT = "__NOT_USE_CC2420_CCA_PIN__";
+		EE_OPT = "USE_LCD_LOG";
+		
+		LIB = ENABLE { NAME = "ST_CMSIS"; };
+		
+		LIB = ENABLE { NAME = "STM32F4XX_SPD"; 
+			STM32F4XX_SPD = ENABLE {
+				USEGPIO = TRUE;
+                		USESPI = TRUE;
+                		USEEXTI = TRUE;
+                		USESYSCFG = TRUE; 
+                		USEMISC = TRUE;
+                		USEUSART = TRUE;
+                		USETIM = TRUE;          		  
+            		};
+		};
+		
+		LIB = ENABLE {
+			NAME = "STM32F4_DISCOVERY";
+			STM32F4_DISCOVERY = ENABLE {
+                		USELEDS = TRUE;
+                		USECOM = TRUE;
+					USEBUTTONS = TRUE;
+					USELCDLOG = TRUE;
+			};			
+		};
+		
+
+		LIB = ENABLE { NAME = "MEMORY"; };	
+		
+		LIB = ENABLE { NAME = "CC2420"; };	
+		EE_OPT = "USE_CC2420";
+		
+		
+		LIB = ENABLE { NAME = "UWIRELESS"; };
+
+		//EE_OPT = "__UWL_USE_SPI_PORT_1__";
+		
+		//EE_OPT = "EE_TYPETICK=EE_INT32"; /* Mandatory! */
+		CFLAGS = "-DEE_TYPETICK=EE_INT32";
+		EE_OPT = "UWL_USE_SIMPLE_802154";
+		EE_OPT = "UWL_GTS_MANIPULATION"; /* Makes sense if Coord. */
+		EE_OPT = "UWL_NO_DYN_ASS"; /* Avoid dynamic association */
+		/*EE_OPT = "UWL_HAL_BUS_FREQ=40000";*/
+		//CFLAGS = "-DUWL_HAL_BUS_FREQ=40000";
+		
+		/*EE_OPT = "UWL_DEBUG";
+		EE_OPT = "UWL_DEBUG_LOG";
+		EE_OPT = "UWL_DEBUG_LOG_SERIAL";
+		EE_OPT = "UWL_DEBUG_LOG_SERIAL_PORT=CONSOLE_SERIAL_PORT_2";
+		EE_OPT = "UWL_DEBUG_LOG_SERIAL_BAUDRATE=115200"; 
+		EE_OPT = "UWL_DEBUG_LOG_HAS_PRINT";*/
+	};
+
+	
+	/* ****************************************************************** */
+	/*                      Application TASKs                             */
+	/* ****************************************************************** */
+	TASK UwlSend{
+		PRIORITY = 4;
+		STACK = SHARED;
+		SCHEDULE = FULL;
+		RESOURCE = "CONS_MUTEX";
+		RESOURCE = "UWL_EE_RESOURCE_MAC_MUTEX";
+		RESOURCE = "UWL_EE_RESOURCE_MAC_SEND_MUTEX";
+	};
+
+	TASK UwlReceive {
+		PRIORITY = 4;
+		STACK = SHARED;
+		SCHEDULE = FULL;
+		RESOURCE = "CONS_MUTEX";
+	};
+	
+	
+	/* ****************************************************************** */
+	/*                    Resources Declaration                           */
+	/* ****************************************************************** */
+	RESOURCE CONS_MUTEX { RESOURCEPROPERTY = STANDARD; };
+
+
+	/* -------------------------------------------------------------------- 
+	|                  --  OpenZB OIL Section  --                          |
+	|                                                                      |
+	|  - 1 PHY Task (read from radio)                                      |
+	|  - 7 MAC Tasks (superframe management)                               |
+	 -------------------------------------------------------------------- */
+
+	COUNTER UWL_EE_TASK_COUNTER;
+	
+	TASK UWL_EE_TASK_PHY_READ_DISPATCHER {
+		PRIORITY = 30;
+		STACK = SHARED;
+		SCHEDULE = FULL;
+		RESOURCE = "UWL_EE_RESOURCE_MAC_RX_BEACON_MUTEX";
+		RESOURCE = "UWL_EE_RESOURCE_MAC_RX_DATA_MUTEX";
+		RESOURCE = "UWL_EE_RESOURCE_MAC_RX_COMMAND_MUTEX";
+		RESOURCE = "UWL_EE_RESOURCE_MAC_SEND_MUTEX";
+	};
+
+	TASK UWL_EE_TASK_MAC_PROCESS_RX_BEACON {
+		PRIORITY = 25;
+		STACK = SHARED;
+		SCHEDULE = FULL;
+		RESOURCE = "UWL_EE_RESOURCE_MAC_RX_BEACON_MUTEX";
+	};
+
+	TASK UWL_EE_TASK_MAC_PROCESS_RX_DATA {
+		PRIORITY = 20;
+		STACK = SHARED;
+		SCHEDULE = FULL;
+		RESOURCE = "UWL_EE_RESOURCE_MAC_RX_DATA_MUTEX";
+	};
+
+	TASK UWL_EE_TASK_MAC_PROCESS_RX_COMMAND {
+		PRIORITY = 20;
+		STACK = SHARED;
+		SCHEDULE = FULL;
+		RESOURCE = "UWL_EE_RESOURCE_MAC_RX_COMMAND_MUTEX";
+		RESOURCE = "UWL_EE_RESOURCE_MAC_SEND_MUTEX";
+	};
+
+	TASK UWL_EE_TASK_MAC_TIMESLOT {
+		PRIORITY = 20;
+		STACK = SHARED;
+		SCHEDULE = FULL;
+		RESOURCE = "UWL_EE_RESOURCE_MAC_MUTEX";
+		RESOURCE = "UWL_EE_RESOURCE_MAC_GTS_SEND_MUTEX";
+	};
+	ALARM UWL_EE_ALARM_MAC_TIMESLOT {
+		COUNTER = "UWL_EE_TASK_COUNTER";
+		ACTION = ACTIVATETASK {TASK="UWL_EE_TASK_MAC_TIMESLOT";};
+	};
+
+	TASK UWL_EE_TASK_MAC_BEFORE_TIMESLOT {
+		PRIORITY = 20;
+		STACK = SHARED;
+		SCHEDULE = FULL;
+		RESOURCE = "UWL_EE_RESOURCE_MAC_MUTEX";
+	};
+	ALARM UWL_EE_ALARM_MAC_BEFORE_TIMESLOT {
+		COUNTER = "UWL_EE_TASK_COUNTER";
+		ACTION = ACTIVATETASK {TASK="UWL_EE_TASK_MAC_BEFORE_TIMESLOT";};
+	};
+
+	TASK UWL_EE_TASK_MAC_BACKOFF_PERIOD {
+		PRIORITY = 20;
+		STACK = SHARED;
+		SCHEDULE = FULL;
+		RESOURCE = "UWL_EE_RESOURCE_MAC_SEND_MUTEX";
+	};
+	ALARM UWL_EE_ALARM_MAC_BACKOFF_PERIOD {
+		COUNTER = "UWL_EE_TASK_COUNTER";
+		ACTION = ACTIVATETASK {TASK="UWL_EE_TASK_MAC_BACKOFF_PERIOD";};
+	};
+
+	TASK UWL_EE_TASK_MAC_GTS_SEND {
+		PRIORITY = 15;
+		STACK = SHARED;
+		SCHEDULE = FULL;
+		RESOURCE = "UWL_EE_RESOURCE_MAC_GTS_SEND_MUTEX";
+	};
+	ALARM UWL_EE_ALARM_MAC_GTS_SEND {
+		COUNTER = "UWL_EE_TASK_COUNTER";
+		ACTION = ACTIVATETASK {TASK="UWL_EE_TASK_MAC_GTS_SEND";};
+	};
+	
+	/* ****************************************************************** */
+	/*                    Resources Declaration                           */
+	/* ****************************************************************** */
+	RESOURCE UWL_EE_RESOURCE_MAC_MUTEX { 
+		RESOURCEPROPERTY = STANDARD; 
+	};
+	RESOURCE UWL_EE_RESOURCE_MAC_GTS_SEND_MUTEX { 
+		RESOURCEPROPERTY = STANDARD; 
+	};
+	RESOURCE UWL_EE_RESOURCE_MAC_RX_BEACON_MUTEX { 
+		RESOURCEPROPERTY = STANDARD; 
+	};
+	RESOURCE UWL_EE_RESOURCE_MAC_RX_DATA_MUTEX { 
+		RESOURCEPROPERTY = STANDARD; 
+	};
+	RESOURCE UWL_EE_RESOURCE_MAC_RX_COMMAND_MUTEX { 
+		RESOURCEPROPERTY = STANDARD; 
+	};
+	RESOURCE UWL_EE_RESOURCE_MAC_SEND_MUTEX { 
+		RESOURCEPROPERTY = STANDARD; 
+	};
+	
+	ISR systick_handler {
+		CATEGORY = 2;
+		ENTRY = "SYSTICK";
+		PRIORITY = 1;
+	};
+	
+	ISR CC2420_INTERRUPT_NAME {
+		CATEGORY = 2;
+		ENTRY = "EXTI4";
+		PRIORITY = 2;
+	};
+	ISR UWL_TIMER_INTERRUPT_NAME {
+		CATEGORY = 2;
+		ENTRY = "TIM2";
+		PRIORITY = 2;
+	};
+	
+	ISR button_usr_isr {
+		CATEGORY = 2;
+		ENTRY = "EXTI0";
+		PRIORITY = 2;
+	};	
+};
+

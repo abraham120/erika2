@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<evidence_example version="1" ID="S12G_CODEWARRIOR_EE_MULTISTACK_EVENT_DEMO">
+
+ <category>s12g/codewarrior</category>
+ <title>multistack_event_demo</title>
+   
+ <small_descr>
+ A minimal EE demo that demonstrates how to work in MULTISTACK mode using Event, Alarms and counters.
+ </small_descr>
+
+ <long_descr>
+ Event demo: A minimal EE demo that demonstrates how to work in MULTISTACK mode using Event, Alarms and counters.
+ The compilation chain can start outside Eclipse environment from the Cygwin shell with the "make" 
+ command inside the Debug folder of the project.
+ The Debug folder can be created manually if you don't have the oil-based generator. 
+ The Debug folder must contain at least the following files (suitably modified...):
+ eecfg.h, eecfg.c and the makefile (see the examples of different architectures to begin...) 
+
+ </long_descr>
+
+ <file_section>
+  <file     name="Project.prm"/> 
+  <file     name="conf.oil"/>
+  <file     name="Start12.c"/>
+  <file     name="readme.txt"/>
+  <file     name="main.c"/>
+  <file     name="CPU12ISRs.c"/>
+  <file     name="CPU12ISRs.h"/>
+  <file     name="Vectors.c"/>
+  <file     name="Full_Chip_Simulation.ini"/>
+  <file     name="PE_Multilink_CyclonePro.ini"/>
+  <file     name="C_Layout.hwl"/>
+ </file_section>
+
+</evidence_example>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<evidence_example version="1" ID="fpg_eye_mico32_demo_camera">
+
+ <category>mico32/FPG-EYE/fpg_eye_mico32</category>
+ <title>Demo with Camera support</title>
+
+ <small_descr>
+ This is the simple camera demo.
+ </small_descr>
+
+ <long_descr>
+ This is the simple camera demo that permit to download picture by uart RS232 interface.
+ </long_descr>
+
+ <file_section>
+  <file     name="test_main.c"/>
+  <file     name="crt0ram.S"/>
+  <file     name="conf.oil"/>
+  <file     name="makefile"/>
+ </file_section>
+
+</evidence_example>

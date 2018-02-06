@@ -1,0 +1,20 @@
+IF run()
+ Break
+
+IF R(MSR)==0
+  GOTO end
+
+r.set SRR1 R(MSR)
+r.set MSR 0
+r.set SRR0 R(IP)
+r.set IP EE_e200zx_external_input
+
+Go EE_e200zx_external_input_handler\7
+WAIT !run()
+
+r.set R3 62.
+
+end:
+Go
+
+ENDDO

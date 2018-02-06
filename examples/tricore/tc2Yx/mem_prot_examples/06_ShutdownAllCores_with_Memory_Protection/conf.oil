@@ -1,0 +1,122 @@
+CPU test_application {
+
+  OS EE {
+    EE_OPT = "EE_DEBUG";
+    EE_OPT = "__ASSERT__";
+    EE_OPT = "EE_EXECUTE_FROM_RAM";
+    EE_OPT = "EE_SAVE_TEMP_FILES";
+    //EE_OPT = "EE_MM_OPT";
+    EE_OPT = "EE_ICACHE_ENABLED";
+    EE_OPT = "EE_DCACHE_ENABLED";
+    //EE_OPT = "EE_BUILD_SINGLE_ELF";
+
+
+    MEMORY_PROTECTION   = TRUE;
+    //STACKMONITORING   = TRUE;
+    REMOTENOTIFICATION  = USE_RPC;
+    /* Service Protection is activated implicitly */
+
+    CPU_DATA = TRICORE {
+      ID = "master";
+      CPU_CLOCK = 200.0;
+      APP_SRC = "core0.c";
+      MULTI_STACK = TRUE;
+      COMPILER_TYPE = GNU;
+    };
+
+    CPU_DATA = TRICORE {
+      ID = "slave1";
+      APP_SRC = "core1.c";
+      MULTI_STACK = TRUE;
+      COMPILER_TYPE = GNU;
+    };
+
+    MASTER_CPU = "master";
+
+    MCU_DATA = TRICORE {
+      MODEL = TC27x;
+    };
+
+    STATUS        = EXTENDED; /* @Nicola: se la Service Protection è abilitata NON essere in status EXTENDED sarebbe un warning!  */
+    SHUTDOWNHOOK  = TRUE;
+    //ORTI_SECTIONS = ALL;
+    KERNEL_TYPE = ECC2;
+  };
+
+  TASK TaskCore0Prio1 {
+    CPU_ID      = "master";
+    PRIORITY    = 1;
+    AUTOSTART   = TRUE;
+    STACK       = SHARED;
+    ACTIVATION  = 1;
+    SCHEDULE    = FULL;
+  };
+
+  TASK TaskCore1Restart {
+    CPU_ID      = "slave1";
+    PRIORITY    = 1;
+    AUTOSTART   = FALSE;
+    STACK       = SHARED;
+    ACTIVATION  = 1;
+    SCHEDULE    = NON;
+  };
+
+  TASK TaskCore1StdPrio1 {
+    CPU_ID      = "slave1";
+    PRIORITY    = 1;
+    AUTOSTART   = FALSE;
+    STACK       = SHARED;
+    ACTIVATION  = 3;
+    SCHEDULE    = FULL;
+    ACCESSING_APPLICATION = AppCore0;
+  };
+
+  TASK TaskCore1ExtPrio2 {
+    CPU_ID      = "slave1";
+    PRIORITY    = 2;
+    AUTOSTART   = FALSE;
+    STACK = PRIVATE {
+      SYS_SIZE = 64;
+    };
+    ACTIVATION  = 1;
+    SCHEDULE    = FULL;
+    EVENT       = EventCore1;
+    ACCESSING_APPLICATION = AppCore0;
+  };
+
+  EVENT EventCore1 { MASK = AUTO; };
+
+  APPLICATION AppCore0 {
+    CPU_ID = "master";
+    TRUSTED = TRUE;
+    TASK    = TaskCore0Prio1;
+    SHARED_STACK_SIZE = 256;
+    IRQ_STACK_SIZE = 256;
+    STARTUPHOOK = TRUE;
+    SHUTDOWNHOOK = TRUE;
+  };
+
+  APPLICATION AppCore1 {
+    CPU_ID  = "slave1";
+    TRUSTED = FALSE;
+    TASK    = TaskCore1Restart;
+    TASK    = TaskCore1StdPrio1;
+    TASK    = TaskCore1ExtPrio2;
+    SHARED_STACK_SIZE = 256;
+    IRQ_STACK_SIZE = 256;
+    RESTARTTASK = TaskCore1Restart;
+    STARTUPHOOK = TRUE;
+    SHUTDOWNHOOK = TRUE;
+  };
+
+  APPLICATION AppCore1Trusted {
+    CPU_ID  = "slave1";
+    TRUSTED = TRUE {
+      TRUSTED_FUNCTION = TRUE {
+        NAME = "SignalShutdown";
+      };
+    };
+    SHARED_STACK_SIZE = 8; /* @Nicola: Inutile dovrebbe essere opzionale se non ci sono TASK con STACK SHARED associati con la OSApplication  */
+    IRQ_STACK_SIZE = 8; /* @Nicola: Inutile dovrebbe essere opzionale se non ci sono ISR2 associati con la OSApplication */
+  };
+};

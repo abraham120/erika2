@@ -1,0 +1,70 @@
+/*
+ * conf.oil (Microchip TCPIP stack v5.25)
+ */
+
+CPU mySystem {
+
+	OS myOs {
+		//EE_OPT = "VERBOSE";
+		EE_OPT = "DEBUG";
+		EE_OPT = "NODEPS";
+		EE_OPT = "__dsPIC33F__";
+		EE_OPT = "__C30__";
+		EE_OPT = "__USE_MCHP_TCPIP_531__";
+		
+		CFLAGS = "-I ../.";
+		CFLAGS = "-Os";
+		ASFLAGS = "";
+		
+		CPU_DATA = PIC30 {
+			APP_SRC = "MainDemo.c";
+			APP_SRC = "CustomHTTPApp.c";
+			APP_SRC = "CustomSNMPApp.c";
+			APP_SRC = "CustomSSLCert.c";
+			APP_SRC = "MPFSImg2.S";
+			APP_SRC = "BerkeleyTCPClientDemo.c";
+			APP_SRC = "BerkeleyTCPServerDemo.c";
+			APP_SRC = "BerkeleyUDPClientDemo.c";
+			APP_SRC = "UARTConfig.c";
+			APP_SRC = "PingDemo.c";
+			APP_SRC = "SMTPDemo.c";
+			MULTI_STACK = FALSE;
+			ICD2 = TRUE;
+		};
+
+		MCU_DATA = PIC30 {
+			MODEL = PIC33FJ256MC710;
+		};
+		
+		BOARD_DATA = EE_FLEX {
+			USELEDS = TRUE;
+		};
+	
+		KERNEL_TYPE = FP;
+		
+		
+		/* ********************************************************** */
+		/*                Contrib Library Inlcusion                   */
+		/* ********************************************************** */
+		EE_OPT = "__ADD_LIBS__";
+		CFLAGS = "-DYOUR_BOARD";
+		EE_OPT = "__USE_MOTIONBOARD__";
+		LIB = ENABLE { NAME = "TCPIP"; };
+		//LIB = ENABLE { NAME = "SCICOS"; };
+	};
+	
+	/* User section */
+	TASK myTask {
+		PRIORITY = 2;
+		STACK = SHARED;
+		SCHEDULE = FULL;
+	};
+	
+	COUNTER myCounter;
+	
+	ALARM myAlarm {
+		COUNTER = myCounter;
+		ACTION = ACTIVATETASK { TASK = myTask; };
+	};
+};
+

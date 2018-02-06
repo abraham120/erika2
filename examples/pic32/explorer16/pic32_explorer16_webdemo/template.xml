@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<evidence_example version="1" ID="pic32_explorer16_web_demo">
+
+ <category>pic32/Explorer16</category>
+ <title>Web Demo</title>
+   
+ <small_descr>
+Web Demo App: based on the Microchip TCPIP stack 5_31.
+ </small_descr>
+
+ <long_descr>
+ The demo is taken from the Microchip application libraries and based
+ on the TCPIP Stack 5_31.
+ To get it working as-it-is an access point have to be configured as:
+ &lt;ul&gt;
+ &lt;li&gt; SSID: MicrochipDemoAP, &lt;/li&gt;
+ &lt;li&gt; WPA-PSK Passphrase: Microchip 802.11 Secret PSK Password, &lt;/li&gt;
+ &lt;/ul&gt;
+
+ Buttons are configured to:
+ &lt;ul&gt;
+ &lt;li&gt;Button S4: activate a ping demo.  &lt;/li&gt;
+ &lt;li&gt;Button S3: display over UART a web page. &lt;/li&gt;
+ &lt;/ul&gt;
+ </long_descr>
+
+ <file_section>
+  <file     name="BerkeleyTCPClientDemo.c"/>   
+  <file     name="CustomHTTPApp.c"/> 
+  <file     name="HTTPPrint.h"/>         
+  <file     name="MainDemo.c"/>   
+  <file     name="SMTPDemo.c"/>      
+  <file     name="conf.oil"/> 
+  <file     name="BerkeleyTCPServerDemo.c"/>   
+  <file     name="CustomSNMPApp.c"/>   
+  <file     name="HardwareProfile.h"/>   
+  <file     name="MainDemo.h"/>   
+  <file     name="TCPIPConfig.h"/>
+  <file     name="BerkeleyUDPClientDemo.c"/>   
+  <file     name="PingDemo.c"/>   
+  <file     name="MPFSImg2.S"/>          
+  <file     name="UARTConfig.c"/> 
+  <file     name="CustomSSLCert.c"/>
+  <file     name="IperfApp.h"/>
+  <file     name="MPFSImg.c"/>
+  <file     name="MPFSImg2.c"/>
+  <file     name="GenericTCPClient.c"/>
+  <file     name="LegacyHTTPApp.c"/>
+  <file     name="mib.h"/>
+  <file     name="WF_Config.c"/>
+  <file     name="BerkeleyUDPClientDemo.c"/>
+  <file     name="GenericTCPServer.c"/>
+  <file     name="IperfApp.c"/>
+  <file     name="WF_Config.h"/>
+ </file_section>
+
+</evidence_example>

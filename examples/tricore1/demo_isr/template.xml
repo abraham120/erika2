@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<evidence_example version="1" ID="tricore_base_isr">
+
+ <category>tricore1/base</category>
+ <title>Isr</title>
+   
+ <small_descr>
+ An simple demo with ISR and Traps.
+ </small_descr>
+
+ <long_descr>
+ This demo shows how use ISR and Traps.
+ </long_descr>
+
+ <file_section>
+  <file     name="app.mk"/> 
+  <file     name="code.c"/> 
+  <file     name="conf.oil"/>
+ </file_section>
+
+</evidence_example>

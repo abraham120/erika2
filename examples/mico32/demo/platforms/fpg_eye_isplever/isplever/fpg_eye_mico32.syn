@@ -1,0 +1,73 @@
+JDF B
+// Created by Version 8.0 
+PROJECT fpg_eye_mico32
+DESIGN fpg_eye_mico32 Normal
+DEVKIT LFXP2-17E-5QN208C
+ENTRY Pure Verilog HDL
+MODULE ..\msb\soc\fpg_eye_mico32.v
+MODSTYLE lm32_top Normal
+MODSTYLE lm32_cpu Normal
+MODSTYLE i2cm_opencores Normal
+MODSTYLE pmi_fifo_dc Normal
+MODSTYLE sdr_fifo_intf Normal
+MODSTYLE spi_flash_intf Normal
+MODSTYLE lm32_mc_arithmetic Normal
+MODSTYLE ER1 Normal
+MODSTYLE wb_ebr_ctrl Normal
+MODSTYLE jtag_cores Normal
+MODSTYLE wb_sdr_ctrl Normal
+MODSTYLE spi_flash Normal
+MODSTYLE mico32_camera Normal
+MODSTYLE wb_fifo_intf Normal
+MODSTYLE serial_io Normal
+MODSTYLE asram_core Normal
+MODSTYLE lm32_monitor_ram Normal
+MODSTYLE pmi_addsub Normal
+MODSTYLE lm32_load_store_unit Normal
+MODSTYLE uart_core Normal
+MODSTYLE intface Normal
+MODSTYLE pmi_ram_dq Normal
+MODSTYLE pmi_ram_dp Normal
+MODSTYLE pmi_pll_fp Normal
+MODSTYLE lm32_instruction_unit Normal
+MODSTYLE fpg_eye_mico32 Normal
+MODSTYLE wb_intf Normal
+MODSTYLE asram_top Normal
+MODSTYLE arbiter3 Normal
+MODSTYLE serpario Normal
+MODSTYLE lm32_dcache Normal
+MODSTYLE rxcver Normal
+MODSTYLE lm32_icache Normal
+MODSTYLE lm32_logic_op Normal
+MODSTYLE lm32_shifter Normal
+MODSTYLE camera Normal
+MODSTYLE sdr_ctrl Normal
+MODSTYLE TRI_PIO Normal
+MODSTYLE TYPEA Normal
+MODSTYLE TYPEB Normal
+MODSTYLE sdr_data Normal
+MODSTYLE i2c_master_bit_ctrl Normal
+MODSTYLE gpio Normal
+MODSTYLE sdr_sig Normal
+MODSTYLE lm32_interrupt Normal
+MODSTYLE lm32_addsub Normal
+MODSTYLE lm32_decoder Normal
+MODSTYLE lm32_adder Normal
+MODSTYLE jtag_lm32 Normal
+MODSTYLE lm32_multiplier Normal
+MODSTYLE i2c_master_byte_ctrl Normal
+MODSTYLE spi Normal
+MODSTYLE timer Normal
+MODSTYLE txmitt Normal
+MODSTYLE jtagconn16 Normal
+MODSTYLE lm32_monitor Normal
+MODSTYLE camera_component_mod Normal
+MODSTYLE lm32_ram Normal
+MODSTYLE lm32_debug Normal
+MODSTYLE lm32_jtag Normal
+MODULE fpg_eye_mico32_wrapper.v
+MODSTYLE fpg_eye_mico32_wrapper Normal
+SYNTHESIS_TOOL Synplify
+SIMULATOR_TOOL ActiveHDL
+AUTO_READ_DESIGN TRUE
+TOPMODULE fpg_eye_mico32_wrapper

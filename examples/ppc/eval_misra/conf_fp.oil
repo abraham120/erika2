@@ -1,0 +1,63 @@
+CPU test_application {
+
+	OS EE {
+		EE_OPT = "DEBUG";
+		EE_OPT = "NODEPS";
+		EE_OPT = "__ASSERT__";
+		EE_OPT = "__USE_LEDS__";
+		EE_OPT = "__USE_BUTTONS__";
+		EE_OPT = "EE_ISR_DYNAMIC_TABLE";
+
+		EE_OPT = "USE_PRAGMAS";
+
+		CPU_DATA = PPCE200ZX {
+			MODEL = E200Z7;
+			APP_SRC = "main.c";
+			MULTI_STACK = FALSE;
+		};
+
+		MCU_DATA = PPCE200ZX {
+			MODEL = MPC5674F;
+		};
+
+		USERESSCHEDULER = FALSE;
+	};
+
+	TASK Task1 {
+		PRIORITY = 0x01;
+		AUTOSTART = FALSE;
+		STACK = SHARED;
+		ACTIVATION = 1;
+		RESOURCE = MyResource;
+	};
+
+	TASK Task2 {
+		PRIORITY = 0x02;
+		SCHEDULE = FULL;
+		AUTOSTART = FALSE;
+		STACK = SHARED;
+		RESOURCE = MyResource;
+	};
+
+
+	RESOURCE MyResource { RESOURCEPROPERTY = STANDARD; };
+
+	COUNTER MainTimer {
+		MINCYCLE = 2;
+		MAXALLOWEDVALUE = 100;
+		TICKSPERBASE = 1;
+	};
+
+	ALARM MyAlarm {
+		COUNTER = MainTimer;
+		ACTION = ACTIVATETASK {
+			TASK = Task1;
+		};
+		/* Autstart is not supported on FP kernel! */
+		AUTOSTART = FALSE;
+	};
+
+	OS EE { KERNEL_TYPE = FP; };
+	TASK Task1 { SCHEDULE = NON; };
+	TASK Task2 { ACTIVATION = 1; };
+};

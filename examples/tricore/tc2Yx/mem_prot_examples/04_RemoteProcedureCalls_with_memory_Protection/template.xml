@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<evidence_example version="1" ID="tricore_tc27x_oo_event">
+  <category>tricore/infineon_TriBoard-TC2X5_V2.0/Stack Monitoring, Service Protection and Memory Protection automatic tests</category>
+  <title>Multicore Remote Procedure Call (RPC) with memory protection test </title>
+
+  <small_descr>
+  </small_descr>
+
+  <long_descr>
+    This code test the the new RPC dispatcher to execute system calls on foreign core,
+    with memory protection enabled.
+  </long_descr>
+
+  <file_section>
+    <file     name="conf.oil"/>
+    <file     name="master.c"/>
+    <file     name="slave1.c"/>
+    <file     name="slave2.c"/>
+    <file     name="shared.h"/>
+  </file_section>
+
+</evidence_example>

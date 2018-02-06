@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<evidence_example version="1" ID="pic30_DemoBoard_base">
+
+ <category>pic30/FLEX Demo Board</category>
+ <title>Basic Devices Demo</title>
+   
+ <small_descr>
+ This is the demo to test some of the basic FLEX Demo Board devices.
+ </small_descr>
+
+ <long_descr>
+ A minimal EEB demo that demostrates the functions for:
+ &lt;ul&gt;
+ &lt;li&gt;Leds; &lt;/li&gt;
+ &lt;li&gt;Buttons; &lt;/li&gt;
+ &lt;li&gt;LCD; &lt;/li&gt;
+ &lt;li&gt;ADC; &lt;/li&gt;
+ &lt;/ul&gt;
+ </long_descr>
+
+ <file_section>
+  <file     name="code.c"/> 
+  <file     name="conf.oil"/>
+ </file_section>
+
+</evidence_example>

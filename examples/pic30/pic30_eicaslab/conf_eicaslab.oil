@@ -1,0 +1,98 @@
+#define EICASTASK(name,quotedname,priority,offset,period)       \
+	TASK name {                                             \
+		PRIORITY = priority;                            \
+		STACK = SHARED;                                 \
+		SCHEDULE = FULL;                                \
+	};                                                      \
+	ALARM Alarm_##name {                                    \
+		COUNTER = myCounter;                          \
+		ACTION = ACTIVATETASK { TASK = quotedname; };   \
+                AUTOSTART = TRUE {                              \
+				ALARMTIME = offset;             \
+				CYCLETIME = period;             \
+			};                                      \
+	};
+
+#define EICASFILE(name) 					\
+			APP_SRC = name;
+
+
+//define EICASFILE(name) 					\
+//	OS EE {						\
+//		CPU_DATA = PIC30 {				\
+//			APP_SRC = name;				\
+//		};						\
+//	};
+
+
+CPU mySystem {
+
+	OS EE {
+		EE_OPT = "DEBUG";
+		EE_OPT = "NODEPS";
+		//EE_OPT = "VERBOSE";
+
+		// put the following line if the code generated contains malloc();
+		// LDFLAGS = "--heap=8000";
+
+		//LDFLAGS = "-L../../libscicos/Debug";
+
+		CFLAGS = "-I../Processor1/Common";
+
+		CPU_DATA = PIC30 {
+			APP_SRC = "code.c";
+			APP_SRC = "eicas_tasks.c";
+#include "eicas_files.oil"
+
+			MULTI_STACK = FALSE;
+			ICD2 = TRUE;
+		};
+
+		MCU_DATA = PIC30 {
+			MODEL = PIC33FJ256MC710;
+		};
+		
+		BOARD_DATA = EE_FLEX {
+			TYPE = DEMO {
+				OPTIONS = ALL;
+			};
+		};
+		
+                EE_OPT = "__OO_STARTOS_OLD__";
+		KERNEL_TYPE = BCC1;
+		
+//              Put these lines when we'll build a library especially for EICASLab
+//		EE_OPT = "__ADD_LIBS__";
+//		LIB = ENABLE {
+//			NAME = "EICAS";
+//		};
+		
+	};
+
+	TASK rt_LCD {
+		PRIORITY = 1;
+		STACK = SHARED;
+		SCHEDULE = FULL;
+	};
+	
+	COUNTER myCounter {
+	        MINCYCLE = 1;
+	        MAXALLOWEDVALUE = 0xFFFF ;
+	        TICKSPERBASE = 1;
+	};
+
+	
+	ALARM AlarmLcd {
+		COUNTER = myCounter;
+		ACTION = ACTIVATETASK { TASK = rt_LCD; };
+                AUTOSTART = TRUE {
+				ALARMTIME = 500;
+				CYCLETIME = 500;
+			};
+	};
+
+
+#include "eicas_tasks.oil"
+
+};
+

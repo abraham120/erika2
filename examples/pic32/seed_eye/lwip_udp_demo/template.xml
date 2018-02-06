@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<evidence_example version="1" ID="pic32_LWIP_UDP_demo">
+
+ <category>pic32/SEED-EYE</category>
+ <title>LWIP UDP Demo</title>
+   
+ <small_descr>
+ This is the demo to test UDP packets transmission using LWIP stack and SEED-EYE board.
+ </small_descr>
+
+ <long_descr>
+ A minimal UDP demo that demostrates the functions for:
+ &lt;ul&gt;
+ &lt;li&gt;LWIP; &lt;/li&gt;
+ &lt;li&gt;Timer; &lt;/li&gt;
+ &lt;li&gt;Time measures; &lt;/li&gt;
+ &lt;li&gt;Console (serial interface); &lt;/li&gt;
+ &lt;/ul&gt;
+ </long_descr>
+
+ <file_section>
+  <file     name="main.c"/> 
+  <file     name="conf.oil"/>
+  <file     name="lwip.h"/>
+  <file     name="util.c"/>
+  <file     name="util.h"/>
+ </file_section>
+
+</evidence_example>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<evidence_example version="1" ID="pic30_MultibusBoard_udp_demo">
+
+ <category>pic30/FLEX MultiBus Board</category>
+ <title>UDP Demo</title>
+   
+ <small_descr>
+ This is an UDP demo based on the Microchip TCPIP stack v5_31.
+ </small_descr>
+
+ <long_descr>
+ The demo shows how to implement an UDP-based communication between the FLEX Multibus board and the PC.
+ </long_descr>
+
+ <file_section>
+  <file     name="code.c"/>   
+  <file     name="conf.oil"/> 
+  <file     name="flex_udp.c"/>   
+  <file     name="flex_udp.h"/>   
+  <file     name="HardwareProfile.h"/>   
+  <file     name="TCPIPConfig.h"/>   
+ </file_section>
+
+</evidence_example>

@@ -1,0 +1,84 @@
+; script used to load modistarc tests
+
+area
+area.create Messages
+area.view Messages
+
+open #1 report.log /Create
+
+&failed=0
+&count=0
+area.select Messages
+
+print "Test no. " %Decimal &count " (" &failed " errors so far)"
+area.select Messages
+print
+pwd
+area.select A000
+
+SYStem.RESet
+SYStem.BdmClock 4.0MHz
+SYStem.CPU MPC5674
+NExus.PORTSIze MDO12
+NExus.Dtm ReadWrite
+NExus.PORTMode 1/1
+SYStem.Option.WATCHDOG OFF
+SYStem.Up
+
+Data.Set EA:0x40000000--0x4003ffff %Quad 0
+
+; setup MMU for flash, RAM and register access
+
+MMU.TLB1.SET 0x1 0xC0000500 0xFFF0000A 0xFFF0003F
+MMU.TLB1.SET 0x2 0xC0000700 0x20000000 0x2000003F
+MMU.TLB1.SET 0x3 0xC0000400 0x40000008 0x4000003F
+MMU.TLB1.SET 0x4 0xC0000500 0xC3F00008 0xC3F0003F
+MMU.TLB1.SET 0x5 0xC0000700 0x00000000 0x0000003F
+
+Data.Load ppc.elf
+
+B.Set EE_assert_last
+
+Go __start
+
+wait !run() 5.s
+if run()
+(
+  break
+)
+
+b.delete
+
+if (data.byte(EE_assertions)==0x1)
+(
+  ;test successful
+  AREA.select Messages
+  print "OK!!!"
+  print
+  AREA.Select A000
+  write #1 "Test OK"
+  enddo
+)
+else
+(
+  area.view
+  AREA.select Messages
+  print
+  print "----------------------------------------"
+  print " TEST FAILED !!!!!!!"
+  print "----------------------------------------"
+  print
+  AREA.Select A000
+  write #1 "Test Failed"
+  &failed=&failed+1
+)
+
+area.select Messages
+print
+print
+print "Done."
+print "-------------------------------------------------------"
+area.select A000
+
+write #1 "Done."
+close #1

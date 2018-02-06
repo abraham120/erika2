@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<evidence_example version="1" ID="tricore_tc27x_oo_event">
+
+  <category>tricore/infineon_TriBoard-TC2X5_V2.0/Lauterbach</category>
+  <title>Lauterbach TriCore simulator demo</title>
+   
+ <small_descr>
+ A minimal Demo developed in collaboration with Lauterbach, it runs under Lauterbach simulation environment and Infineon TriBoard.
+ </small_descr>
+
+ <long_descr>
+ Task demo: A minimal EE demo with the TriCore TC275-TE
+ under lauterbach simulation environment and Infineo TriBoard
+ The demo uses the following peripherals:
+ &lt;ul&gt;
+ &lt;li&gt;STM Timer; &lt;/li&gt;
+ &lt;li&gt;DIO as output for LEDs; &lt;/li&gt;
+ &lt;li&gt;DIO as envent input with ESR (External Service Requests) as button [Soldered by hand]; &lt;/li&gt;
+ &lt;/ul&gt;
+The demo tests the ECC1 kernel type.
+ </long_descr>
+
+  <file_section>
+    <file     name="code.c"/> 
+    <file     name="conf.oil"/>
+  </file_section>
+
+</evidence_example>

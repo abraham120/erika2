@@ -1,0 +1,272 @@
+
+
+/***************************************************************************
+ *
+ * ORTI: Declaration Section ( CPU 0 )
+ *
+ **************************************************************************/
+VERSION {
+    KOIL = "2.1";
+    OSSEMANTICS = "ORTI", "2.1";
+};
+
+IMPLEMENTATION EE_cpu_0 {
+    OS {
+
+    /* here for each task a small description and its index */
+        ENUM [
+            "NO_TASK" = "-1",
+            "MainTask" = 0,
+            "TrustedTask1" = 1,
+            "App1Task" = 2,
+            "App1Ack" = 3,
+            "App1Bkg" = 4,
+            "App2Task" = 5,
+            "App2Ack" = 6
+        ] RUNNINGTASK, "Running Task Id";
+
+        ENUM "int" [
+            "Not Running (0)" = 0,
+            "0x1" = 0x1,
+            "0x2" = 0x2,
+            "0x4" = 0x4,
+            "0x8" = 0x8
+        ] RUNNINGTASKPRIORITY, "Priority of Running Task";
+
+        TOTRACE ENUM "unsigned char" [
+            "ActivateTask" = 2,
+            "TerminateTask" = 4,
+            "ChainTask" = 6,
+            "Schedule" = 8,
+            "GetTaskID" = 10,
+            "GetTaskState" = 12,
+            "DisableAllInterrupts" = 14,
+            "EnableAllInterrupts" = 16,
+            "SuspendAllInterrupts" = 18,
+            "ResumeAllInterrupts" = 20,
+            "SuspendOSInterrupts" = 22,
+            "ResumeOSInterrupts" = 24,
+            "GetResource" = 26,
+            "ReleaseResource" = 28,
+            "SetEvent" = 30,
+            "ClearEvent" = 32,
+            "GetEvent" = 34,
+            "WaitEvent" = 36,
+            "GetAlarmBase" = 38,
+            "GetAlarm" = 40,
+            "SetRelAlarm" = 42,
+            "SetAbsAlarm" = 44,
+            "CancelAlarm" = 46,
+            "GetActiveApplicationMode" = 48,
+            "StartOS" = 50,
+            "ShutdownOS" = 52,
+            "ForceSchedule" = 54,
+            "CounterTick" = 56
+        ] SERVICETRACE, "OS Services Watch";
+
+    /* please note int and not unsigned char */
+        ENUM "int" [
+            "E_OK" = 0,
+            "E_OS_ACCESS" = 1,
+            "E_OS_CALLEVEL" = 2,
+            "E_OS_ID" = 3,
+            "E_OS_LIMIT" = 4,
+            "E_OS_NOFUNC" = 5,
+            "E_OS_RESOURCE" = 6,
+            "E_OS_STATE" = 7,
+            "E_OS_VALUE" = 8,
+            "E_OS_SYS_INIT" = 9
+        ] LASTERROR, "Last error";
+
+        ENUM "unsigned char" [
+            "OSDEFAULTAPPMODE" = 0
+        ] CURRENTAPPMODE, "Current application mode";
+
+        /* EE specific data structures */
+        CTYPE "unsigned int" vs_EE_SYSCEILING, "EE system ceiling";
+    }, "OS";
+
+    TASK {
+        ENUM "int" [
+            "Not Running (0)" = 0,
+            "0x1" = 0x1,
+            "0x2" = 0x2,
+            "0x4" = 0x4,
+            "0x8" = 0x8
+        ] PRIORITY , "Actual Prio";
+        ENUM "unsigned char" [
+            "RUNNING"=0,
+            "WAITING"=1,
+            "READY"=2,
+            "SUSPENDED"=3
+        ] STATE, "Task State";
+        ENUM "unsigned int" [
+            "Stack0" : Stack0 = 0,
+            "Stack1" : Stack1 = 1,
+            "Stack2" : Stack2 = 2,
+            "Stack3" : Stack3 = 3,
+            "Stack4" : Stack4 = 4,
+            "Stack5" : Stack5 = 5,
+            "Stack6" : Stack6 = 6,
+            "Stack7" : Stack7 = 7,
+            "Stack8" : Stack8 = 8,
+        ] STACK, "Task Stack";
+        CTYPE "int" CURRENTACTIVATIONS, "Current activations";
+    }, "Tasks";
+
+    STACK {
+        CTYPE SIZE, "Stack Size (Byte)";
+        CTYPE "unsigned int *" BASEADDRESS, "Base Address";
+        STRING STACKDIRECTION, "Stack Direction";
+        CTYPE "unsigned int" FILLPATTERN, "Stack Fill Pattern";
+    }, "Stacks";
+
+    ALARM {
+        CTYPE "unsigned int" ALARMTIME, "Alarm Time"; /* EE_TYPETICK */
+        CTYPE "unsigned int" CYCLETIME, "Cycle Time"; /* EE_TYPETICK */
+        ENUM [
+            "STOPPED" = 0,
+            "RUNNING" = 1
+        ] STATE, "Alarm state";
+        STRING ACTION, "Action";
+        STRING COUNTER, "Counter";
+        CTYPE "unsigned int" COUNTERVALUE, "Counter Value";
+    }, "Alarms";
+
+    RESOURCE {
+        ENUM "unsigned char" [
+            "UNLOCKED" = 0,
+            "LOCKED" = 1
+        ] STATE, "Resource State";
+        ENUM "int" [
+            "NO_TASK" = "-1",
+            "MainTask" = 0,
+            "TrustedTask1" = 1,
+            "App1Task" = 2,
+            "App1Ack" = 3,
+            "App1Bkg" = 4,
+            "App2Task" = 5,
+            "App2Ack" = 6
+        ] LOCKER, "Resource Locker";
+        STRING PRIORITY, "Ceiling priority";
+    }, "Resources";
+
+}; /* END OF IMPLEMENTATION */
+
+
+/***************************************************************************
+ *
+ * ORTI: Information Section ( CPU 0 )
+ *
+ **************************************************************************/
+OS EE_arch {
+    RUNNINGTASK = "EE_stkfirst";
+    RUNNINGTASKPRIORITY = "(EE_stkfirst == -1) ? 0 : EE_ORTI_th_priority[EE_stkfirst]";
+    SERVICETRACE = "EE_ORTI_servicetrace";
+    LASTERROR = "EE_ORTI_lasterror";
+    CURRENTAPPMODE = "EE_ApplicationMode";
+    vs_EE_SYSCEILING = "EE_sys_ceiling";
+};
+
+
+        /* Tasks */
+TASK MainTask {
+    PRIORITY = "(EE_ORTI_th_priority[0])";
+    STATE = "(EE_th_status[0])";
+    CURRENTACTIVATIONS = "(1 - EE_th_rnact[0])";  /* 1 = max activations */
+    STACK = "(EE_e200z7_system_tos[1])";
+};
+TASK TrustedTask1 {
+    PRIORITY = "(EE_ORTI_th_priority[1])";
+    STATE = "(EE_th_status[1])";
+    CURRENTACTIVATIONS = "(1 - EE_th_rnact[1])";  /* 1 = max activations */
+    STACK = "(EE_e200z7_system_tos[1])";
+};
+TASK App1Task {
+    PRIORITY = "(EE_ORTI_th_priority[2])";
+    STATE = "(EE_th_status[2])";
+    CURRENTACTIVATIONS = "(1 - EE_th_rnact[2])";  /* 1 = max activations */
+    STACK = "(EE_e200z7_system_tos[2])";
+};
+TASK App1Ack {
+    PRIORITY = "(EE_ORTI_th_priority[3])";
+    STATE = "(EE_th_status[3])";
+    CURRENTACTIVATIONS = "(1 - EE_th_rnact[3])";  /* 1 = max activations */
+    STACK = "(EE_e200z7_system_tos[2])";
+};
+TASK App1Bkg {
+    PRIORITY = "(EE_ORTI_th_priority[4])";
+    STATE = "(EE_th_status[4])";
+    CURRENTACTIVATIONS = "(1 - EE_th_rnact[4])";  /* 1 = max activations */
+    STACK = "(EE_e200z7_system_tos[3])";
+};
+TASK App2Task {
+    PRIORITY = "(EE_ORTI_th_priority[5])";
+    STATE = "(EE_th_status[5])";
+    CURRENTACTIVATIONS = "(1 - EE_th_rnact[5])";  /* 1 = max activations */
+    STACK = "(EE_e200z7_system_tos[4])";
+};
+TASK App2Ack {
+    PRIORITY = "(EE_ORTI_th_priority[6])";
+    STATE = "(EE_th_status[6])";
+    CURRENTACTIVATIONS = "(1 - EE_th_rnact[6])";  /* 1 = max activations */
+    STACK = "(EE_e200z7_system_tos[5])";
+};
+
+
+        /* Stacks */
+STACK Stack0 {
+    SIZE = "4096";
+    STACKDIRECTION = "DOWN";
+    BASEADDRESS = "(unsigned int *)( (int)&EE_e200zx_sys_stack )";
+    FILLPATTERN = "0xA5A5A5A5";
+};
+STACK Stack1 {
+    SIZE = "512";
+    STACKDIRECTION = "DOWN";
+    BASEADDRESS = "(unsigned int *)( (int)(&EE_stack_1))";
+    FILLPATTERN = "0xA5A5A5A5";
+};
+STACK Stack2 {
+    SIZE = "512";
+    STACKDIRECTION = "DOWN";
+    BASEADDRESS = "(unsigned int *)( (int)(&EE_stack_2))";
+    FILLPATTERN = "0xA5A5A5A5";
+};
+STACK Stack3 {
+    SIZE = "512";
+    STACKDIRECTION = "DOWN";
+    BASEADDRESS = "(unsigned int *)( (int)(&EE_stack_3))";
+    FILLPATTERN = "0xA5A5A5A5";
+};
+STACK Stack4 {
+    SIZE = "512";
+    STACKDIRECTION = "DOWN";
+    BASEADDRESS = "(unsigned int *)( (int)(&EE_stack_4))";
+    FILLPATTERN = "0xA5A5A5A5";
+};
+STACK Stack5 {
+    SIZE = "512";
+    STACKDIRECTION = "DOWN";
+    BASEADDRESS = "(unsigned int *)( (int)(&EE_stack_5))";
+    FILLPATTERN = "0xA5A5A5A5";
+};
+STACK Stack6 {
+    SIZE = "512";
+    STACKDIRECTION = "DOWN";
+    BASEADDRESS = "(unsigned int *)( (int)(&EE_stack_6))";
+    FILLPATTERN = "0xA5A5A5A5";
+};
+STACK Stack7 {
+    SIZE = "512";
+    STACKDIRECTION = "DOWN";
+    BASEADDRESS = "(unsigned int *)( (int)(&EE_stack_7))";
+    FILLPATTERN = "0xA5A5A5A5";
+};
+STACK Stack8 {
+    SIZE = "512";
+    STACKDIRECTION = "DOWN";
+    BASEADDRESS = "(unsigned int *)( (int)(&EE_stack_8))";
+    FILLPATTERN = "0xA5A5A5A5";
+};
+

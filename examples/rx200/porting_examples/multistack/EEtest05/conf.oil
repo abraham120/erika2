@@ -1,0 +1,126 @@
+/* ###*B*###
+ * ERIKA Enterprise - a tiny RTOS for small microcontrollers
+ *
+ * Copyright (C) 2002-2012  Evidence Srl
+ *
+ * This file is part of ERIKA Enterprise.
+ *
+ * ERIKA Enterprise is free software; you can redistribute it
+ * and/or modify it under the terms of the GNU General Public License
+ * version 2 as published by the Free Software Foundation, 
+ * (with a special exception described below).
+ *
+ * Linking this code statically or dynamically with other modules is
+ * making a combined work based on this code.  Thus, the terms and
+ * conditions of the GNU General Public License cover the whole
+ * combination.
+ *
+ * As a special exception, the copyright holders of this library give you
+ * permission to link this code with independent modules to produce an
+ * executable, regardless of the license terms of these independent
+ * modules, and to copy and distribute the resulting executable under
+ * terms of your choice, provided that you also meet, for each linked
+ * independent module, the terms and conditions of the license of that
+ * module.  An independent module is a module which is not derived from
+ * or based on this library.  If you modify this code, you may extend
+ * this exception to your version of the code, but you are not
+ * obligated to do so.  If you do not wish to do so, delete this
+ * exception statement from your version.
+ *
+ * ERIKA Enterprise is distributed in the hope that it will be
+ * useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License version 2 for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * version 2 along with ERIKA Enterprise; if not, write to the
+ * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ * Boston, MA 02110-1301 USA.
+ * ###*E*### */
+
+/*
+ * A minimal EE demo that demonstrates how to work with the MULTISTACK mode and
+ * semaphores.
+ * In this demo two tasks are activated in the main function and work with
+ * different stacks.
+ * The demo is a classical producer/consumer problem implemented with two
+ * semaphores P and V.
+ * The demo is used to show the following features of ERIKA Enterprise OS: 
+ * - 	Multistack configuration: The Producer and the Consumer task need a
+ * 	separate stack because they block calling the WaitSem primitive. 
+ *
+ * - 	Separate stack for IRQs: the OIL file allocates a separate stack for
+ * 	ISR Type 2 by setting: "IRQ_STACK = TRUE { SYS_SIZE=64; };".
+ *
+ * - 	Semaphores: ERIKA Enterprise supports counting semaphores.
+ * 	The demo show how to initialize the semaphores, and how to use the main
+ *	semaphore primitives (PostSem and WaitSem).
+ *
+ * Author: 2012  Gianluca Franchino
+ * Based on examples/cortex_mx/lm4f232xxxx/porting_examples_keil/EETest05
+ */
+
+CPU mySystem {
+
+	OS myOs {
+
+		EE_OPT = "DEBUG";
+		EE_OPT = "__ASSERT__";
+		EE_OPT = "__SEM__";
+		
+		CPU_DATA = RX200 {
+			APP_SRC = "code.c";
+			COMPILER_TYPE = CCRX; 
+			MULTI_STACK = TRUE {
+				IRQ_STACK = TRUE {
+					SYS_SIZE=512;
+				};
+			};
+		};
+
+		MCU_DATA = RENESAS {
+			MODEL = R5F5210x;
+		};
+
+		EE_OPT = "__RSKRX210__";
+		EE_OPT = "__USE_RSKRX120_USER_LED__";
+		EE_OPT = "__USE_RSKRX210_OP_FREQ_SETUP__";
+
+		STATUS = EXTENDED;
+		STARTUPHOOK = FALSE;
+		ERRORHOOK = FALSE;
+		SHUTDOWNHOOK = FALSE;
+		PRETASKHOOK = FALSE;
+		POSTTASKHOOK = FALSE;
+		USEGETSERVICEID = FALSE;
+		USEPARAMETERACCESS = FALSE;
+		USERESSCHEDULER = FALSE;
+
+		KERNEL_TYPE = FP {
+			NESTED_IRQ = TRUE;
+		}; 
+
+	};
+
+	TASK Producer {
+		PRIORITY = 0x02;   /* High priority */
+		AUTOSTART = FALSE;
+		STACK = PRIVATE {
+			SYS_SIZE = 512;
+		};
+		ACTIVATION = 1;    /* only one pending activation */
+		SCHEDULE = FULL;
+	};
+
+	TASK Consumer {
+		PRIORITY = 0x01;   /* Low priority */
+		AUTOSTART = FALSE;
+		STACK = PRIVATE {
+			SYS_SIZE = 512;
+		};
+		ACTIVATION = 1;    /* only one pending activation */
+		SCHEDULE = FULL;
+	};
+
+
+};

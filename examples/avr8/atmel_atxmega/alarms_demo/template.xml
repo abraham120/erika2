@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<evidence_example version="1" ID="avr8_alarms_demo">
+
+ <category>avr8/Atmel ATxmega16D4</category>
+ <title>Alarms Demo</title>
+   
+ <small_descr>
+ TaskL1, TaskL2 and TaskL3 are actived by alarms controlled by timers.
+ Every tasks switch on a led.
+ </small_descr>
+
+ <long_descr>
+ In this demo 3 tasks are actived by 3 alarms controlled by 2 timers.
+ TaskL1 puts on the l1 led and TaskL2 put on the l2 led, while TaskL3 put on the
+ l3 led.
+ </long_descr>
+
+ <file_section>
+  <file     name="ee_types.h"/>
+  <file     name="code.c"/>
+  <file     name="conf.oil"/>
+ </file_section>
+
+</evidence_example>

@@ -1,0 +1,46 @@
+CPU test_application {
+
+	OS EE {
+		EE_OPT = "__ASSERT__";
+		CFLAGS = "-g2";
+		ASFLAGS = "";
+		LDFLAGS = ""; 
+
+//		EE_OPT = "__MPC5668__";
+//		EE_OPT = "__VLE__";
+		EE_OPT = "__E200ZX_EXECUTE_FROM_RAM__";
+		CPU_DATA = MPC5674F {
+			APP_SRC = "main.c";
+			APP_SRC = "dirty_regs.S";
+			MULTI_STACK = FALSE;
+		};
+
+		STATUS = EXTENDED;
+		STARTUPHOOK = FALSE;
+		ERRORHOOK = FALSE;
+		SHUTDOWNHOOK = FALSE;
+		PRETASKHOOK = FALSE;
+		POSTTASKHOOK = FALSE;
+		USEGETSERVICEID = FALSE;
+		USEPARAMETERACCESS = FALSE;
+		USERESSCHEDULER = FALSE;
+	};
+
+	/* this is the OIL part for the first task */
+	TASK Task1 {
+		PRIORITY = 0x01;   /* Low priority */
+		AUTOSTART = FALSE;
+		STACK = SHARED;
+		ACTIVATION = 1;    /* only one pending activation */
+	};	
+
+	/* this is the OIL part for the second task */
+	TASK Task2 {
+		PRIORITY = 0x02;   /* High priority */
+		AUTOSTART = TRUE;
+		STACK = SHARED;
+		ACTIVATION = 1;    /* only one pending activation */
+	};	
+
+	OS EE { KERNEL_TYPE = BCC1; EE_OPT = "__OO_STARTOS_OLD__";};
+};

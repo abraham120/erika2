@@ -1,0 +1,1057 @@
+#LyX 1.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 221
+\textclass article
+\language italian
+\inputencoding auto
+\fontscheme default
+\graphics default
+\paperfontsize default
+\spacing single 
+\papersize a4paper
+\paperpackage a4
+\use_geometry 0
+\use_amsmath 1
+\use_natbib 0
+\use_numerical_citations 0
+\paperorientation portrait
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\defskip medskip
+\quotes_language english
+\quotes_times 2
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\bullet 0
+	0
+	17
+	-1
+\end_bullet
+\bullet 1
+	0
+	15
+	-1
+\end_bullet
+
+\layout Section*
+
+ERIKA Protected
+\layout Standard
+
+In questo documento vengono presentate le specifiche del sistema che ERIKA
+ deve gestire, le scelte progettuali che sono state fatte per consentire
+ protezione di memoria e di privilegio.
+ 
+\layout Subsection*
+
+Descrizione del Sistema
+\layout Standard
+
+Come definito da 
+\begin_inset LatexCommand \cite{HIS2}
+
+\end_inset 
+
+ un'
+\emph on 
+applicazione
+\emph default 
+ é un gruppo di oggetti di sistema
+\begin_inset Foot
+collapsed true
+
+\layout Standard
+
+Task, handler di interruzioni, risorse ...
+\end_inset 
+
+ (entità) che dovono essere protetti da altre applicazioni.
+ Questa protezione viene sviluppata secondo due paradigmi
+\begin_inset Foot
+collapsed true
+
+\layout Standard
+
+Entrambi devono essere supportati a livello hardware dal 
+\begin_inset Formula $\mu$
+\end_inset 
+
+-controllore.
+\end_inset 
+
+:
+\layout Itemize
+
+protezione di memoria;
+\layout Itemize
+
+limitazione del livello di privilegio per un'applicazione utente.
+\layout Standard
+
+Il nostro sistema é quindi composto da varie applicazioni che devono essere
+ protette in modo mutuamente esclusivo.
+\layout Standard
+
+Una distinzione viene fatta tra applicazioni 
+\emph on 
+trusted
+\emph default 
+ ed applicazioni 
+\emph on 
+non trusted
+\emph default 
+: le prime sono applicazioni alle cui entità é consentita l'esecuzione con
+ un livello di privilegio alto (ad esempio le primitive di sistema), mentre
+ le seconde sono entità che devono eseguire in modalità non privilegiata
+ (ad esempio i thread che compongono un'applicazione utente).
+ Quando queste ultime devono eseguire del 
+\emph on 
+codice trusted
+\emph default 
+ (ad esempio una chiamata ad una primitva di sistema) si ha una transizione
+ dall'applicazione non-trusted a una trusted.
+ Si hanno anche transizioni da entità trusted ad entità non trusted: ad
+ esempio quando si deve eseguire un handler di tipo2 (vedi par.
+ 3.2.3 
+\begin_inset LatexCommand \cite{HIS2}
+
+\end_inset 
+
+).
+\layout Standard
+
+Le applicazioni sono a loro volta composte da thread, interrupt routine
+ e funzioni hook: tutte queste entità devono quindi essere eseguite in modalità
+ non privilegiata e con protezione di memoria.
+ Per quanto riguarda la protezione di memoria possiamo distinguere tre zone
+ in cui é consentito l'accesso di queste entità:
+\layout Enumerate
+
+lo stack privato di ogni entità, al più condiviso tra più entità ma sempre
+ della stessa applicazione;
+\layout Enumerate
+
+i dati globali dell'applicazione a cui quell'entità appartiene;
+\layout Enumerate
+
+i dati globali al sistema.
+\layout Standard
+
+Per quanto invece riguarda il cambio di livello di privilegio possiamo riassumer
+e tutto in alcune regole
+\layout Itemize
+
+le entità che appartengono ad una applicazione utente devono eseguire in
+ modalità non privilegiata, non possono quindi accedere alle varie risorse
+ di confgiurazione del 
+\begin_inset Formula $\mu$
+\end_inset 
+
+-controllore;
+\layout Itemize
+
+le entità che appartengono al Kernel (o ad applicazioni Kernel che sono
+ applicazioni trusted) devo eseguire in modalità privilegiata, devono cioé
+ aver accesso a tutti i registri di configurazione del 
+\begin_inset Formula $\mu$
+\end_inset 
+
+-controllore;
+\layout Itemize
+
+quando una entità utente deve accedere ad una risorsa critica del sistema
+ (ad esempio i registri di configurazione degli interrupt) deve invocare
+ una routine di sistema (trusted) innalzando così il livello di privilegio
+ --transizione da entità trusted ad etinità non trusted;
+\layout Itemize
+
+quando una primitiva di sistema invoca una entità utente (ad esempio una
+ funzione di hook che é una entità non trusted) deve abbassare il livello
+ di privilegio del 
+\begin_inset Formula $\mu$
+\end_inset 
+
+-controllore ed impostare i registri di configurazione della memoria in
+ modo opportuno --transizione da entità non trusted ad entità trusted;
+\layout Standard
+
+A queste caratteristiche del sistema che vogliamo gestire dobbiamo aggiungere
+ un ulteriore vincolo di progetto: vorremmo modificare il meno possibile
+ il 
+\emph on 
+kernel-layer
+\emph default 
+ esistente di ERIKA.
+ Quindi lo sviluppo riguarderà soprattutto lo HAL di ERIKA per l'adattamento
+ a queste nuove specifiche del sistema.
+\layout Subsection*
+
+Considerazioni
+\layout Standard
+
+Per quanto riguarda la protezione della memoria si é pensato di utilizzare
+ una memoria segmentata per le applicazioni non trusted: ad un thread 
+\emph on 
+i 
+\emph default 
+dell'applicazione 
+\emph on 
+j
+\emph default 
+ é consentito utilizzare tre segmenti:
+\layout Enumerate
+
+un segmento dati uguale per ogni thread del sistema (dati globali del sistema);
+\layout Enumerate
+
+un segmento dati uguale per ogni thread dell'applicazione (dati globali
+ all'applicazione);
+\layout Enumerate
+
+un segmento stack diverso per ogni thread, fatto salvo il caso di stack
+ condivisi.
+\layout Standard
+
+Per quanto riguarda le transizioni da un'entità non trusted ad entità trusted
+ utilizzeremo il meccanismo delle system call
+\begin_inset Foot
+collapsed true
+
+\layout Standard
+
+Così viene definito nella letteratura PowerPC.
+\end_inset 
+
+, che innalzano il livello di privilegio a 
+\begin_inset Formula $\mu$
+\end_inset 
+
+-codice, mentre per le transizioni da entità trusted ad entità non trusted
+ utilizzeremo le istruzioni di RFI
+\begin_inset Foot
+collapsed true
+
+\layout Standard
+
+Return From Interrupt.
+\end_inset 
+
+ che eseguono l'operazione duale a quella di system call.
+\layout Standard
+
+Un'altra considerazione da fare é sulle entità che compongono il sistema:
+\layout Description
+
+thread nel sistema sono presenti due thread id: uno locale all'applicazione
+ (che non viene effettivamente utilizzatodal kernel
+\begin_inset Foot
+collapsed true
+
+\layout Standard
+
+Il kernel ha infatti bisogno di informazioni globali.
+\end_inset 
+
+) ed uno globale al sistema, utilizzato dal sistema operativo per la schedulazio
+ne;
+\layout Description
+
+stack anche in questo caso abbiamo due id dello stack: un id locale all'applicaz
+ione ed uno globale al sistema con cui il sistema operativo recupera le
+ informazioni di protezione;
+\layout Description
+
+handler gli handler di tipo 2 vengono gestiti dal sistema come veri e propri
+ thread, con l'unica differenza che non entrano nella shedulazione.
+ Infatti ogni handler ha il suo stack su cui eseguire in modalità non privilegia
+ta ed ha inoltre tutte le restrizioni di memoria di un thread che appartiene
+ alla stessa applicazione;
+\layout Description
+
+hook vengono invocate dalle primitive di sistema (esecuzione privilegiata)
+ e devono essere eseguite in modalità non privilegiata.
+ Vedreme più avanti una possibile soluzione a questo problema.
+\layout Subsection*
+
+Strutture Dati
+\layout Standard
+
+Per implementare il sistema si é pensato di utilizzare le seguenti strutture
+ dati --alcune di queste strutture vengono utilizzate per mantenere una
+ certa compatibilità con il Kernel layer esistente di ERIKA:
+\layout Itemize
+
+una tabella, che da ora verrà rifetita con il nome di 
+\series bold 
+THREAD_TOC
+\series default 
+
+\begin_inset Foot
+collapsed true
+
+\layout Standard
+
+Table Of Contents.
+\end_inset 
+
+, che faccia corrispondere al 
+\emph on 
+thread id globale
+\emph default 
+ tutte le seguenti informazioni:
+\begin_deeper 
+\layout Enumerate
+
+l'id dell'applicazione
+\begin_inset Foot
+collapsed true
+
+\layout Standard
+
+Viene quindi introdotto anche il concetto di 
+\emph on 
+application id
+\emph default 
+.
+\end_inset 
+
+ a cui quel thread appartiene;
+\layout Enumerate
+
+l'indirizzo del corpo della funzione;
+\layout Enumerate
+
+l'id globale del suo stack;
+\end_deeper 
+\layout Itemize
+
+una tabella, che da ora verrà riferita con il nome di 
+\series bold 
+APPLICATION_TOC
+\series default 
+, che faccia corrispondere all'application id
+\begin_inset Foot
+collapsed true
+
+\layout Standard
+
+Questa informazione vine recuperata dalla tabella THREAD_TOC.
+\end_inset 
+
+ tutte le informazioni di protezione per quell'applicazione, come:
+\begin_deeper 
+\layout Enumerate
+
+tutte le informazioni che riguardano il segmento dati di quell'applicazione
+\begin_inset Foot
+collapsed true
+
+\layout Standard
+
+Di solito si ha bisogni di un 
+\emph on 
+indirizzo base
+\emph default 
+ e di un 
+\emph on 
+offset massimo
+\emph default 
+.
+\end_inset 
+
+;
+\layout Enumerate
+
+un bit che indica se quell'applicazione deve funzionare con livello di privilegi
+o basso o alto
+\begin_inset Foot
+collapsed true
+
+\layout Standard
+
+In pratica ci viene indicato se si tratta di un'applicazione utente o kernel.
+\end_inset 
+
+ --in questo secondo caso le due precedenti informazioni non hanno valori
+ significativi, quindi il bit funge anche da bit di validitá delle informazioni
+ sui segmenti.
+\end_deeper 
+\layout Itemize
+
+una tabella, che da ora verrà riferita con 
+\series bold 
+STACK_TOC
+\series default 
+, che faccia corrispondere allo stack id globale le seguenti informazioni:
+\begin_deeper 
+\layout Enumerate
+
+l'indirizzo del top of stack;
+\layout Enumerate
+
+tutte le informazioni che riguardano il segmento di quello stack.
+\end_deeper 
+\layout Standard
+
+Nel sistema sono anche presenti uno stack del kernel, su cui vengono eseguite
+ tutte le primitive di sistema, ed uno stack IRQ, su cui viene eseguito
+ il codice dell'interrupt handler che esegue con privilegio alto e gli handler
+ di tipo 1.
+\layout Subsection*
+
+Adattamento al Kernel Layer esistente
+\layout Standard
+
+Nella versione classica di ERIKA alcune primitive sono implementate in questo
+ modo:
+\layout Enumerate
+
+eseguono una parte di codice;
+\layout Enumerate
+
+chiamano la 
+\family typewriter 
+ready2stacked()
+\family default 
+ che effettivamente mette in esecuzione il nuovo thread;
+\layout Enumerate
+
+
+\begin_inset LatexCommand \label{enu:epilogo-primitiva}
+
+\end_inset 
+
+al termine del nuovo thread ritornano alla primitiva che esegue ancora del
+ codice prima di tornare al thread che l'aveva invocata.
+\layout Standard
+
+Nella versione con protezione questo non é più possibile: non é infatti
+ la
+\family typewriter 
+ ready2stacked()
+\family default 
+ che mette in esecuzione il nuovo thread, ma é l'esecuzione della 
+\series bold 
+RFI
+\series default 
+ della primitiva a farlo, visto che il nuovo thread deve eseguire ad un
+ livello di privilegio basso.
+ Per questo motivo il codice del punto 
+\begin_inset LatexCommand \ref{enu:epilogo-primitiva}
+
+\end_inset 
+
+ deve essere eseguito non al ritorno dalla 
+\family typewriter 
+ready2stacked()
+\family default 
+ ma quando verrà rischedulado il thread, ora 
+\emph on 
+stacked
+\emph default 
+, che aveva invocato la primitva.
+ Questa porzione di codice é stata denominata 
+\emph on 
+epilogo della primitva
+\emph default 
+: abbiamo bisogno di una nuova struttura per la sua gestione.
+\layout Standard
+
+Un discorso analogo si può fare per quando riguarda gli handler di tipo
+ 2: quando scatta un interrupt viene eseguito del codice con livello di
+ privilegio alto (innalzato automaticamente).
+ Compito di questo codice é di capire qual é la sorgente di IRQ e di chiamare
+ l'handler appropriato (oltre quello di salvare il contesto del thread/handler
+ interrotto).
+ Questa chiamata viene eseguita con una 
+\series bold 
+RFI
+\series default 
+, visto che gli handler di tipo 2 devono eseguire con un livello di privilegio
+ basso.
+ Rimane quindi da eseguire tutto il codice che deve ripristinare il contesto
+ dell'entità interrotta: questo codice, 
+\emph on 
+epilogo dell'interruzione
+\emph default 
+, viene chiamato al termine dell'handler come fosse una primitiva --deve
+ infatti eseguire con privilegio alto.
+\layout Standard
+
+Per implementare tutte queste situazioni i thread, ed anche gli handler
+ di tipo 2 visto la somiglianza, sono stati incapsulati in degli 
+\emph on 
+stub
+\emph default 
+: la 
+\series bold 
+RFI
+\series default 
+ ha come indirizzo di ritorno (da una primitiva o da un interrupt handler)
+ uno di questi stub che si preoccupa di eseguire il codice corretto, sia
+ esso un thread o un handler, e al ritorno da questo di invocare l'epilogo
+ corretto.
+\layout Subsection*
+
+Funzioni di Hook
+\layout Standard
+
+Fanno parte di questa categoria le funzioni 
+\family typewriter 
+StartupHook()
+\family default 
+, 
+\family typewriter 
+ShutdownHook()
+\family default 
+ ed 
+\family typewriter 
+ErrorHook()
+\family default 
+.
+ Queste funzioni vengono chiamate da alcune primitve di sistema e devono
+ eseguire in modo non privilegiato.
+ Il problema é che la chiamata a queste funzioni può avvenire in un qualsiasi
+ punto del codice della primitva --all'inizio, in fondo ma anche nel mezzo.
+ Questo comporta una difficile gestione di queste chiamate da parte del
+ sistema infatti la primitiva, in questo caso il 
+\emph on 
+chiamante
+\emph default 
+, funziona ad un livello privilegiato mentre la funzione di hook deve funzionare
+ a livello utente, quindi la chiamata dovrebbe avvenire con una 
+\series bold 
+RFI
+\series default 
+.
+ Il problema é che la parte finale della primitiva (il codice dopo il ritorno
+ dalla funzione hook) deve eseguire in modo privilegiato, esattamente come
+ il codice che precede la chiamata alla hook.
+\layout Standard
+
+Allo stato attuale il sistema non supporta esplicitamente questo tipo di
+ 
+\emph on 
+chiamate
+\emph default 
+.
+ Una possibile soluzione potrebbe essere quella di utilizzare uno ``stratagemma'
+' simile a quello utilizzato per gli handler di tipo 2: la primitiva potrebbe
+ essere spezzata in due tronchi; il primo tronco é quello che precede la
+ chiamata della funzione hook (
+\emph on 
+pre-hook
+\emph default 
+) ed il secondo é quello successivo al ritorno della funzione hook (
+\emph on 
+post-hook
+\emph default 
+ che assomiglia molto ad un epilogo della primitiva).
+ Viene poi introdotto uno stub che automatizza la chiamata alla hook e la
+ system call alla primitva post-hook.
+ Un esempio del codice utilizzabile é in Algorithm 
+\begin_inset LatexCommand \ref{alg:stub-funzioni-hook}
+
+\end_inset 
+
+.
+\layout Standard
+
+
+\begin_inset Float algorithm
+placement H
+wide false
+collapsed false
+
+\layout LyX-Code
+
+// ee_generic.c
+\layout LyX-Code
+
+void 
+\series bold 
+\emph on 
+GenericPrimitive_PreHook
+\series default 
+\emph default 
+(void){
+\layout LyX-Code
+
+     <codice della primitiva prima della chiamata alla funzione hook>
+\layout LyX-Code
+
+     
+\series bold 
+yyyyHookXXX
+\series default 
+();
+\layout LyX-Code
+
+}
+\layout LyX-Code
+
+void 
+\series bold 
+\emph on 
+GenericPrimitive_PostHook
+\series default 
+\emph default 
+(void){
+\layout LyX-Code
+
+     <codice della primitva dopo il ritorno dalla funzione hook>
+\layout LyX-Code
+
+}
+\layout LyX-Code
+
+void 
+\series bold 
+\emph on 
+yyyyHookXXX
+\series default 
+\emph default 
+(){
+\layout LyX-Code
+
+     
+\series bold 
+EE_hook_stub
+\series default 
+((EE_UREG)
+\series bold 
+RealHookFunction
+\series default 
+,
+\layout LyX-Code
+
+                  (EE_UREG)
+\series bold 
+EE_API_ID_GENERICPRIMITVE_POSTHOOK
+\series default 
+);
+\layout LyX-Code
+
+}
+\layout LyX-Code
+
+\layout LyX-Code
+
+// ee_hookstub.S
+\layout LyX-Code
+
+     ....
+\layout LyX-Code
+
+
+\series bold 
+EE_hook_stub
+\series default 
+:
+\layout LyX-Code
+
+     // r3 = &RealHookFunction
+\layout LyX-Code
+
+     // r4 = EE_API_ID_GENERICPRIMITIVE_POSTHOOK
+\layout LyX-Code
+
+     mtlr    r3
+\layout LyX-Code
+
+     blrl
+\layout LyX-Code
+
+     mr      r11, r4
+\layout LyX-Code
+
+     sc
+\layout LyX-Code
+
+     // Qui non si deve rientrare
+\layout LyX-Code
+
+     // La system call che viene eseguita 
+\layout LyX-Code
+
+     // schedulerà un nuovo thread, che può anche 
+\layout LyX-Code
+
+     // essere il thread che aveva invocato la 
+\layout LyX-Code
+
+     // prima primitiva --quella che aveva poi
+\layout LyX-Code
+
+     // chiamato la funzione hook
+\layout LyX-Code
+
+\layout LyX-Code
+
+     ....
+\layout LyX-Code
+
+\layout LyX-Code
+
+\layout Caption
+
+Chiamata della funzioni 
+\emph on 
+hook
+\begin_inset LatexCommand \label{alg:stub-funzioni-hook}
+
+\end_inset 
+
+
+\end_inset 
+
+
+\layout Subsection*
+
+Funzioni 
+\emph on 
+TerminateTask() 
+\emph default 
+e 
+\emph on 
+ChainTask()
+\layout Standard
+
+Queste due funzioni vengono invocate per uccidere 
+\emph on 
+completamente
+\emph default 
+
+\begin_inset Foot
+collapsed true
+
+\layout Standard
+
+Intendo dire che devono rimuovere dallo stack il frame relativo.
+\end_inset 
+
+ il thread in esecuzione, passando poi il controllo ad un thread segnalato
+ dallo scheduler.
+ Per poter utilizzare queste funzioni su ERIKA protected dobbiamo introdurre
+ una nuova struttura che contenga i top of stack di goni thread all'inizio
+ della loro esecuzione.
+ Quindi abbiamo bisogno di una tabella in cui ogni entry contine il top
+ of stack iniziale ed indicizzata sul thread id.
+\layout Standard
+
+La 
+\family typewriter 
+TerminateTask()
+\family default 
+ e la 
+\family typewriter 
+ChainTask()
+\family default 
+ cancellano dallo stack il frame e, se tutto é andato bene, chiamano lo
+ scheduler per segnalare allo HAL qual é il thread che deve essere eseguito.
+ Tutto questo deve essere eseguito con un'unica primitiva che funziona totalment
+e in modo privilegiato.
+ Una possibile soluzione può essere:
+\layout Itemize
+
+con la chiamata alla primitiva 
+\family typewriter 
+TerminateTask()
+\family default 
+ o 
+\family typewriter 
+ChainTask()
+\family default 
+ viene in realtà chiamato uno stub (implementato in C) che é la reale primitiva;
+\layout Itemize
+
+in questo stub viene chiamata (con una semplice function call
+\begin_inset Foot
+collapsed true
+
+\layout Standard
+
+Cioé senza cambio di privilegio.
+\end_inset 
+
+) la 
+\family typewriter 
+TerminateTask() 
+\family default 
+o la 
+\family typewriter 
+ChainTask()
+\family default 
+;
+\layout Itemize
+
+al ritorno dalla funzione viene testato il valore di ritorno ed in caso
+ viene eseguita una function call a 
+\family typewriter 
+_thread_end_instance()
+\family default 
+;
+\layout Itemize
+
+quando termina la primitiva il system call handler
+\begin_inset Foot
+collapsed true
+
+\layout Standard
+
+É il codice che sta nell'exception vector all'entry per la gestione delle
+ system call.
+\end_inset 
+
+ processerà i valori modificati da 
+\family typewriter 
+_thread_end_instance()
+\family default 
+ e schedulerà il thread segnalato.
+\layout Standard
+
+
+\begin_inset Float algorithm
+placement H
+wide false
+collapsed false
+
+\layout LyX-Code
+
+
+\series bold 
+#ifdef
+\series default 
+ __OO_EXTENDED_STATUS__
+\layout LyX-Code
+
+StatusType 
+\series bold 
+EE_oo_TerminateTask_stub
+\series default 
+(void){
+\layout LyX-Code
+
+       StatusType temp;
+\layout LyX-Code
+
+       temp = EE_oo_TerminateTask();
+\layout LyX-Code
+
+       if (temp == EE_OK)
+\layout LyX-Code
+
+
+\series bold 
+#else
+\layout LyX-Code
+
+void 
+\series bold 
+EE_oo_TerminateTask_stub
+\series default 
+(void){
+\layout LyX-Code
+
+       EE_oo_TerminateTask();
+\layout LyX-Code
+
+
+\series bold 
+#endif
+\layout LyX-Code
+
+       EE_oo_thread_end_instance();
+\layout LyX-Code
+
+
+\series bold 
+#ifdef
+\series default 
+ __OO_EXTENDED_STATUS__
+\layout LyX-Code
+
+       return temp;
+\layout LyX-Code
+
+
+\series bold 
+#endif
+\layout LyX-Code
+
+}
+\layout LyX-Code
+
+....
+\layout LyX-Code
+
+StatusType 
+\series bold 
+EE_oo_ChainTask_stub
+\series default 
+(TaskType TaskID){
+\layout LyX-Code
+
+       StatusType temp;
+\layout LyX-Code
+
+       temp = EE_oo_ChainTask(TaskID);
+\layout LyX-Code
+
+       if (temp == EE_OK)
+\layout LyX-Code
+
+              EE_oo_thread_end_instance();
+\layout LyX-Code
+
+       return temp;
+\layout LyX-Code
+
+}
+\layout LyX-Code
+
+\layout LyX-Code
+
+\layout LyX-Code
+
+\layout Caption
+
+Stub per 
+\family typewriter 
+TerminateTask() 
+\family default 
+e 
+\family typewriter 
+ChainTask()
+\begin_inset LatexCommand \label{alg:Stub-per-TerminateTask()}
+
+\end_inset 
+
+
+\end_inset 
+
+
+\layout Standard
+\pagebreak_bottom 
+Le due funzioni in Algorithm 
+\begin_inset LatexCommand \ref{alg:Stub-per-TerminateTask()}
+
+\end_inset 
+
+ sono le due primitve esportate dal kernel.
+ Vengono chiamate tramite gli stub classici implementati per ogni primitiva
+ del kernel.
+\layout Standard
+
+
+\begin_inset Float figure
+placement tp
+wide false
+collapsed false
+
+\layout Standard
+\align center 
+
+\begin_inset Graphics
+	filename immagini/ProtectedSchedule.eps
+	width 100col%
+	keepAspectRatio
+	rotateAngle 90
+
+\end_inset 
+
+
+\layout Caption
+
+Scheduling Handler
+\end_inset 
+
+
+\layout Subsection*
+\pagebreak_top 
+Documentazione Motorola
+\layout Standard
+
+La documentazione utilizzata nella fase di studio e durante la fase di sviluppo
+ sono:
+\layout Itemize
+
+
+\series bold 
+AN2109
+\series default 
+.pdf -- in questo application note viene illistrata la gestione delle interruzion
+i esterne della 
+\begin_inset Formula $\mu$
+\end_inset 
+
+-CU, con particolare riguardo alla gestione del modulo USIU del MPPC;
+\layout Itemize
+
+
+\series bold 
+AN2472
+\series default 
+.pdf -- in questo application note viene illistrata la modalità Enhanced
+ Interrupt Control dei 
+\begin_inset Formula $\mu$
+\end_inset 
+
+-controllori MPC565-566;
+\layout Itemize
+
+
+\series bold 
+MPC565_MPC566RM
+\series default 
+.pdf -- manuale di riferimento per i particolari 
+\begin_inset Formula $\mu$
+\end_inset 
+
+-controllori;
+\layout Itemize
+
+
+\series bold 
+MPC566EVB
+\series default 
+.pdf -- manuale dell'evaluation board utilizzata;
+\layout Itemize
+
+
+\series bold 
+MPCFPE32B
+\series default 
+.pdf -- manuale ``Programming Environment'' dell'architettura.
+ In questo manuale vengono fornite tutte le informazioni per la programmazione
+ del PowerPC di Motorola;
+\layout Itemize
+
+
+\series bold 
+RCPURM
+\series default 
+.pdf
+\series bold 
+ 
+\series default 
+-- manuale per le architetture RISC PowerPC di Motorola/FreeScale;
+\layout Itemize
+
+
+\series bold 
+eabi_app
+\series default 
+.pdf -- documento sullo standard di programmazione PowerPC: utilizzo dei
+ registri, passaggio di parametri ...
+ .
+\layout Standard
+
+
+\begin_inset LatexCommand \BibTeX[alpha]{biblio/protec}
+
+\end_inset 
+
+
+\the_end

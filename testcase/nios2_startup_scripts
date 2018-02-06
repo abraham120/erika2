@@ -1,0 +1,9 @@
+# These scripts are needed to compile a binary distribution for Nios II
+# execute them using ". ./filename"
+
+#please also look at pkg/cpu/nios2/cfg/rules.mk
+export EE_NIOS2_VERSION=81
+
+export PATH=${PATH}:/cygdrive/c/altera/81/nios2eds/bin/nios2-gnutools/H-i686-pc-cygwin/bin:/cygdrive/c/altera/81/nios2eds/bin/
+export EE_NIOS2_IDE_BASE=/cygdrive/c/altera/81/nios2eds/bin/eclipse
+export CLASSPATH='C:\Programmi\Java\jre1.6.0_05\lib\tools.jar;C:\altera\81\nios2eds\bin\eclipse\startup.jar'

@@ -1,0 +1,398 @@
+Note a powerpc prese con le ultime discussioni con Antonio Fiaschi.
+21 dicembre 2004
+
+
+ee_cpu.h
+--------
+
+ci sono dei tipi definitio come volatile signed ---> sono usati per le strutture interne dei registri PPC, in particolare dentro mcu/ppc/inc/ee_micro.h
+
+e sono di fatto uno standard nella programmazione PPC
+
+Il TOS (Top of Stack) su ARM era fatto da due campi, uno per il system tos ed uno per lo IRQ tos. Qui c'e' solo il SYS_TOS. Ha lasciato la struttura per omogeneità con quanto definito per la piattaforma ARM.
+
+la irq_table ---> di fatto contiene la lista degli handler
+le ninterruzioni esterne entrano sempre dallo stesso indirizzzo. Di fatto leggo il tipo di interruzione e con quello entro nella IRQTABLE dove ci sono gli handler.
+
+Inoiltre ricordarsi che PowerPC fa la distinzione sui tipi degli interrupt. Ci sono di fatto IRQ e Level
+ci sono:
+- 7 livelli di IRQ che corrispondono agli IRQ che arrivano sui piedini esterni della CPU
+- 7 livelli Level che sono i livelli delle periferiche interne alla CPU
+
+irqtable[0] contiene l'handler IRQ 0
+irqtable[1] contiene l'handler Level 0
+irqtable[2] contiene l'handler IRQ 1
+irqtable[3] contiene l'handler Level 1
+e cosi' via
+
+la funzione enable_irq
+per disabilitare gli interrupt ci sono dei bit nell'MSR Machine Status Register.
+
+l'idea è che per disabilitare gli interrupt devo leggere msr / modificarlo / scriverlo
+ci sono tre registri speciali:
+EIE --> External Interrupt Enable --> numero special register 80
+EID --> external interrupt disable --> numero special register 81
+NRI --> disabilita gli esterni e disabilita anche dice anche che è NON RECOVERABLE Interrupt --> numero special register 82
+
+scrivendo qualcosa in uno di questi tre registri posso abilitare/disabilitare/settare nri
+
+nri è un bit che segnala se arriva un IRQ; il bit è settato se in generale l'interruzione viene gestita subito ed il sistema non è in grado di ripristinare lo stato. praticamente all'interruzione vengono usati i registri SRRx, pertanto non possono scattare degli IRQ se non mi sono prima salvato tali registri. per questo motivo dopo aver salvato i registri srrx di solito riabilito il bit nri.
+
+Cosa succede quando viene salvato l'IRQ:
+- MSR è salvato in SRR1 (save & restore register 1)
+- PC è salvato in SRR0
+
+(pertanto dopo lo scatto dell'irq lòa prima cosa da fare è di salvare da qualche parte srrx in modo tale da poter resettare il bit R che dice al sistema che l'interruzione è ripristinabile.
+
+quando riabilito le eccezioni il bit NRI viene resettato
+il discorso dell'eccezione recuperabile/non recuperabile  ---> ho salvato le cose dopo un IRQ, riabilito NRI e posso avere una qualsiasi eccezione  che andrà anch'essa a salvare su srr0/srr1
+
+devo fare il backup dei registri minimiche mi servono pere riabilitare le eccezioni ----> sono i registri srr0/srr1, una volta salvati segnalo al sistema che le eccezioni sono recuperabili ovvero che può scattare una eccezione e lo faccio cambiando il bit NRI
+
+
+di fatto quello che faccio è che non salvo solo srr0/srr1 ma anche un contesto che è un po' + grande. una volta salvato il contesto l'irq decide cosa fare:
+- irq innestati --> riabilito le interruzioni e riabilitandole dico anche implicitamente che le eccezioni sono recuperabili
+- no irq innestati -> segnalo al sistema che le interruzioni sono esplicitamente recuperabili.
+
+
+in ogni caso le eccezion i di watchdog e di reset scattano sempre
+
+il bit nri alla fine di fatto è come un bit di abilitazione a far scattare le interruzioni/eccezioni
+
+
+mtctr --> move to register ctr -->il registro ctr è un registro su cui posso fare un salto, in un certo senso è simile a lr anche se non ho istruzioni che ci salvano direttamente il contenuto.
+
+
+
+
+NESTED PRIMITIVE
+----------------
+
+l'idea è che prima devo leggere MSR e mettere a posto il registro
+
+di fatto per queste funzioni ANtonio ha usato un registro temp=0 perchè quando metto un registro a caso non si sa perchè sembrano esserci dei problemi... in particolare i problemi sembrano presentarsi quando il registro non era MAI stato utilizzato prima dall'accensione della macchina.
+
+
+
+
+
+FLOATING POINT
+--------------
+NON sono gestiti
+
+
+
+Passaggio dei parametri
+-----------------------
+
+sono 32 registri generali, il PPC è una architettura RISC con uno standard chiamato EABI
+
+R1 è utilizzato come SP
+parametri passati in R3...
+valore di ritorno in R3
+
+
+la struttura del frame è:
+
+
+    old R1  <---- R1 punta qui
+    vuoto
+    R3 (primo parametro)
+    R4 (secondo parametro)
+    ...
+
+
+la struttura del frame viene di solito ottenuta tramite una funzione STWU Store Word Update
+
+ad esempio 
+
+stwu r1, -8(r1)
+mflr r0
+stw r0, 12(r1)
+
+vuol dire: 
+- salvo r1 in -8(r1); poi r1= indirizzo dove ho salvato
+- metto lr in r0
+- salvo lr nella zona vuota del frame precedente
+
+
+BLRL  Branch register and link
+
+LIS Load Immediate Shifted
+LWZ Load Word Zero
+
+quando metto etichetta@ha significa parte alta, se uso @l è la parte bassa
+
+
+LIS+LWZ --> carico il valore puntato dall'etichetta
+LIS+LA  --> carico l'etichetta
+
+CMPWI crr0,r3,0  compare word immediate --> comparo r3 con l'immediato "0", e metto il risultato in crr3
+
+
+
+
+
+Change_tos
+----------
+
+- la funzione è una foglia posso evitare di allocare lo stack
+- uso cmpw, non cmpwi perchè comparo de registri
+
+usa la coppia 
+cmpw    <-- fa il test
+beqlr   <-- fa il branch su lr solo se eq
+
+addi 1,1,-72 ---> r1 -=72
+
+stmw r14,0(r1)  salva da r14 a r31 a partire dall'indirizzo 0(r1) in poi. in pratica con una istruzione salvo tutti i registri volatilida r14 a r31
+
+SLWI --> shift left word immediate
+SLWI r0,r0,2 ---> r0=r0<<2
+
+LI --> load immediate
+
+
+
+EE_irqvect.s
+------------
+
+A seconda del tipo di eccezione entra in un indirizzo ben preciso
+
+--> irq -> se irq abilitati -> entra 
+-> salva i registri:
+   - srr0 = PC
+   - srr1 = MSR
+   - lr
+   - xer --> utilizzata per i flag aritmetici tipo overflow carry ecc...
+   - ctr --> control register, usato per i jump
+   - cr -> condition register contiene i vari flag
+poi fa bl a save_registers che si occupa di salvare il contesto, ed in particolare i registri r3-r13 che sono i registri volatili
+poi uso SIVEC. SIVEC contiene l'indice dell'ISR generato shiftato di 4 (come nell'evaluator)
+dopo rimappo le maschere degli interrupt per mascherare chi necessario
+abilito le eccezioni facendo MTSPR 80,0
+
+
+Debugging di PopwerPC su Lauterbach
+-----------------------------------
+
+Bit di MSR
+EE - eXCEPTION eNABLE
+pr - pRIVILEGE LEVEL (0=SOFTWARE, 1=USER)
+fp - floating point
+ip - registro che influenza l'indirizzo base dell'exception vector (1-> 0x00000000 + offset, 1-> 0xfff0 0000+offset)
+ri - recoverable interrupt (0 not recoverable, 1 recoverable)
+pvr - processor version register
+dec - decrementato sui branch
+dsisr - data extraction... --> usato per l'accesso ai dati e alle istruzioni
+DAR - data address register - usato per l'accesso ai dati
+
+------------------
+
+nel menu mpc566/usiu (USIU unified system interface unit)
+si trovano i vari registri delle interfacce
+nella parte System Interface Unit
+SIU - interrupt configuration
+SIPEND -> interrupt pendente
+SIMASK -> maschere
+SIVEC -> dice il codice
+(per SIVEC e SIMASK e' definito solo il byte piu' significativo)
+
+--------------
+
+
+real time clock
+
+per ogni periferica ci sono i bit di configurazione ed i bit di stato
+c'e' il registro RTCSC = realtimeclock status Controller
+e' un bitfield con alcuni field:
+RTCIRQ --> a che Level voglio che sia generato l'IRQ (80 IRQ Level 0, 40 IRQ Level 1, ...
+SEC -->ogni secondo il real time clock manda un IRQ
+ALR --> eccezione di allarme
+4M -->dice se la frequenza del real time clock e' 4 o 20 MHz
+SIE --> Abilitazione dell'interrupt ogni secondo
+ALE --> Alarm Enabled
+RTF --> vai/fermati
+RTE Abilitazione ad inviare l'IRQ??? simile ad RTF???
+
+---------
+
+RTC Real Time Controller --> e' il contatore . non si axzzera, deve farlo l'handler
+
+carica dentro RTCAL --> il valore dell'allarme
+quando RTC=RTCAL-> eccezione di allarme.
+
+
+
+-------
+
+
+I registri Timebase/RTClock/Periodic Interrupt Timer  hanno la loro chiave di sblocco --> ci devo mettere un valore particolare per poterci scrivere!!!
+
+---------------
+
+
+dentro CS0-CS3 che fanno parte del memory controller
+
+BR -> seleziona un'area di memoria  --> BIT V =1
+
+Antonio li ha sempre usati come
+
+CS0.BR.V = 0, CS1.BR.V = 1 mentre all'accensione erano invertiti i valori
+
+
+
+Fine parte sul debugging
+
+
+
+----------------------
+
+MP5 Protected
+
+ee_cpu.h
+
+ha aggiunto un nuovo tipo
+
+EE_AID Application ID
+EE_PID  Primitive ID ---> probabilmente non utilizzato, da eliminare
+
+
+EE_thread_toc 
+
+contiene:
+
+AID | body | stackid | |APPL_SEGM (INFO SUI SEGMENTI DI MEMORIA) | Appl. protezione (bit di protezione
+
+gli ultimi due avrebbero dovuto far parte di una tabella indirizzata dall'AID, sono stati unificati per motivi di efficenza.
+
+Handler_toc ha Body | tipo (1 o 2, che sarebbe il tipo di isr, isr1 o isr2)
+
+ee_tos
+|sys_tos| segment| (prima nella versione non protetta c'era solo sys_tos
+
+mpc5_thread_epilogo --> contiene l'epilogo delle primitive!
+
+ee_hal_protected_stub_r_xp   dove c'e' r se esiste il valore di ritorno, x indica il numero dei parametri
+
+---
+
+quando next_body =0 nella hal_* -->. vuol dire che torno ad un thread stacked
+
+ee_IRQ_epilogue --> e' la primitiva che viene chiamata come primitiva finale di un ISR di tipo 2
+
+
+
+----
+
+SYS_CALL
+
+quando parte la syscall viene salvato tutto il contesto nello stack (160 bytes!)
+
+potrebbe essere un handler o un task a chiamare la SWI, in ogi caso salvo tutto
+
+R1 non lo salvo perche' e' il valore di SP --> lo salvo nella struttura che mantiene i TOS
+
+a questo punto controllo se sono stato eseguito da un handler o da un task
+
+se da un handler la variabile EE_IRQ_handler_active dice quale e' il thread attivo  --> entro in EE_MPC5_handler_tos
+
+NOTA: la stringa "<----------" come handler attivo usa SIVEC, che e' gia' hiftato di 2 (multipli di 4). la struttura handler_tos e' fatta di 8 bytes (body + protezione), devo shiftare di 1 in + per essere mutiplo di 8. la stringa "<-------------" indica gli shift che devo modificare se quando implemento la protezione dovro' ingrandire la struttura.
+
+
+
+alla fine r10 ci va &EE_mpc5_handler_tos[handler_active], alla fine alla label "2:" trovo in R10 l'indirizzo che devo memorizzare in SP
+
+---------------------
+Per essere sicuro salva 3 parametri nello stack di Systema + altre info ---> sono solo per debug, posso rimuoverle in futuro
+--------------------------
+
+calling_the_primitive
+r11 contiene il numero della primitiva (e' il primo registro non usato nel passaggio dei parametri) --> usa quello per accedere al vettore delle primitive e saltare
+
+
+continue:
+quando torno dalla primitiva devo controllare il nesting_level (=0 chiamato da thread, !=0 chiamato dallo handler)
+
+se chiamato dallo handler recupero lo stack pointer dell'handler, salvo r3 che contiene l'eventuale valore di ritorno e poi posso saltare di nuovo alla restore (prima del jump ci vogliono le info di protezione)
+
+se = 0 
+carico l'active_tos, shifto di 3 perche' ci sono le info di protezione --> l'active tos e' il puntatore al nuovo stack --> lo uso per salvare il valore di ritorno che stava in R3
+
+vado poi a vedere se quello che schedulo e' un thread nuovo, o il thread che ho chiamato.
+
+endcycle_next_thread in r7 e salvo nello STACK DI SISTEMA, carico poi l'active thread prima della chiamata
+
+
+se alla fine l'active thread e' diverso dal next thread devo schedulare uno nuovo.
+
+--> se non cambio thread rimane solo da ripristinare il contesto
+--> se lo cambio faccio un update dell'active_thread
+--> poi controllo ed ecventualmente eseguo l'epilogo
+
+
+
+
+
+
+
+---------------------
+
+
+gestione degli IRQ
+
+
+salvo contesto
+TOS
+decido se ho interrotto un handler o un task
+salvo il tos nell'handler_tos o nel system_tos
+poi salto a switch_on_stack
+
+--> se ho interrotto un thread salto nello stack IRQ
+
+0--> se ho interrotto un handler devo saltare sullo stack irq, e devo tenere conto degli handler perche' non sono stacked uno sull'altro ma potrebbero essere sparsi in applicazioni diverse. per questo motivo mi salvo sull'IRQ_STACK una catena di attivazioni. 
+
+Nota che sull'IRQ stack ci eseguo anche handler di tipo 1 ed in piu' ci salvo la catena degli handler innestati.
+
+-----
+
+poi incremento il nesting_level, carico l'addr dell'handler appropriato.
+
+se l'handler e' di tipo 2 --> ho protezione --> salto con la RFI sullo stub della epilogue
+
+se l'handler e' di tipo 1 --> non ho protezione --> chiamo l'handler --> quando ritorno decremento l'IRQ-nesting-level --> verifico se ci sono altri handler da eseguire? --> se si --> ci sono degli handler bloccati -->salto sulla continue
+
+il salto sulla continue:
+la continue e' una parte delle system call. salto sulal continue della system call che anziche' essere sullo stack system call sono sullo stack irq . nota che l'informazione per recuperare l'handler ce la ho sullo satck.
+
+la continue e' fatta in modo da poter recuperare l'handler
+--> quando esegue da un irq si tratta dell'handler che e' stato bloccato da un altro handler
+--> per la system call non ho un handler innestato, al limite potrei avere un handler che chiama una system call ma in igni caso ci puo' essere al piu' una sola system call contemporaneamente.
+
+Per fare la cosa allora l'handler IRQ riempie handler_active con il valore salvato sullo stack IRQ, a quel punto chiama la continue che si aspetta in handler_active l'eventuale handler da rieseguire (che poteva anche essere l'handler che era stato interrotto dalla system call nel caso di chiamata alla continue da parte di una system call).
+-----
+se non ci sono altri handler preemptati salto di nuovo alla no_change_thread perche' la situazione e' la stessa di una chiamata del tipo thread0 -> syscall -> che deve tornare a thread0
+
+
+
+
+
+
+------
+irq_epilogue
+deve essere chiamata come primitiva al termine dell'handler di tipo 2. deve tornare sullo stack IRQ, recuperare le info di eventuali handler bloccati, ripristinare il contesto di eventuali handler (chiamo irqendinstance in questo caso)/thread bloccati e continuare
+
+
+se pero' 
+
+EE_IRQ_epilogue --> parte sullo stack di sistema, controlla il nesting level --> lo carico e ci sottraggo 1 --> ho finito gli handler?
+
+si -> irq_endinstance e terminare schedulando chi devo schedulare e chiamo la continue
+
+no -> ci sono altri handler -> salto sullo stack irq ma ci salto usando un altro registro diverso da 1 -> uso R2
+
+con r2 prendo dallo stack IRQ lo handler interrotto. (lo toglo dallo stack irq)
+
+dentro handler_active ci metto che l'handler bloccato e' l'handler attivo e salto alla continue
+
+ed in questo modo la continue puo' essere usata da entrambe le parti risparmiando cosi' del codice.

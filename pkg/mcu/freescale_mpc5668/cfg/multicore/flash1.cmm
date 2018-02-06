@@ -1,0 +1,14 @@
+;
+; Script to run ERIKA from ROM
+;
+
+; evi - ERIKA binary object and VLE setting (from the makefile)
+&filename="#EXE_NAME#"
+&use_vle=#USE_VLE#
+
+; The program has been already loaded in memory
+d.load.elf &filename /NOCODE
+
+#ORTICMD#
+
+ENDDO

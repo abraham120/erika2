@@ -1,0 +1,197 @@
+<!-- ###*B*###
+     ERIKA Enterprise - a tiny RTOS for small microcontrollers
+     
+     Copyright (C) 2002-2011  Evidence Srl
+     
+     This file is part of ERIKA Enterprise.
+     
+     ERIKA Enterprise is free software; you can redistribute it
+     and/or modify it under the terms of the GNU General Public License
+     version 2 as published by the Free Software Foundation, 
+     (with a special exception described below).
+     
+     Linking this code statically or dynamically with other modules is
+     making a combined work based on this code.  Thus, the terms and
+     conditions of the GNU General Public License cover the whole
+     combination.
+     
+     As a special exception, the copyright holders of this library give you
+     permission to link this code with independent modules to produce an
+     executable, regardless of the license terms of these independent
+     modules, and to copy and distribute the resulting executable under
+     terms of your choice, provided that you also meet, for each linked
+     independent module, the terms and conditions of the license of that
+     module.  An independent module is a module which is not derived from
+     or based on this library.  If you modify this code, you may extend
+     this exception to your version of the code, but you are not
+     obligated to do so.  If you do not wish to do so, delete this
+     exception statement from your version.
+     
+     ERIKA Enterprise is distributed in the hope that it will be
+     useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+     of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+     GNU General Public License version 2 for more details.
+     
+     You should have received a copy of the GNU General Public License
+     version 2 along with ERIKA Enterprise; if not, write to the
+     Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+     Boston, MA 02110-1301 USA.
+     ###*E*### */
+     
+     Simple project to test Mcu_init() and to demonstrate that the MCU driver is
+     is integrated into the makefiles.
+     Author: 2011  Giuseppe Serano
+  -->
+<?xml version="1.0" encoding="UTF-8"?>
+<AUTOSAR
+  xmlns="http://autosar.org/3.1.5"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://autosar.org/3.1.5 autosar_3-1-5.xsd"
+>
+  <TOP-LEVEL-PACKAGES>
+    <AR-PACKAGE>
+      <SHORT-NAME>ASMCU0</SHORT-NAME>
+      <ELEMENTS>
+	<ECU-CONFIGURATION UUID="23a29ffd-1687-4efe-abe9-b2ec989d46d5">
+	<SHORT-NAME>ASMCU0</SHORT-NAME>
+	<ECU-SW-COMPOSITION-REF DEST="ECU-SW-COMPOSITION">
+	  /ASMCU0/SwComposition
+	</ECU-SW-COMPOSITION-REF>
+	<MODULE-REFS>
+	  <MODULE-REF DEST="MODULE-CONFIGURATION">/ASMCU0/Mcu</MODULE-REF>
+	</MODULE-REFS>
+	</ECU-CONFIGURATION>
+	<ECU-SW-COMPOSITION UUID="222a7882-dfe3-4682-a89e-863fae593b4d"> <!-- ?!? -->
+	<SHORT-NAME>SwComposition</SHORT-NAME>
+	</ECU-SW-COMPOSITION>
+	<MODULE-CONFIGURATION UUID="ea4995d7-ecc5-487b-b712-55bf93a851af">
+	  <SHORT-NAME>Mcu</SHORT-NAME>
+	  <DEFINITION-REF DEST="MODULE-DEF">/Erika/Autosar/Mcu</DEFINITION-REF>
+	  <CONTAINERS>
+	    <CONTAINER UUID="65852ba6-162d-436f-afb2-1283f94b0883">
+	      <SHORT-NAME>McuGeneralConfiguration</SHORT-NAME>
+	      <DEFINITION-REF DEST="PARAM-CONF-CONTAINER-DEF">
+		McuGeneralConfiguration
+	      </DEFINITION-REF>
+	      <PARAMETER-VALUES>
+		<BOOLEAN-VALUE>
+		  <DEFINITION-REF DEST="BOOLEAN-PARAM-DEF">
+		    McuDevErrorDetect
+		  </DEFINITION-REF>
+		  <VALUE>false</VALUE>
+		</BOOLEAN-VALUE>
+		<BOOLEAN-VALUE>
+		  <DEFINITION-REF DEST="BOOLEAN-PARAM-DEF">
+		    McuGetRamStateApi
+		  </DEFINITION-REF>
+		  <VALUE>false</VALUE>
+		</BOOLEAN-VALUE>
+		<BOOLEAN-VALUE>
+		  <DEFINITION-REF DEST="BOOLEAN-PARAM-DEF">
+		    McuInitClock
+		  </DEFINITION-REF>
+		  <VALUE>false</VALUE>
+		</BOOLEAN-VALUE>
+		<BOOLEAN-VALUE>
+		  <DEFINITION-REF DEST="BOOLEAN-PARAM-DEF">
+		    McuNoPll
+		  </DEFINITION-REF>
+		  <VALUE>true</VALUE>
+		</BOOLEAN-VALUE>
+		<BOOLEAN-VALUE>
+		  <DEFINITION-REF DEST="BOOLEAN-PARAM-DEF">
+		    McuPerformResetApi
+		  </DEFINITION-REF>
+		  <VALUE>true</VALUE>
+		</BOOLEAN-VALUE>
+		<BOOLEAN-VALUE>
+		  <DEFINITION-REF DEST="BOOLEAN-PARAM-DEF">
+		    McuVersionInfoApi
+		  </DEFINITION-REF>
+		  <VALUE>true</VALUE>
+		</BOOLEAN-VALUE>
+	      </PARAMETER-VALUES>
+	    </CONTAINER>
+	    <CONTAINER UUID="481b3cf5-28fe-4f60-9037-3fbe166b5f6f">
+	      <SHORT-NAME>McuModuleConfiguration</SHORT-NAME>
+	      <DEFINITION-REF DEST="PARAM-CONF-CONTAINER-DEF">
+		McuModuleConfiguration
+	      </DEFINITION-REF>
+	      <PARAMETER-VALUES>
+		<ENUMERATION-VALUE>
+		  <DEFINITION-REF DEST="ENUMERATION-PARAM-DEF">
+		    McuClockSrcFailureNotification
+		  </DEFINITION-REF>
+		  <VALUE>DISABLED</VALUE>
+		</ENUMERATION-VALUE>
+		<INTEGER-VALUE>
+		  <DEFINITION-REF DEST="DERIVED-INTEGER-PARAM-DEF">
+		    McuNumberOfMcuModes
+		  </DEFINITION-REF>
+		  <VALUE>1/VALUE>
+		</INTEGER-VALUE>
+		<INTEGER-VALUE>
+		  <DEFINITION-REF DEST="DERIVED-INTEGER-PARAM-DEF">
+		    McuRamSectors
+		  </DEFINITION-REF>
+		  <VALUE>1</VALUE>
+		</INTEGER-VALUE>
+		<!--
+		<INTEGER-VALUE>
+		  <DEFINITION-REF DEST="INTEGER-PARAM-DEF">
+		    McuResetSetting
+		  </DEFINITION-REF>
+		  <VALUE>1</VALUE>
+		</INTEGER-VALUE>
+		-->
+	      </PARAMETER-VALUES>
+	      <SUB-CONTAINERS>
+		<CONTAINER UUID="62617d05-cc2e-4c4d-b4b1-9202e9455fc2">
+		  <SHORT-NAME>McuModeSettingConf</SHORT-NAME>
+		  <DEFINITION-REF DEST="PARAM-CONF-CONTAINER-DEF">
+		    McuModeSettingConf
+		  </DEFINITION-REF>
+		  <PARAMETER-VALUES>
+		    <INTEGER-VALUE>
+		      <DEFINITION-REF DEST="INTEGER-PARAM-DEF">
+			McuMode
+		      </DEFINITION-REF>
+		      <VALUE>0</VALUE>
+		    </INTEGER-VALUE>
+		  </PARAMETER-VALUES>
+		</CONTAINER>
+		<CONTAINER UUID="62234d05-bb3e-1a5z-e4c1-7365e9678fc4">
+		  <SHORT-NAME>McuRamSectorSettingConf</SHORT-NAME>
+		  <DEFINITION-REF DEST="PARAM-CONF-CONTAINER-DEF">
+		    McuRamSectorSettingConf
+		  </DEFINITION-REF>
+		  <PARAMETER-VALUES>
+		    <INTEGER-VALUE>
+		      <DEFINITION-REF DEST="INTEGER-PARAM-DEF">
+			McuRamDefaultValue
+		      </DEFINITION-REF>
+		      <VALUE>0</VALUE>
+		    </INTEGER-VALUE>
+		    <INTEGER-VALUE>
+		      <DEFINITION-REF DEST="INTEGER-PARAM-DEF">
+			McuRamSectionBaseAddress
+		      </DEFINITION-REF>
+		      <VALUE>0x20000000</VALUE>
+		    </INTEGER-VALUE>
+		    <INTEGER-VALUE>
+		      <DEFINITION-REF DEST="INTEGER-PARAM-DEF">
+			McuRamSectionSize
+		      </DEFINITION-REF>
+		      <VALUE>0x00008000</VALUE>
+		    </INTEGER-VALUE>
+		  </PARAMETER-VALUES>
+		</CONTAINER>
+	      </SUB-CONTAINERS>
+	    </CONTAINER>
+	  </CONTAINERS>
+	</MODULE-CONFIGURATION>
+      </ELEMENTS>
+    </AR-PACKAGE>
+  </TOP-LEVEL-PACKAGES>
+</AUTOSAR>
+

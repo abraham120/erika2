@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<evidence_example version="1" ID="STM32_qpc_dpp">
+
+ <category>Cortex-MX/STM32F4 Discovery Board/QP Framework</category>
+ <title>Demo QP for DPs problem </title>
+   
+ <small_descr>
+ This demo implements the Dining Philosophers Problem (DPP) example.
+ </small_descr>
+
+ <long_descr>
+  Demo that shows how to use the QP framework. This demo implements the 
+  Dining Philosophers Problem (DPP) example using six concurrent active objects.  
+  The behavior of each object is implemented through a state machine. 
+  
+ &lt;ul&gt;
+ &lt;li&gt;LED6 (BLUE) is on when a Philosopher is eating. It is off otherwise;&lt;/li&gt;
+ &lt;li&gt;LED5 (RED) is on when the application is paused. &lt;/li&gt;
+ &lt;li&gt;User Button is used to pause and resume the application &lt;/li&gt;
+ &lt;/ul&gt;
+  
+  Hardware:
+ &lt;ul&gt;
+ &lt;li&gt;STM32F407 Discovery board. &lt;/li&gt;
+ &lt;/ul&gt;
+   
+
+ </long_descr>
+
+ <file_section>
+  <file     name="main.c"/>
+  <file     name="philo.c"/>
+  <file     name="table.c"/>
+  <file     name="bsp.c"/> 
+  <file     name="bsp.h"/>
+  <file     name="dpp.h"/> 
+  <file     name="conf.oil"/>
+ </file_section>
+
+</evidence_example>

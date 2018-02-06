@@ -1,0 +1,131 @@
+#LyX 1.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 221
+\textclass article
+\language american
+\inputencoding auto
+\fontscheme default
+\graphics default
+\paperfontsize default
+\papersize Default
+\paperpackage a4
+\use_geometry 0
+\use_amsmath 0
+\use_natbib 0
+\use_numerical_citations 0
+\paperorientation portrait
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\defskip medskip
+\quotes_language english
+\quotes_times 2
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+
+\layout Title
+
+idea di requisiti per kernel protetto
+\layout Standard
+
+PJ & Antonio Fiaschi, 22/12/2004
+\layout Itemize
+
+la primitiva deve terminare completamente al ritorno della funzione in C
+ del kernel
+\layout Itemize
+
+deve essere minimizzato il tempo di disabilitazione degli interrupt
+\layout Itemize
+
+deve essere possibile avere funzioni di libreria che funzionino ad interrupt
+ abilitati.
+ le funzioni possono avere sezioni critiche ad interrupt disabilitati
+\layout Itemize
+
+deve essere possibile avere handler e task in modo privilegiato e non privilegia
+to
+\layout Itemize
+
+deve essere possibile usare le funzioni di hook in modo non privilegiato
+\layout Itemize
+
+condivisione di stack?
+\layout Itemize
+
+esistono delle applicazioni
+\begin_deeper 
+\layout Itemize
+
+con spazio di indirizzamento privato
+\layout Itemize
+
+con dei task
+\layout Itemize
+
+con degli handler
+\layout Itemize
+
+con degli stack eventualmente condivisi tra le entita' della stessa applicazione
+\begin_deeper 
+\layout Itemize
+
+anche tra task e handler della stessa applicazione
+\end_deeper 
+\layout Itemize
+
+ogni applicazione ha una funzione di accensione (startuphook) ed una di
+ spegnimento (shutdownhook) che devono inizializzare il contesto dove funzionano
+ i task e gli handler.
+ Le funzioni sono non privilegiate
+\layout Itemize
+
+ogni applicazione ha informazioni che riguardano la protezione di memoria
+ per i suoi dati globali
+\end_deeper 
+\layout Itemize
+
+posso passare dei puntatori alle primitive, che internamente dovranno fare
+ la conversione
+\layout Itemize
+
+al termine di una primitiva che attiva un task va in esecuzione il task
+ a priorita' piu' alta in quel momento senza bisogno di epiloghi
+\layout Itemize
+
+DA VERIFICARE
+\begin_deeper 
+\layout Itemize
+
+le primitive funzionano ad interruzioni abilitate.
+ si esporta un concetto di 
+\begin_inset Quotes eld
+\end_inset 
+
+lock
+\begin_inset Quotes erd
+\end_inset 
+
+ per permettere l'accodamento di primitive pendenti
+\layout Itemize
+
+se ci sono primitive 
+\begin_inset Quotes eld
+\end_inset 
+
+corte
+\begin_inset Quotes erd
+\end_inset 
+
+ esse utilizzeranno comunque i lock e al loro interno disabiliteranno Esplicitam
+ente le interruzioni.
+\end_deeper 
+\layout Itemize
+
+gli hook ed handler sono oggetto di schedulazione o no??? ---> cosa succede
+ quando eseguo un hook? lo devo schedulare prima di tutti??? gli handler
+ che priorita' hanno nel sistema???
+\layout Itemize
+
+devono essere possibili interrupt innestati
+\the_end

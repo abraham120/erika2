@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<evidence_example version="1" ID="pic30_easylab_demo">
+
+ <category>pic30/Easylab Board</category>
+ <title>Easylab Board Demo</title>
+   
+ <small_descr>
+ This is the demo to test the Easylab board devices.
+ </small_descr>
+
+ <long_descr>
+ A demo that demostrates the functions for:
+ &lt;ul&gt;
+ &lt;li&gt;Leds; &lt;/li&gt;
+ &lt;li&gt;Buzzer; &lt;/li&gt;
+ &lt;li&gt;Timer; &lt;/li&gt;
+ &lt;li&gt;ADC; &lt;/li&gt;
+ &lt;li&gt;PWM; &lt;/li&gt;
+ &lt;li&gt;UART; &lt;/li&gt;
+ &lt;/ul&gt;
+ At the beginning the User configure the PWM and the ADC channels, 
+ and the desired voltage value that analog input should match, 
+ through serial communication. 
+ Then, using a simple cable, the user can connect the analogic 
+ output (AOx for PWM channel x) to the AD converter (ANx for ADC channel x). 
+ The value measured by the AD converter is then transmitted to the PC 
+ (tested with putty.exe).
+ </long_descr>
+
+ <file_section>
+  <file     name="code.c"/> 
+  <file     name="conf.oil"/>
+  <file     name="README"/>
+ </file_section>
+
+</evidence_example>

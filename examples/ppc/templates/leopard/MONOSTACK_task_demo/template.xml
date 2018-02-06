@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<evidence_example version="1" ID="E200Z7_EE_MONOSTACK_TASK_DEMO_MPC5643L">
+
+ <category>e200zx/MPC56XX_EVB(Leopard)</category>
+ <title>task_demo</title>
+   
+ <small_descr>
+ A minimal EE demo for the MONOSTACK case with the MPC5643L evaluation board.
+ </small_descr>
+
+ <long_descr>
+ Task demo: A minimal EE demo with the MPC5643L
+ evaluation board.
+ The demo uses the following peripherals:
+ &lt;ul&gt;
+ &lt;li&gt;LEDs; &lt;/li&gt;
+ &lt;li&gt;Buttons; &lt;/li&gt;
+ &lt;/ul&gt;
+The demo to tests the BCC1, BCC2, FP conformance class, TaskActivate, Schedule, and non preemptive settings.
+ </long_descr>
+
+ <file_section>
+  <file     name="code.c"/> 
+  <file     name="conf.oil"/>
+  <file     name="variables.cmm"/>
+ </file_section>
+
+</evidence_example>

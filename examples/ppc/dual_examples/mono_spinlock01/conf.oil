@@ -1,0 +1,67 @@
+CPU test_application {
+
+	OS EE {
+		EE_OPT = "__ASSERT__";
+		CFLAGS = "";
+		ASFLAGS = "";
+		LDFLAGS = ""; 
+
+		EE_OPT = "__E200ZX_EXECUTE_FROM_RAM__";
+		EE_OPT = "DEBUG";
+		EE_OPT = "EE_ISR_DYNAMIC_TABLE";
+
+		MASTER_CPU = "master";
+
+		CPU_DATA = PPCE200ZX {
+			ID = "master";
+			MODEL = E200Z6;
+			APP_SRC = "master.c";
+			MULTI_STACK = FALSE;
+			VLE = TRUE;
+			SYS_STACK_SIZE = 4096;
+		};
+
+		CPU_DATA = PPCE200ZX {
+			MODEL = E200Z0;
+			ID = "slave";
+			APP_SRC = "slave.c";
+			MULTI_STACK = FALSE;
+			VLE = TRUE;
+			SYS_STACK_SIZE = 4096;
+		};
+
+		MCU_DATA = PPCE200ZX {
+			MODEL = MPC5668G;
+		};
+
+		STATUS = EXTENDED;
+		STARTUPHOOK = FALSE;
+		ERRORHOOK = FALSE;
+		SHUTDOWNHOOK = FALSE;
+		PRETASKHOOK = FALSE;
+		POSTTASKHOOK = FALSE;
+		USEGETSERVICEID = FALSE;
+		USEPARAMETERACCESS = FALSE;
+		USERESSCHEDULER = FALSE;
+
+		USEREMOTETASK = ALWAYS;
+
+		KERNEL_TYPE = FP;
+	};
+	
+	TASK TaskZ6 {
+		CPU_ID = "master";
+		PRIORITY = 0x01;
+		AUTOSTART = FALSE;
+		STACK = SHARED;
+		ACTIVATION = 1;
+	};
+
+	TASK TaskZ0 {
+		CPU_ID = "slave";
+		PRIORITY = 0x01;
+		AUTOSTART = FALSE;
+		STACK = SHARED;
+		ACTIVATION = 1;
+	};
+};

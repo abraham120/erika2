@@ -1,0 +1,42 @@
+; script used to load modistarc tests
+
+; NOTE: This file is used both by e7t_manual and by e7t_rtdruid!!!!
+
+area.select Messages
+print
+pwd
+area.select A000
+
+
+do out/t32/startup
+
+data.load out/evaluator7t.elf
+
+b.set EE_assert_last
+
+go
+
+wait !run()
+
+b.delete
+
+if (data.byte(EE_assertions)==0x1)
+(
+  ;test successful
+  AREA.select Messages
+  print "OK!!!"
+  print
+  AREA.Select A000
+  enddo
+)
+else
+(
+  area.view
+  AREA.select Messages
+  print
+  print "----------------------------------------"
+  print " TEST FAILED !!!!!!!"
+  print "----------------------------------------"
+  print
+  AREA.Select A000
+)

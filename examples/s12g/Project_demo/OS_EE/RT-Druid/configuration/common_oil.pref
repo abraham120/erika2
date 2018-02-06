@@ -1,0 +1,9 @@
+
+# Path to the S12 CW Compiler
+preference_S12__path_for_codewarrior_compiler = C:/Programmi/Freescale/CWS12v5.1
+
+# Path to the S12 Cosmic Compiler
+preference_S12__path_for_cosmic_compiler = C:/Programmi/COSMIC/EVAL12X
+
+# Erika Enterprise path
+erika_enterprise_location=${eclipse_home}/../ee_base

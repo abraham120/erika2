@@ -1,0 +1,154 @@
+/* ###*B*###
+ * ERIKA Enterprise - a tiny RTOS for small microcontrollers
+ *
+ * Copyright (C) 2009-2011  Evidence Srl
+ *
+ * This file is part of ERIKA Enterprise.
+ *
+ * ERIKA Enterprise is free software; you can redistribute it
+ * and/or modify it under the terms of the GNU General Public License
+ * version 2 as published by the Free Software Foundation, 
+ * (with a special exception described below).
+ *
+ * Linking this code statically or dynamically with other modules is
+ * making a combined work based on this code.  Thus, the terms and
+ * conditions of the GNU General Public License cover the whole
+ * combination.
+ *
+ * As a special exception, the copyright holders of this library give you
+ * permission to link this code with independent modules to produce an
+ * executable, regardless of the license terms of these independent
+ * modules, and to copy and distribute the resulting executable under
+ * terms of your choice, provided that you also meet, for each linked
+ * independent module, the terms and conditions of the license of that
+ * module.  An independent module is a module which is not derived from
+ * or based on this library.  If you modify this code, you may extend
+ * this exception to your version of the code, but you are not
+ * obligated to do so.  If you do not wish to do so, delete this
+ * exception statement from your version.
+ *
+ * ERIKA Enterprise is distributed in the hope that it will be
+ * useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License version 2 for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * version 2 along with ERIKA Enterprise; if not, write to the
+ * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ * Boston, MA 02110-1301 USA.
+ * ###*E*### */
+
+/*
+	Author: Dario Di Stefano, 2011
+*/ 
+
+CPU test_application {
+
+	OS EE {
+		EE_OPT = "DEBUG";      // compila con le informazioni di debug
+		
+		EE_OPT = "__CODEWARRIOR__"; 
+		/* If the compiler license is expired use this 
+		   option to avoid syntax errors during the compilation:
+		   EE_OPT = "CW_EVAL_VERSION"; 
+		*/
+		EE_OPT = "CW_EVAL_VERSION";    // abilita gli strumenti per compilare con la versione
+		                               // di valutazione del compilatore
+		
+		ASFLAGS = "";                  // opzioni dell'assembler
+		LDFLAGS = "-addansibi.lib";    // opzioni del linker
+		
+		CFLAGS = "-D__FAR_DATA -Onf";  // opzioni del compilatore
+		/* If you need to add an include path, see the following example.
+		   (N.B. This approach supports also paths with blank spaces)
+		   Example:
+		       for a path like this: C:\Cobra_S12G\Nuova cartella
+		       add this string (note the path, it is in the DOS short form):
+		       CFLAGS = "-I$(call native_path,C:/COBRA_~1/NUOVAC~1)";
+		       To obtain the path in the DOS short form use the Cygwin shell and type this command:
+		       cygpath -ms "C:\Cobra_S12G\Nuova cartella"
+		*/
+		
+		CPU_DATA = MC9S12 {
+			APP_SRC = "src/main.c";        // sorgenti da compilare esterni a Erika 
+			APP_SRC = "s12g/Vectors.c";
+			APP_SRC = "s12g/CPU12ISRs.c";
+			APP_SRC = "s12g/Start12.c";
+			MULTI_STACK = FALSE;           // Scelta dello stack
+		};
+		
+		MCU_DATA = MC9S12 {
+			MODEL = CUSTOM{
+				MODEL = "MC9S12G128";
+				//LINKERSCRIPT = "../s12g/mc9s12g128.prm"; // Linker-script, se il campo è vuoto è utilizzato un linker-script di default. 
+				LINKERSCRIPT = "";                         // Linker-script, se il campo è vuoto è utilizzato un linker-script di default. 
+				INCLUDE_H = "mc9s12g128.h"; // sorgenti da compilare esterni a Erika, forniti dal compilatore Freescale
+				INCLUDE_C = "mc9s12g128.c"; // sorgenti da compilare esterni a Erika, forniti dal compilatore Freescale
+				INCLUDE_S = "";             // sorgenti da compilare esterni a Erika, forniti dal compilatore Freescale
+				};
+				SERIAL = TRUE;
+				TIMER = TRUE;
+		};
+		
+		BOARD_DATA = TWRS12G128 {  // Selezione della board. Se la board che si vuole utilizzare non è supportata da RT-Druid
+		                           // allora è sufficiente rimuovere questo campo.
+			OPTIONS = ALL;         // Abilita l'uso di leds e pulsanti...
+		};
+
+		// Sezione delle opzioni OIL/OSEK
+		STATUS = EXTENDED;
+		STARTUPHOOK = FALSE;
+		ERRORHOOK = FALSE;
+		SHUTDOWNHOOK = FALSE;
+		PRETASKHOOK = FALSE;
+		POSTTASKHOOK = FALSE;
+		USEGETSERVICEID = FALSE;
+		USEPARAMETERACCESS = FALSE;
+		USERESSCHEDULER = FALSE;
+    };
+
+	/* this is the OIL part for the task displaying the christmas tree */
+    TASK Task1 {
+		PRIORITY = 0x01;   /* Low priority */
+		AUTOSTART = FALSE;
+		STACK = SHARED;
+		ACTIVATION = 1;    /* only one pending activation */
+	};	
+	
+	/* this is the OIL part for the task activated by the button press */
+    TASK Task2 {
+		PRIORITY = 0x02;   /* High priority */
+		SCHEDULE = FULL;
+		AUTOSTART = TRUE;
+		STACK = SHARED;
+    };
+
+	/* 
+	 * Task2 supports six pending activations.
+	 * The kernel type has to be BCC2 to support more than one pending activation!
+	 */
+    OS EE { EE_OPT = "MYSCHEDULE"; KERNEL_TYPE = BCC2; EE_OPT = "__OO_STARTOS_OLD__";}; 
+	TASK Task1 { SCHEDULE = NON; };
+	TASK Task2 { ACTIVATION = 6; };
+	
+	
+	/* 
+	 * Kernel is FP
+	 * Task 1 is full preemptive
+	 
+	OS EE { KERNEL_TYPE = FP; EE_OPT = "__OO_STARTOS_OLD__";}; 
+	TASK Task1 { SCHEDULE = FULL; };
+	TASK Task2 { ACTIVATION = 1; };
+	
+	// COUNTERs list
+	COUNTER SystemTimer;
+
+	// ALARMs list
+	ALARM SystemAlarm {
+		COUNTER = SystemTimer;
+		ACTION = ACTIVATETASK { TASK = Task1; };
+	};
+	*/
+};
+
+

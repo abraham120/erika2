@@ -1,0 +1,146 @@
+CPU PerfTestApp {
+  OS EE {
+    EE_OPT = "EE_DEBUG";
+
+    EE_OPT = "EE_EXECUTE_FROM_RAM";
+    EE_OPT = "EE_SAVE_TEMP_FILES";
+    //EE_OPT = "EE_MM_OPT";
+
+    MEMORY_PROTECTION = TRUE;
+    STACKMONITORING = TRUE;
+
+    /* Used to enable static map of OS-Applications on protection sets
+       optimization */
+    EE_OPT = "EE_OS_APP_MAPPED_ON_PROTECTION_SETS";
+
+    CPU_DATA = TRICORE {
+      CPU_CLOCK = 200.0;
+      APP_SRC = "code.c";
+      APP_SRC = "trusted.c";
+      APP_SRC = "test_irq.c";
+      COMPILER_TYPE = GNU;
+      MULTI_STACK = TRUE {
+        IRQ_STACK = TRUE {
+            SYS_SIZE = 128;
+        };
+      };
+      SYS_CSA_SIZE=0x2000;
+    };
+
+    MCU_DATA = TRICORE {
+      MODEL = TC26x;
+    };
+
+    STATUS = EXTENDED;
+    USEPARAMETERACCESS = FALSE;
+    USERESSCHEDULER = FALSE;
+
+    KERNEL_TYPE = BCC1;
+
+    ORTI_SECTIONS = ALL;
+  };
+
+  TASK MainTask {
+    PRIORITY = 1;
+    ACTIVATION = 1;
+    SCHEDULE = NON;
+    AUTOSTART = TRUE;
+    STACK = SHARED;
+  };
+
+  TASK TaskApp1Prio2 {
+    PRIORITY = 2;
+    ACTIVATION = 1;
+    SCHEDULE = FULL;
+    AUTOSTART = FALSE;
+    STACK = SHARED;
+  };
+
+  TASK TaskApp1Prio4 {
+    PRIORITY = 4;
+    ACTIVATION = 1;
+    SCHEDULE = FULL;
+    AUTOSTART = FALSE;
+    STACK = SHARED;
+  };
+
+  TASK TaskApp1Prio5 {
+    PRIORITY = 5;
+    ACTIVATION = 1;
+    SCHEDULE = FULL;
+    AUTOSTART = FALSE;
+    STACK = SHARED;
+  };
+
+  TASK TaskApp1Prio7 {
+    PRIORITY = 7;
+    ACTIVATION = 1;
+    SCHEDULE = FULL;
+    AUTOSTART = FALSE;
+    STACK = SHARED;
+  };
+
+  TASK TaskApp2Prio3 {
+    PRIORITY = 3;
+    ACTIVATION = 1;
+    SCHEDULE = FULL;
+    AUTOSTART = FALSE;
+    STACK = SHARED;
+  };
+
+  TASK TaskApp2Prio6 {
+    PRIORITY = 6;
+    ACTIVATION = 1;
+    SCHEDULE = FULL;
+    AUTOSTART = FALSE;
+    STACK = SHARED;
+  };
+
+  TASK TaskApp2Prio8 {
+    PRIORITY = 8;
+    ACTIVATION = 1;
+    SCHEDULE = FULL;
+    AUTOSTART = FALSE;
+    STACK = SHARED;
+  };
+
+  ISR App1Isr1 {
+    CATEGORY = 2;
+    PRIORITY = 1;
+  };
+
+  ISR App2Isr2 {
+    CATEGORY = 2;
+    PRIORITY = 2;
+  };
+
+  ISR App2Isr3 {
+    CATEGORY = 2;
+    PRIORITY = 3;
+  };
+
+  APPLICATION TrustedApp1 {
+    TRUSTED = TRUE;
+    ISR  = App1Isr1;
+    TASK = TaskApp1Prio2;
+    TASK = TaskApp1Prio4;
+    TASK = TaskApp1Prio5;
+    TASK = TaskApp1Prio7;
+    TASK = MainTask;
+    MEMORY_SIZE = 0x1000;
+    SHARED_STACK_SIZE = 512;
+    IRQ_STACK_SIZE = 512;
+  };
+
+  APPLICATION TrustedApp2 {
+    TRUSTED = TRUE;
+    ISR  = App2Isr2;
+    ISR  = App2Isr3;
+    TASK = TaskApp2Prio3;
+    TASK = TaskApp2Prio6;
+    TASK = TaskApp2Prio8;
+    MEMORY_SIZE = 0x1000;
+    SHARED_STACK_SIZE = 512;
+    IRQ_STACK_SIZE = 512;
+  };
+};

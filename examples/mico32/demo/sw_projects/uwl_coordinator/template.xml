@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<evidence_example version="1" ID="fpg_eye_mico32_uwl_coordinator">
+
+ <category>mico32/FPG-EYE/fpg_eye_mico32</category>
+ <title>UWL coordinator test demo</title>
+
+ <small_descr>
+ This is the demo to test UWL coordinator on FPG-EYE Board devices.
+ </small_descr>
+
+ <long_descr>
+ UWL coordinator test.
+ &lt;br /&gt;
+ &lt;br /&gt;
+ This demo shows how to configure a coordinator node in a ZIGBEE net.
+ &lt;br /&gt;
+ &lt;br /&gt;
+ The stack si based on the uWIRELESS library.
+ &lt;br /&gt;
+ &lt;br /&gt;
+ The demo requires a RS232 serial connection with a 115200 bps, 8N1
+ configuration.
+ &lt;br /&gt;
+ &lt;br /&gt;
+ The demo requires a SPI connection with the MRF24J40MA/MB device.
+ </long_descr>
+
+ <file_section>
+  <file     name="conf.oil"/>
+  <file     name="main.c"/>
+  <file     name="makefile"/>
+ </file_section>
+
+</evidence_example>

@@ -1,0 +1,15 @@
+These programs are used to parse the configuraion strings of the testcases:
+
+- confparser_mux 
+  multiplexes different variables on the same string
+  ("v1=a,b v2=c" --> "v1_a_v2_c v1_b_v2_c")
+
+- confparser_demux
+  demultplexes strings produced by confparser_mux (used for makefiles)
+  ("v1_a_v2_c" --> "v1=a v2=c")
+
+- confparser_demux2
+  demultplexes strings produced by confparser_mux (used for input to
+  gcc preprocessor)
+  ("v1_a_v2_c" --> "   a    c")
+

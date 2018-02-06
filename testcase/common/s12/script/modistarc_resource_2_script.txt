@@ -1,0 +1,124 @@
+// *** modistarc_resource_2 ***
+//modistarc_resource_2/ out_s12xs_CONF_B1_STATUS_STD
+//modistarc_resource_2/ out_s12xs_CONF_B1_STATUS_EXT
+//modistarc_resource_2/ out_s12xs_CONF_B2_STATUS_STD
+//modistarc_resource_2/ out_s12xs_CONF_B2_STATUS_EXT
+//modistarc_resource_2/ out_s12xs_CONF_E1_STATUS_STD
+//modistarc_resource_2/ out_s12xs_CONF_E1_STATUS_EXT
+//modistarc_resource_2/ out_s12xs_CONF_E2_STATUS_STD
+//modistarc_resource_2/ out_s12xs_CONF_E2_STATUS_EXT
+
+// B1_STATUS_STD
+cd ..\..\modistarc_resource_2\out_s12xs_CONF_B1_STATUS_STD
+load "Debug\hs12xs.elf" NOPRELOADCMD NOPOSTLOADCMD NORUNAFTERLOAD
+BS 0xC779 P E
+GO
+// Wait the breakpoint or a similar pause
+WAIT 10 ;s
+STOP
+IF EE_assertions[0]==1
+printf("OK!!!")
+ELSE
+printf("FAILURE!!!")
+ENDIF
+
+// B1_STATUS_EXT
+cd ..\out_s12xs_CONF_B1_STATUS_EXT
+load "Debug\hs12xs.elf" NOPRELOADCMD NOPOSTLOADCMD NORUNAFTERLOAD
+BS 0xC779 P E
+GO
+// Wait the breakpoint or a similar pause
+WAIT 10 ;s
+STOP
+IF EE_assertions[0]==1
+printf("OK!!!")
+ELSE
+printf("FAILURE!!!")
+ENDIF
+
+// B2_STATUS_STD
+cd ..\out_s12xs_CONF_B2_STATUS_STD
+load "Debug\hs12xs.elf" NOPRELOADCMD NOPOSTLOADCMD NORUNAFTERLOAD
+BS 0xC779 P E
+GO
+// Wait the breakpoint or a similar pause
+WAIT 10 ;s
+STOP
+IF EE_assertions[0]==1
+printf("OK!!!")
+ELSE
+printf("FAILURE!!!")
+ENDIF
+
+// B2_STATUS_EXT
+cd ..\out_s12xs_CONF_B2_STATUS_EXT
+load "Debug\hs12xs.elf" NOPRELOADCMD NOPOSTLOADCMD NORUNAFTERLOAD
+BS 0xC779 P E
+GO
+// Wait the breakpoint or a similar pause
+WAIT 10 ;s
+STOP
+IF EE_assertions[0]==1
+printf("OK!!!")
+ELSE
+printf("FAILURE!!!")
+ENDIF
+
+// E1_STATUS_STD
+cd ..\out_s12xs_CONF_E1_STATUS_STD
+load "Debug\hs12xs.elf" NOPRELOADCMD NOPOSTLOADCMD NORUNAFTERLOAD
+BS 0xC779 P E
+GO
+// Wait the breakpoint or a similar pause
+WAIT 10 ;s
+STOP
+IF EE_assertions[0]==1
+printf("OK!!!")
+ELSE
+printf("FAILURE!!!")
+ENDIF
+
+// E1_STATUS_EXT
+cd ..\out_s12xs_CONF_E1_STATUS_EXT
+load "Debug\hs12xs.elf" NOPRELOADCMD NOPOSTLOADCMD NORUNAFTERLOAD
+BS 0xC779 P E
+GO
+// Wait the breakpoint or a similar pause
+WAIT 10 ;s
+STOP
+IF EE_assertions[0]==1
+printf("OK!!!")
+ELSE
+printf("FAILURE!!!")
+ENDIF
+
+// E2_STATUS_STD
+cd ..\out_s12xs_CONF_E2_STATUS_STD
+load "Debug\hs12xs.elf" NOPRELOADCMD NOPOSTLOADCMD NORUNAFTERLOAD
+BS 0xC779 P E
+GO
+// Wait the breakpoint or a similar pause
+WAIT 10 ;s
+STOP
+IF EE_assertions[0]==1
+printf("OK!!!")
+ELSE
+printf("FAILURE!!!")
+ENDIF
+
+// E2_STATUS_EXT
+cd ..\out_s12xs_CONF_E2_STATUS_EXT
+load "Debug\hs12xs.elf" NOPRELOADCMD NOPOSTLOADCMD NORUNAFTERLOAD
+BS 0xC779 P E
+GO
+// Wait the breakpoint or a similar pause
+WAIT 10 ;s
+STOP
+IF EE_assertions[0]==1
+printf("OK!!!")
+ELSE
+printf("FAILURE!!!")
+ENDIF
+
+// end
+cd ..\..\common\s12xs

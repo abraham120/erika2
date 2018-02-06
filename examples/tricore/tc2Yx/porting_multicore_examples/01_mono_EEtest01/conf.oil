@@ -1,0 +1,63 @@
+CPU test_application {
+
+  OS EE {
+    EE_OPT = "EE_DEBUG";
+    EE_OPT = "__ASSERT__";
+    EE_OPT = "EE_EXECUTE_FROM_RAM";
+
+    MASTER_CPU = "master";
+
+    CPU_DATA = TRICORE {
+      ID = "master";
+      APP_SRC = "master.c";
+      MULTI_STACK = FALSE;
+      SYS_STACK_SIZE = 4096;
+      COMPILER_TYPE = GNU;
+    };
+
+    CPU_DATA = TRICORE {
+      ID = "slave";
+      APP_SRC = "slave.c";
+      MULTI_STACK = FALSE;
+      SYS_STACK_SIZE = 4096;
+      COMPILER_TYPE = GNU;
+    };
+
+    MCU_DATA = TRICORE {
+      MODEL = TC27x;
+    };
+
+    MASTER_CPU = "master";
+
+    STATUS = EXTENDED;
+    USERESSCHEDULER = FALSE;
+    USEREMOTETASK = ALWAYS;
+
+    KERNEL_TYPE = BCC1;
+    EE_OPT = "__OO_STARTOS_OLD__";
+  };
+
+  TASK TaskMaster {
+    CPU_ID = "master";
+    PRIORITY = 0x01;
+    AUTOSTART = TRUE;
+    STACK = SHARED;
+    ACTIVATION = 1;
+  };
+
+  TASK Task1 {
+    CPU_ID = "slave";
+    PRIORITY = 0x01;
+    AUTOSTART = FALSE;
+    STACK = SHARED;
+    ACTIVATION = 1;
+  };
+
+  TASK Task2 {
+    CPU_ID = "slave";
+    PRIORITY = 0x02;
+    AUTOSTART = TRUE;
+    STACK = SHARED;
+    ACTIVATION = 1;    /* only one pending activation */
+  };
+};

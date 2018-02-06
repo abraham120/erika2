@@ -1,0 +1,50 @@
+---------------------------------------------------
+Global testcase makefile
+---------------------------------------------------
+
+This testcase will run the test for all the configuration 
+whose name starts with a given prefix.
+
+Full documentation of the testcase architecture is inside common/readme.txt
+
+usage:
+
+make ARCH=prefix
+make ARCH=prefix DIRS=<list of examples you want to test> MCU_TARGET=sub-prefix
+make clean
+make supported ARCH=prefix
+
+where 
+
+- "DIRS" are the list of examples you want to test
+- "DISTCC=distcc" if not set in your bash_profile, 
+  allows to run tests using distcc
+
+- "prefix" is one of:
+
+  - "e7t_manual" - Evaluator7T, GNU gcc, manual code generation
+  - "e7t_rtdruid" - Evaluator7T, GNU gcc, code generation with RTDRUID
+  - "triscend" - Triscend A7, GNU gcc
+  - "janusg_manual" - Janus, GNU gcc, manual code generation
+  ... and others
+
+- "sub-prefix" - Specific chip informations, actually needed only for PowerPC.
+     It supports this target list: cobra55, k2 or mamba.
+     For instance: make ARCH=e200zx_diab_5_5_1_vle MCU_TARGET=mamba
+
+- the "clean" rule removes all the */out* directories
+
+- the "supported" rule prints for each testcase if the particular ARCHitecture
+  is supported
+
+Environment:
+- "RTDRUID_ECLIPSE_HOME" is the "native" path of RT-Druid Code Generator.
+- "ERIKA_FILES" is the "native" path of Erika Enterprise sources.
+		If setted, indicates the path used to find both test-sources
+		and Erika-sources.
+		If not setted, the path used to find the test-sources is the
+		current path, while the RT-Druid generates automatically the
+		Erika sources path.
+
+Examples:
+

@@ -1,0 +1,49 @@
+; script used to load modistarc tests
+
+area.select Messages
+print
+pwd
+area.select A000
+
+; Program the tracer to record everything we need
+system.option.dtm ReadWrite
+
+do testcase_data
+if ("&EE_NIOS2_JAM_FILE"!="&current_jam")
+(
+  &current_jam="&EE_NIOS2_JAM_FILE"
+  do t32\jam
+)
+do t32\load
+
+b.set EE_assert_last
+
+go
+
+wait !run()
+
+; save the trace
+trace.save trace.ad
+
+b.delete
+
+if (data.byte(EE_assertions)==0x1)
+(
+  ;test successful
+  AREA.select Messages
+  print "OK!!!"
+  print
+  AREA.Select A000
+  enddo
+)
+else
+(
+  area.view
+  AREA.select Messages
+  print
+  print "----------------------------------------"
+  print " TEST FAILED !!!!!!!"
+  print "----------------------------------------"
+  print
+  AREA.Select A000
+)

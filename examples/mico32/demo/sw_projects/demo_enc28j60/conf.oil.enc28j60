@@ -1,0 +1,38 @@
+/* ENC28J60 OIL */
+
+OS EE {
+	
+	/* Flags */
+	//CFLAGS = "-D__ENC28J60_DEBUG__";
+	//CFLAGS = "-D__ENC28J60_DEBUG_SERIAL__";
+	//CFLAGS = "-D__ENC28J60_TIME_DEBUG__";
+	
+	/* ENC28J60 library enabling */
+	EE_OPT = "__ADD_LIBS__";
+	LIB = ENABLE { NAME = "ENC28J60"; };
+	LIB = ENABLE { NAME = "CONSOLE"; };
+	CFLAGS = "-DUSE_CONSOLE";
+	CFLAGS = "-DUSE_CONSOLE_SERIAL";
+
+	/* Board specification */
+	BOARD_DATA = FPG_EYE {
+		OPTIONS = ETHERNET;
+		OPTIONS = ETHERNET_IRQ_SUPPORT;
+	};
+};
+
+/* ISRs list */
+ISR Gpio {
+	CATEGORY = 2;
+	LEVEL = "EE_ENC28J60_IRQ";
+	HANDLER = "EE_enc28j60_handler";
+};
+
+
+
+
+
+
+
+
+

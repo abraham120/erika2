@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<evidence_example version="1" ID="lpc12xx_base_demo">
+
+ <category>Cortex-MX/STM32F4 Discovery Board</category>
+ <title>Demo DAC </title>
+   
+ <small_descr>
+ This is a basic demo generating analog outputs using the Digital-to-Analog converter.
+ </small_descr>
+
+ <long_descr>
+This example provides a short description of how to use the DAC peripheral to generate several signals using DMA controller.&lt;br&gt;
+&lt;br&gt;
+When the user presses the USER push-button, DMA transfers the two selected waveforms to the DAC. For each press on USER button, 2 signals has been selected and can be monitored on the two DAC channels:
+&lt;ul&gt;
+&lt;li&gt;Escalator waveform (Channel 1) and Sine waveForm (Channel 2).&lt;/li&gt;
+&lt;li&gt;Noise waveform (Channel 1) and Triangle waveform (Channel 2).&lt;/li&gt;
+&lt;/ul&gt;
+ </long_descr>
+
+ <file_section>
+  <file     name="code.c"/> 
+  <file     name="conf.oil"/>
+ </file_section>
+
+</evidence_example>

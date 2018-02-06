@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<evidence_example version="1" ID="tricore_tc27x_oo_resource">
+
+  <category>tricore/infineon_TriBoard-TC2X5_V2.0/OO examples</category>
+  <title>Resource demo</title>
+   
+  <small_descr>
+    This is the demo to test the OO Resources, and the Application modes.
+  </small_descr>
+
+  <long_descr>
+    This is the demo to test the OO Resources, and the Application modes.
+  </long_descr>
+
+  <file_section>
+    <file     name="code.c"/> 
+    <file     name="conf.oil"/>
+  </file_section>
+
+</evidence_example>

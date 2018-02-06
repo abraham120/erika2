@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<evidence_example version="1" ID="pic30_frsh_coverage">
+
+ <category>pic30/FRESCOR</category>
+ <title>FRSH Coverage test</title>
+   
+ <small_descr>
+ This application basically calls all the FRSH primitives. It was used
+ as an internal test only, but you can use it to see how the FRSH
+ primitives can be called.
+ </small_descr>
+
+ <long_descr>
+ This application basically calls all the FRSH primitives. It was used
+ as an internal test only, but you can use it to learn how the FRSH
+ primitives can be called. Seven tests to try activation, bind,
+ unbind, resources, and synchronization objects of the FRSH kernel
+ developed in the context of the FRESCOR IST Project
+ http://www.frescor.org . Requires a FLEX plus Demo Board.
+ </long_descr>
+
+ <file_section>
+  <file     name="code.c"/> 
+  <file     name="conf.oil"/>
+ </file_section>
+
+</evidence_example>

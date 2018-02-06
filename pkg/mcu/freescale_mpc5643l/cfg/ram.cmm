@@ -1,0 +1,70 @@
+;
+; Script to run ERIKA in MPC5643L from RAM in single core mode (both LSM or DPM & VLE or FLE)
+;
+; Francesco Esposito 23-03-2012
+;
+
+; evi - ERIKA binary object and VLE setting (from the makefile)
+&filename="#EXE_NAME#"
+&use_vle=#USE_VLE#
+&lock_step=#USE_LOCK_STEP#
+
+SYStem.RESet
+SYStem.BdmClock 4.0MHz
+SYStem.CPU MPC5643L
+NExus.PORTSIze MDO4
+NExus.Dtm ReadWrite
+NExus.PORTMode 1/2
+SYStem.Option.WATCHDOG OFF
+SYStem.Up
+
+; initialize internal SRAM
+if &lock_step==1
+(
+    Data.Set EA:0x40000000--0x4001FFFF %quad 0x0
+)
+else
+(
+    Data.Set EA:0x40000000--0x4000FFFF %quad 0x0
+)
+
+; setup MMU for flash, RAM and register access, as BAM does
+GOSUB setup_mmu &use_vle
+
+d.load.elf &filename /PlusVM
+
+#ORTICMD#
+
+; Evidence - Francesco E: check if the symbol exist
+if symbol.exist(mem_write_code)
+(
+    if &use_vle==1
+    (
+        ; Evidence - Francesco E. Mark 3 crazy instructions in boot code
+        ; as VLE to prevent Lauterbach from uncorrect VLE decoding
+        sYmbol.NEW.ATTRibute VLE mem_write_code++0xB
+    )
+    else
+    (
+        ; Evidence - Francesco E. Mark 3 crazy instructions in boot code
+        ; as FLE to prevent Lauterbach from uncorrect FLE decoding
+        sYmbol.NEW.ATTRibute FLE mem_write_code++0xB
+    )
+)
+
+; Francesco E: enable HTM feature
+NEXUS.HTM ON
+
+ENDDO
+
+setup_mmu:
+	ENTRY &set_vle
+	if &set_vle==1
+		&vle_flag=0x20
+	else
+		&vle_flag=0
+
+    ; 4 GB from 0x0 as not Guarded, Cachable, All Access. 
+    MMU.TLB1.SET 0x0 0xC0000B00 0x00000002+&vle_flag 0x0000003F
+
+	RETURN

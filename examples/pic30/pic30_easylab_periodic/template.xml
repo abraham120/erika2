@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<evidence_example version="1" ID="pic30_easylab_periodic">
+
+ <category>pic30/Easylab Board</category>
+ <title>Simple Easylab Periodic Task</title>
+   
+ <small_descr>
+ The Simplest demo that show a periodic Task, using some easylab goodies
+ </small_descr>
+
+ <long_descr>
+ &lt;br&gt;
+ It is a minimal EEB demo including:
+ &lt;ul&gt;
+ &lt;li&gt;One task; &lt;/li&gt;
+ &lt;li&gt;One periodic alarm controlled by timer T1 &lt;/li&gt;
+ &lt;li&gt;Support for EASYLAB &lt;/li&gt;
+ &lt;/ul&gt;
+ </long_descr>
+
+ <file_section>
+  <file     name="code.c"/> 
+  <file     name="conf.oil"/>
+ </file_section>
+
+</evidence_example>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<evidence_example version="1" ID="pic30_can_multibus">
+
+ <category>pic30/FLEX MultiBus Board</category>
+ <title>CAN demo</title>
+   
+ <small_descr>
+ CAN communication on FLEX + Multibus daughter board.
+ </small_descr>
+
+ <long_descr>
+ Two sets of FLEX Full board + Multibus Daughter board + CAN module.
+ RS232 module on UART1 slot for CAN Receiver.
+ For other info see: 
+ http://erika.tuxfamily.org/wiki/index.php?title=FLEX_Multibus_Daughter_Board
+ </long_descr>
+
+ <file_section>
+  <file     name="code_receiver.c"/>
+  <file     name="code_sender.c"/>
+  <file     name="conf.oil"/>
+  <file     name="conf_receiver.oil"/>
+  <file     name="conf_sender.oil"/>
+ </file_section>
+
+</evidence_example>

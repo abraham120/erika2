@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<evidence_example version="1" ID="pic24_miwi_p2p_demo">
+
+ <category>pic30/MiniFlex</category>
+ <title>MiWi_P2P protocol demo for MiniFlex board</title>
+   
+ <small_descr>
+ This is a demo showing how to use the Microchip MiWi_P2P stack with the MiniFlex board.
+ </small_descr>
+
+ <long_descr>
+ In this demo, the miniflex reads its sensor devices (battery, temperature, light and accelerometer) and
+ sends the data to an other board through the radio device. Moreover, it also receives sensor data from the
+ other board and prints them on the console (UART).The received data can be displayed by a hyperterminal.
+ Use for instance minicom or HTerm. The radio communication is managed by the MiWiP2P protocol.
+ 
+ </long_descr>
+
+ <file_section>
+  <file     name="code.c"/> 
+  <file     name="hw_funcs.c"/>
+  <file     name="ConfigApp.h"/>
+  <file     name="HardwareProfile.h"/>
+  <file     name="SystemProfile.h"/>    
+  <file     name="conf.oil"/>
+ </file_section>
+
+</evidence_example>

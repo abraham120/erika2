@@ -1,0 +1,78 @@
+CPU test_application {
+
+  OS EE {
+    EE_OPT = "EE_DEBUG";
+    EE_OPT = "__ASSERT__";
+    EE_OPT = "EE_EXECUTE_FROM_RAM";
+    //EE_OPT = "EE_SAVE_TEMP_FILES";
+
+    SPINLOCKS = QUEUED;
+
+    MASTER_CPU = "master";
+
+    CPU_DATA = TRICORE {
+      ID = "master";
+      APP_SRC = "master.c";
+      MULTI_STACK = TRUE;
+      SYS_STACK_SIZE = 4096;
+      COMPILER_TYPE = GNU;
+      //COMPILER_TYPE = TASKING;
+    };
+
+    CPU_DATA = TRICORE {
+      ID = "slave";
+      APP_SRC = "slave.c";
+      MULTI_STACK = TRUE;
+      SYS_STACK_SIZE = 4096;
+      COMPILER_TYPE = GNU;
+      //COMPILER_TYPE = TASKING;
+    };
+
+    MCU_DATA = TRICORE {
+      MODEL = TC27x;
+    };
+
+    STATUS = EXTENDED;
+    STARTUPHOOK = FALSE;
+
+    USEREMOTETASK = ALWAYS;
+    USEREMOTEEVENT = ALWAYS;
+    ORTI_SECTIONS = ALL;
+
+    KERNEL_TYPE = ECC1;
+  };
+
+  TASK TaskZ6 {
+    CPU_ID = "master";
+    PRIORITY = 1;
+    AUTOSTART = FALSE;
+    STACK = SHARED;
+    ACTIVATION = 1;
+    SCHEDULE = FULL;
+  };
+
+  TASK TaskZ0Main {
+    CPU_ID = "slave";
+    PRIORITY = 5;
+    AUTOSTART = TRUE;
+    STACK = PRIVATE {
+      SYS_SIZE = 512;
+    };
+    ACTIVATION = 1;
+    SCHEDULE = FULL;
+    EVENT = Event1;
+    EVENT = Event2;
+  };
+
+  TASK TaskZ0Bkg {
+    CPU_ID = "slave";
+    PRIORITY = 1;
+    AUTOSTART = FALSE;
+    STACK = SHARED;
+    ACTIVATION = 1;
+    SCHEDULE = FULL;
+  };
+
+  EVENT Event1 { MASK = AUTO; };
+  EVENT Event2 { MASK = AUTO; };
+};

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<evidence_example version="1" ID="pic30_uwl_demo_device">
+
+ <category>pic30/FLEX Demo Board</category>
+ <title>IEEE 802154 Demo - Device</title>
+   
+ <small_descr>
+ This is a simple demo that shows the device side of the new IEEE 802.15.4 stack.
+ </small_descr>
+
+ <long_descr>
+ This is a simple demo that shows the device side of the new IEEE 802.15.4 stack.
+ </long_descr>
+
+ <file_section>
+  <file     name="code.c"/> 
+  <file     name="check.S"/> 
+  <file     name="conf.oil"/>
+ </file_section>
+
+</evidence_example>

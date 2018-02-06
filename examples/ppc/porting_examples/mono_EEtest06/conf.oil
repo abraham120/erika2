@@ -1,0 +1,62 @@
+CPU test_application {
+
+	OS EE {		
+		EE_OPT = "__ASSERT__";
+		CFLAGS = "-g2";
+		ASFLAGS = "";
+		LDFLAGS = ""; 
+
+		CPU_DATA = LM32 {
+			APP_SRC = "main.c";
+			MULTI_STACK = FALSE;
+			USESTANDALONEPRINTF = TRUE; // Optional, default is FALSE
+			USESMALLC = FALSE; // Optional, default is FALSE
+		};
+		
+
+		MCU_DATA = LATTICE_PLATFORM {
+   			MODEL = LIBRARY {
+				PLATFORM_LIB_PATH = "../onchipramtimer_lib";
+				PLATFORM_NAME = "onchipramtimer";
+				PLATFORM_BLD_CFG = "Release"; // Optional, default is ""
+   			};
+  		};
+
+		STATUS = EXTENDED;
+		STARTUPHOOK = FALSE;
+		ERRORHOOK = FALSE;
+		SHUTDOWNHOOK = FALSE;
+		PRETASKHOOK = FALSE;
+		POSTTASKHOOK = FALSE;
+		USEGETSERVICEID = FALSE;
+		USEPARAMETERACCESS = FALSE;
+		USERESSCHEDULER = FALSE;
+	};
+
+	/* this is the OIL part for the first task */
+	TASK Task1 {
+		PRIORITY = 0x01;   /* Low priority */
+		AUTOSTART = FALSE;
+		STACK = SHARED;
+		ACTIVATION = 1;    /* only one pending activation */
+	};
+
+	ISR Timer {
+		CATEGORY = 2;		// Only category 2 is supported on Mico32
+		LEVEL = "TIMER_IRQ";	// Could be also a number
+		HANDLER = "timer_interrupt";	// IRQ handler
+	};
+
+	COUNTER MainTimer;
+	
+	ALARM MyAlarm {
+		COUNTER = MainTimer;
+		ACTION = ACTIVATETASK {
+			TASK = Task1;
+		};
+		/* Autstart is not supported on FP kernel! */
+		AUTOSTART = FALSE;
+	};
+
+	OS EE { KERNEL_TYPE = FP; }; 	
+};

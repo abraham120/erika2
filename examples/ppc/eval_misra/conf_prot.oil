@@ -1,0 +1,112 @@
+CPU test_application {
+
+	OS EE {
+		EE_OPT = "DEBUG";
+		EE_OPT = "NODEPS";
+		EE_OPT = "__ASSERT__";
+		EE_OPT = "__USE_LEDS__";
+		EE_OPT = "__USE_BUTTONS__";
+		EE_OPT = "EE_ISR_DYNAMIC_TABLE";
+
+		EE_OPT = "USE_PRAGMAS";
+
+		CFLAGS = "-Xsmall-data=0";
+		MEMORY_PROTECTION = TRUE;
+
+		CPU_DATA = PPCE200ZX {
+			MODEL = E200Z7;
+			APP_SRC = "main.c";
+			MULTI_STACK = TRUE;
+		};
+
+		MCU_DATA = PPCE200ZX {
+			MODEL = MPC5674F;
+		};
+
+		STATUS = EXTENDED;
+		STARTUPHOOK = TRUE;
+		ERRORHOOK = TRUE;
+		SHUTDOWNHOOK = TRUE;
+		PRETASKHOOK = FALSE;
+		POSTTASKHOOK = FALSE;
+		USEGETSERVICEID = FALSE;
+		USEPARAMETERACCESS = FALSE;
+		USERESSCHEDULER = FALSE;
+
+		KERNEL_TYPE = SC4;
+
+//		ORTI_SECTIONS = ALL;
+	};
+
+	TASK Task1 {
+		PRIORITY = 0x01;
+		SCHEDULE = NON;
+		AUTOSTART = FALSE;
+		STACK = SHARED;
+		ACTIVATION = 1;
+		RESOURCE = MyResource;
+	};
+
+	TASK Task2 {
+		PRIORITY = 0x02;
+		SCHEDULE = FULL;
+		AUTOSTART = TRUE;
+		STACK = PRIVATE {
+			SYS_SIZE = 1024;
+		};
+		ACTIVATION = 1;
+		RESOURCE = MyResource;
+		EVENT = MyEvent;
+	};
+
+	EVENT MyEvent { MASK = AUTO; };
+
+	RESOURCE MyResource { RESOURCEPROPERTY = STANDARD; };
+
+	COUNTER MainTimer {
+		MINCYCLE = 2;
+		MAXALLOWEDVALUE = 100;
+		TICKSPERBASE = 1;
+	};
+
+	ALARM MyAlarm {
+		COUNTER = MainTimer;
+		ACTION = ACTIVATETASK {
+			TASK = Task1;
+		};
+		AUTOSTART = TRUE{
+			ALARMTIME = 12;
+			CYCLETIME = 12;
+		};
+	};
+
+	ISR DecrIsr {
+		CATEGORY = 2;
+	};
+
+	ISR FixedIntvIsr {
+		CATEGORY = 2;
+	};
+
+	APPLICATION TrustedApp {
+		TRUSTED = TRUE;
+		ISR = "DecrIsr";
+		TASK = Task1;
+		MEMORY_BASE = 0x40010000;
+		MEMORY_SIZE = 0x10000;
+		SHARED_STACK_SIZE = 512;
+		IRQ_STACK_SIZE = 512;
+	};
+
+	APPLICATION App1 {
+		TRUSTED = FALSE;
+		ISR = "FixedIntvIsr";
+		TASK = Task2;
+		ALARM = MyAlarm;
+		COUNTER = MainTimer;
+		MEMORY_BASE = 0x40020000;
+		MEMORY_SIZE = 0x10000;
+		SHARED_STACK_SIZE = 512;
+		IRQ_STACK_SIZE = 512;
+	};
+};

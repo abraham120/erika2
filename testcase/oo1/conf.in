@@ -1,0 +1,2 @@
+conf = "CONF=B1multi,B1multi2,B1mono,B2multi,B2multi2,B2mono,E1multi,E1multi2,E2multi,E2multi2"
+worksfor = e7t_manual st10_manual triscend

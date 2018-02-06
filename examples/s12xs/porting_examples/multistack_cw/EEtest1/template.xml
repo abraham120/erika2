@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<evidence_example version="1" ID="S12XS_CODEWARRIOR_EE_TEST1_MULTISTACK">
+
+ <category>s12xs/codewarrior/porting_examples/multistack</category>
+ <title>test1</title>
+   
+ <small_descr>
+ A minimal EE demo that demonstrates how to work with the MULTISTACK mode.
+ </small_descr>
+
+ <long_descr>
+ Test1: A minimal EE demo that demonstrates how to work with the MULTISTACK mode.
+ In this first demo two task are activated and work with different stacks.
+ With this demo you can test the preemption mechanism with stack change. 
+ The compilation chain can start outside Eclipse environment from the Cygwin shell with the "make" 
+ command inside the Debug folder of the project.
+ The Debug folder can be created manually if you don't have the oil-based generator. 
+ The Debug folder must contain at least the following files (suitably modified...):
+ eecfg.h, eecfg.c and the makefile (see the examples of different architectures to begin...) 
+ </long_descr>
+
+ <file_section>
+  <file     name="SofTec_HCS12_linker.prm"/> 
+  <file     name="conf.oil"/>
+  <file     name="Start12.c"/>
+  <file     name="readme.txt"/>
+  <file     name="main.c"/>
+  <file     name="myapp.h"/>
+  <file     name="Full_Chip_Simulation.ini"/>
+  <file     name="SofTec_HCS12.ini"/>
+  <file     name="C_Layout.hwl"/>
+ </file_section>
+
+</evidence_example>

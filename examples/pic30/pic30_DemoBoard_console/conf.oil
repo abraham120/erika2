@@ -1,0 +1,48 @@
+CPU mySystem {
+
+	OS myOs {
+		EE_OPT = "DEBUG";
+
+		CPU_DATA = PIC30 {
+			APP_SRC = "code.c";
+			MULTI_STACK = FALSE;
+			ICD2 = TRUE;
+		};
+
+		MCU_DATA = PIC30 {
+			MODEL = PIC33FJ256MC710;
+		};
+		
+		BOARD_DATA = EE_FLEX {
+			USELEDS = TRUE;
+			TYPE = DEMO {
+				OPTIONS = ALL;
+			};
+		};
+		
+		KERNEL_TYPE = FP;
+
+		EE_OPT = "__ADD_LIBS__";
+		LIB = ENABLE {
+			NAME = "CONSOLE";
+		};	
+		EE_OPT = "USE_CONSOLE";
+		EE_OPT = "USE_CONSOLE_SERIAL";
+		EE_OPT = "__USE_UART__";
+		
+	};
+
+	COUNTER myCounter;
+	
+	ALARM AlarmSend {
+		COUNTER = myCounter;
+		ACTION = ACTIVATETASK { TASK = TaskSend; };
+	};
+	
+	TASK TaskSend {
+		PRIORITY = 1;
+		STACK = SHARED;
+		SCHEDULE = FULL;
+	};
+};
+

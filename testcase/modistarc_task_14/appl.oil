@@ -1,0 +1,1390 @@
+/* ###*B*###
+ * ERIKA Enterprise - a tiny RTOS for small microcontrollers
+ *
+ * Copyright (C) 2002-2008  Evidence Srl
+ *
+ * This file is part of ERIKA Enterprise.
+ *
+ * ERIKA Enterprise is free software; you can redistribute it
+ * and/or modify it under the terms of the GNU General Public License
+ * version 2 as published by the Free Software Foundation, 
+ * (with a special exception described below).
+ *
+ * Linking this code statically or dynamically with other modules is
+ * making a combined work based on this code.  Thus, the terms and
+ * conditions of the GNU General Public License cover the whole
+ * combination.
+ *
+ * As a special exception, the copyright holders of this library give you
+ * permission to link this code with independent modules to produce an
+ * executable, regardless of the license terms of these independent
+ * modules, and to copy and distribute the resulting executable under
+ * terms of your choice, provided that you also meet, for each linked
+ * independent module, the terms and conditions of the license of that
+ * module.  An independent module is a module which is not derived from
+ * or based on this library.  If you modify this code, you may extend
+ * this exception to your version of the code, but you are not
+ * obligated to do so.  If you do not wish to do so, delete this
+ * exception statement from your version.
+ *
+ * ERIKA Enterprise is distributed in the hope that it will be
+ * useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License version 2 for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * version 2 along with ERIKA Enterprise; if not, write to the
+ * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ * Boston, MA 02110-1301 USA.
+ * ###*E*### */
+
+#include "../common/rtdruid_common/ee_oil_defs.h"
+
+CPU test_application {
+
+    OS EE {
+        EE_OPT = "__ASSERT__";
+#ifndef	tricore
+        EE_OPT = "DEBUG";
+#endif
+        EE_OPT = "EE_DEBUG";
+
+#ifdef STD
+		STATUS = STANDARD;
+#endif
+#ifdef EXT
+		STATUS = EXTENDED;
+#endif
+
+		STARTUPHOOK = FALSE;
+		ERRORHOOK = FALSE;
+		SHUTDOWNHOOK = FALSE;
+		PRETASKHOOK = FALSE;
+		POSTTASKHOOK = FALSE;
+		USEGETSERVICEID = FALSE;
+		USEPARAMETERACCESS = FALSE;
+		USERESSCHEDULER = FALSE;
+
+#ifdef evaluator7t
+	MCU_DATA = SAMSUNG_KS32C50100;
+#endif
+#include "../common/rtdruid_common/ee_oil_e7t_os.h"
+#include "../common/rtdruid_common/ee_oil_nios2_os.h"
+#include "../common/rtdruid_common/ee_oil_pic30_os.h"
+#include "../common/rtdruid_common/ee_oil_s12_os.h"
+#include "../common/rtdruid_common/ee_oil_e200zx_os.h"
+#include "../common/rtdruid_common/ee_oil_cortex_mx_os.h"
+#include "../common/rtdruid_common/ee_oil_rx200_os.h"
+#include "../common/rtdruid_common/ee_oil_tricore_os.h"
+
+
+#ifdef janusg_rtdruid
+		CPU_DATA = JANUS {
+			CPU_ID = "default_cpu";
+			APP_SRC0 = "code.c";
+	
+			STACK0_TOP    = 0x20004000;
+			STACK0_BOTTOM = 0x20001800;
+			SYS0_SIZE     = 0x200;
+			IRQ0_SIZE     = 0x200;
+			SVC0_SIZE     = 0x100;
+			FIQ0_SIZE     = 0x100;
+			ABT0_SIZE     = 0x100;
+			UND0_SIZE     = 0x100;
+#endif
+
+		
+/* Multi Stack */
+			MULTI_STACK = TRUE {
+				IRQ_STACK = FALSE;
+// Default behaviour:not needed.
+// #if !defined(pic30) && !defined(s12) && !defined(e200zx) && !defined(cortex_mx)\
+// && !defined(rx200)
+				// DUMMY_STACK = SHARED;
+// #endif
+			};
+
+		
+		};
+
+        EE_OPT = "__OO_STARTOS_OLD__";
+#ifdef E1
+        KERNEL_TYPE = ECC1;
+#endif
+#ifdef E2
+        KERNEL_TYPE = ECC2;
+#endif
+
+    };
+
+    TASK Task1 {
+		PRIORITY = 16;
+		ACTIVATION = 1;
+		SCHEDULE = FULL;
+		AUTOSTART = TRUE;
+		EVENT = Task1_Event1;
+		EVENT = Task1_Event2;
+		EVENT = Task1_Event3;
+		EVENT = Task1_Event4;
+		EVENT = Task1_Event5;
+		EVENT = Task1_Event6;
+		EVENT = Task1_Event7;
+		EVENT = Task1_Event8;
+#ifdef evaluator7t
+		STACK = PRIVATE_ARM7 {
+			SYS_SIZE = 0x100;
+			IRQ_SIZE = 0x100;
+		};
+#endif
+#ifdef janusg_rtdruid
+		STACK = PRIVATE_JANUS {
+			SYS_SIZE = 0x100;
+			IRQ_SIZE = 0x100;
+		};
+#endif
+#ifdef nios2
+		STACK = PRIVATE_NIOSII {
+			SYS_SIZE = 0xF0;
+		};
+#endif
+#ifdef pic30
+		STACK = PRIVATE {
+			SYS_SIZE = 0x100;
+		};
+#endif
+#ifdef s12
+		STACK = PRIVATE {
+			SYS_SIZE = 0x100;
+		};
+#endif
+#ifdef e200zx
+		STACK = PRIVATE {
+			SYS_SIZE = 0x200;
+		};
+#endif
+#ifdef cortex_mx
+		STACK = PRIVATE {
+			SYS_SIZE = 0x100;
+		};
+#endif
+#ifdef rx200
+		STACK = PRIVATE {
+			SYS_SIZE = 0x100;
+		};
+#endif
+#ifdef tricore
+		STACK = PRIVATE {
+			SYS_SIZE = 0x100;
+		};
+#endif
+    };
+
+    TASK Task2 {
+		PRIORITY = 15;
+		ACTIVATION = 1;
+		SCHEDULE = FULL;
+		AUTOSTART = FALSE;
+		EVENT = Task2_Event1;
+		EVENT = Task2_Event2;
+		EVENT = Task2_Event3;
+		EVENT = Task2_Event4;
+		EVENT = Task2_Event5;
+		EVENT = Task2_Event6;
+		EVENT = Task2_Event7;
+		EVENT = Task2_Event8;
+#ifdef evaluator7t
+		STACK = PRIVATE_ARM7 {
+			SYS_SIZE = 0x100;
+			IRQ_SIZE = 0x100;
+		};
+#endif
+#ifdef janusg_rtdruid
+		STACK = PRIVATE_JANUS {
+			SYS_SIZE = 0x100;
+			IRQ_SIZE = 0x100;
+		};
+#endif
+#ifdef nios2
+		STACK = PRIVATE_NIOSII {
+			SYS_SIZE = 0xF0;
+		};
+#endif
+#ifdef pic30
+		STACK = PRIVATE {
+			SYS_SIZE = 0x100;
+		};
+#endif
+#ifdef s12
+		STACK = PRIVATE {
+			SYS_SIZE = 0xA0;
+		};
+#endif
+#ifdef e200zx
+		STACK = PRIVATE {
+			SYS_SIZE = 0x200;
+		};
+#endif
+#ifdef cortex_mx
+		STACK = PRIVATE {
+			SYS_SIZE = 0x100;
+		};
+#endif
+#ifdef rx200
+		STACK = PRIVATE {
+			SYS_SIZE = 0x100;
+		};
+#endif
+#ifdef tricore
+		STACK = PRIVATE {
+			SYS_SIZE = 0x100;
+		};
+#endif
+    };
+    TASK Task3 {
+		PRIORITY = 14;
+		ACTIVATION = 1;
+		SCHEDULE = FULL;
+		AUTOSTART = FALSE;
+		EVENT = Task3_Event1;
+		EVENT = Task3_Event2;
+		EVENT = Task3_Event3;
+		EVENT = Task3_Event4;
+		EVENT = Task3_Event5;
+		EVENT = Task3_Event6;
+		EVENT = Task3_Event7;
+		EVENT = Task3_Event8;
+#ifdef evaluator7t
+		STACK = PRIVATE_ARM7 {
+			SYS_SIZE = 0x100;
+			IRQ_SIZE = 0x100;
+		};
+#endif
+#ifdef janusg_rtdruid
+		STACK = PRIVATE_JANUS {
+			SYS_SIZE = 0x100;
+			IRQ_SIZE = 0x100;
+		};
+#endif
+#ifdef nios2
+		STACK = PRIVATE_NIOSII {
+			SYS_SIZE = 0xF0;
+		};
+#endif
+#ifdef pic30
+		STACK = PRIVATE {
+			SYS_SIZE = 0x100;
+		};
+#endif
+#ifdef s12
+		STACK = PRIVATE {
+			SYS_SIZE = 0xA0;
+		};
+#endif
+#ifdef e200zx
+		STACK = PRIVATE {
+			SYS_SIZE = 0x200;
+		};
+#endif
+#ifdef cortex_mx
+		STACK = PRIVATE {
+			SYS_SIZE = 0x100;
+		};
+#endif
+#ifdef rx200
+		STACK = PRIVATE {
+			SYS_SIZE = 0x100;
+		};
+#endif
+#ifdef tricore
+		STACK = PRIVATE {
+			SYS_SIZE = 0x100;
+		};
+#endif
+    };
+    TASK Task4 {
+		PRIORITY = 13;
+		ACTIVATION = 1;
+		SCHEDULE = FULL;
+		AUTOSTART = FALSE;
+		EVENT = Task4_Event1;
+		EVENT = Task4_Event2;
+		EVENT = Task4_Event3;
+		EVENT = Task4_Event4;
+		EVENT = Task4_Event5;
+		EVENT = Task4_Event6;
+		EVENT = Task4_Event7;
+		EVENT = Task4_Event8;
+#ifdef evaluator7t
+		STACK = PRIVATE_ARM7 {
+			SYS_SIZE = 0x100;
+			IRQ_SIZE = 0x100;
+		};
+#endif
+#ifdef janusg_rtdruid
+		STACK = PRIVATE_JANUS {
+			SYS_SIZE = 0x100;
+			IRQ_SIZE = 0x100;
+		};
+#endif
+#ifdef nios2
+		STACK = PRIVATE_NIOSII {
+			SYS_SIZE = 0xF0;
+		};
+#endif
+#ifdef pic30
+		STACK = PRIVATE {
+			SYS_SIZE = 0x100;
+		};
+#endif
+#ifdef s12
+		STACK = PRIVATE {
+			SYS_SIZE = 0xA0;
+		};
+#endif
+#ifdef e200zx
+		STACK = PRIVATE {
+			SYS_SIZE = 0x200;
+		};
+#endif
+#ifdef cortex_mx
+		STACK = PRIVATE {
+			SYS_SIZE = 0x100;
+		};
+#endif
+#ifdef rx200
+		STACK = PRIVATE {
+			SYS_SIZE = 0x100;
+		};
+#endif
+#ifdef tricore
+		STACK = PRIVATE {
+			SYS_SIZE = 0x100;
+		};
+#endif
+    };
+    TASK Task5 {
+		PRIORITY = 12;
+		ACTIVATION = 1;
+		SCHEDULE = FULL;
+		AUTOSTART = FALSE;
+		EVENT = Task5_Event1;
+		EVENT = Task5_Event2;
+		EVENT = Task5_Event3;
+		EVENT = Task5_Event4;
+		EVENT = Task5_Event5;
+		EVENT = Task5_Event6;
+		EVENT = Task5_Event7;
+		EVENT = Task5_Event8;
+#ifdef evaluator7t
+		STACK = PRIVATE_ARM7 {
+			SYS_SIZE = 0x100;
+			IRQ_SIZE = 0x100;
+		};
+#endif
+#ifdef janusg_rtdruid
+		STACK = PRIVATE_JANUS {
+			SYS_SIZE = 0x100;
+			IRQ_SIZE = 0x100;
+		};
+#endif
+#ifdef nios2
+		STACK = PRIVATE_NIOSII {
+			SYS_SIZE = 0xF0;
+		};
+#endif
+#ifdef pic30
+		STACK = PRIVATE {
+			SYS_SIZE = 0x100;
+		};
+#endif
+#ifdef s12
+		STACK = PRIVATE {
+			SYS_SIZE = 0xA0;
+		};
+#endif
+#ifdef e200zx
+		STACK = PRIVATE {
+			SYS_SIZE = 0x200;
+		};
+#endif
+#ifdef cortex_mx
+		STACK = PRIVATE {
+			SYS_SIZE = 0x100;
+		};
+#endif
+#ifdef rx200
+		STACK = PRIVATE {
+			SYS_SIZE = 0x100;
+		};
+#endif
+#ifdef tricore
+		STACK = PRIVATE {
+			SYS_SIZE = 0x100;
+		};
+#endif
+    };
+    TASK Task6 {
+		PRIORITY = 11;
+		ACTIVATION = 1;
+		SCHEDULE = FULL;
+		AUTOSTART = FALSE;
+		EVENT = Task6_Event1;
+		EVENT = Task6_Event2;
+		EVENT = Task6_Event3;
+		EVENT = Task6_Event4;
+		EVENT = Task6_Event5;
+		EVENT = Task6_Event6;
+		EVENT = Task6_Event7;
+		EVENT = Task6_Event8;
+#ifdef evaluator7t
+		STACK = PRIVATE_ARM7 {
+			SYS_SIZE = 0x100;
+			IRQ_SIZE = 0x100;
+		};
+#endif
+#ifdef janusg_rtdruid
+		STACK = PRIVATE_JANUS {
+			SYS_SIZE = 0x100;
+			IRQ_SIZE = 0x100;
+		};
+#endif
+#ifdef nios2
+		STACK = PRIVATE_NIOSII {
+			SYS_SIZE = 0xF0;
+		};
+#endif
+#ifdef pic30
+		STACK = PRIVATE {
+			SYS_SIZE = 0x100;
+		};
+#endif
+#ifdef s12
+		STACK = PRIVATE {
+			SYS_SIZE = 0xA0;
+		};
+#endif
+#ifdef e200zx
+		STACK = PRIVATE {
+			SYS_SIZE = 0x200;
+		};
+#endif
+#ifdef cortex_mx
+		STACK = PRIVATE {
+			SYS_SIZE = 0x100;
+		};
+#endif
+#ifdef rx200
+		STACK = PRIVATE {
+			SYS_SIZE = 0x100;
+		};
+#endif
+#ifdef tricore
+		STACK = PRIVATE {
+			SYS_SIZE = 0x100;
+		};
+#endif
+    };
+    TASK Task7 {
+		PRIORITY = 10;
+		ACTIVATION = 1;
+		SCHEDULE = FULL;
+		AUTOSTART = FALSE;
+		EVENT = Task7_Event1;
+		EVENT = Task7_Event2;
+		EVENT = Task7_Event3;
+		EVENT = Task7_Event4;
+		EVENT = Task7_Event5;
+		EVENT = Task7_Event6;
+		EVENT = Task7_Event7;
+		EVENT = Task7_Event8;
+#ifdef evaluator7t
+		STACK = PRIVATE_ARM7 {
+			SYS_SIZE = 0x100;
+			IRQ_SIZE = 0x100;
+		};
+#endif
+#ifdef janusg_rtdruid
+		STACK = PRIVATE_JANUS {
+			SYS_SIZE = 0x100;
+			IRQ_SIZE = 0x100;
+		};
+#endif
+#ifdef nios2
+		STACK = PRIVATE_NIOSII {
+			SYS_SIZE = 0xF0;
+		};
+#endif
+#ifdef pic30
+		STACK = PRIVATE {
+			SYS_SIZE = 0x100;
+		};
+#endif
+#ifdef s12
+		STACK = PRIVATE {
+			SYS_SIZE = 0xA0;
+		};
+#endif
+#ifdef e200zx
+		STACK = PRIVATE {
+			SYS_SIZE = 0x200;
+		};
+#endif
+#ifdef cortex_mx
+		STACK = PRIVATE {
+			SYS_SIZE = 0x100;
+		};
+#endif
+#ifdef rx200
+		STACK = PRIVATE {
+			SYS_SIZE = 0x100;
+		};
+#endif
+#ifdef tricore
+		STACK = PRIVATE {
+			SYS_SIZE = 0x100;
+		};
+#endif
+    };
+    TASK Task8 {
+		PRIORITY = 9;
+		ACTIVATION = 1;
+		SCHEDULE = FULL;
+		AUTOSTART = FALSE;
+		EVENT = Task8_Event1;
+		EVENT = Task8_Event2;
+		EVENT = Task8_Event3;
+		EVENT = Task8_Event4;
+		EVENT = Task8_Event5;
+		EVENT = Task8_Event6;
+		EVENT = Task8_Event7;
+		EVENT = Task8_Event8;
+#ifdef evaluator7t
+		STACK = PRIVATE_ARM7 {
+			SYS_SIZE = 0x100;
+			IRQ_SIZE = 0x100;
+		};
+#endif
+#ifdef janusg_rtdruid
+		STACK = PRIVATE_JANUS {
+			SYS_SIZE = 0x100;
+			IRQ_SIZE = 0x100;
+		};
+#endif
+#ifdef nios2
+		STACK = PRIVATE_NIOSII {
+			SYS_SIZE = 0xF0;
+		};
+#endif
+#ifdef pic30
+		STACK = PRIVATE {
+			SYS_SIZE = 0x100;
+		};
+#endif
+#ifdef s12
+		STACK = PRIVATE {
+			SYS_SIZE = 0xA0;
+		};
+#endif
+#ifdef e200zx
+		STACK = PRIVATE {
+			SYS_SIZE = 0x200;
+		};
+#endif
+#ifdef cortex_mx
+		STACK = PRIVATE {
+			SYS_SIZE = 0x100;
+		};
+#endif
+#ifdef rx200
+		STACK = PRIVATE {
+			SYS_SIZE = 0x100;
+		};
+#endif
+#ifdef tricore
+		STACK = PRIVATE {
+			SYS_SIZE = 0x100;
+		};
+#endif
+    };
+    TASK Task9 {
+		PRIORITY = 8;
+		ACTIVATION = 1;
+		SCHEDULE = FULL;
+		AUTOSTART = FALSE;
+		EVENT = Task9_Event1;
+		EVENT = Task9_Event2;
+		EVENT = Task9_Event3;
+		EVENT = Task9_Event4;
+		EVENT = Task9_Event5;
+		EVENT = Task9_Event6;
+		EVENT = Task9_Event7;
+		EVENT = Task9_Event8;
+#ifdef evaluator7t
+		STACK = PRIVATE_ARM7 {
+			SYS_SIZE = 0x100;
+			IRQ_SIZE = 0x100;
+		};
+#endif
+#ifdef janusg_rtdruid
+		STACK = PRIVATE_JANUS {
+			SYS_SIZE = 0x100;
+			IRQ_SIZE = 0x100;
+		};
+#endif
+#ifdef nios2
+		STACK = PRIVATE_NIOSII {
+			SYS_SIZE = 0xF0;
+		};
+#endif
+#ifdef pic30
+		STACK = PRIVATE {
+			SYS_SIZE = 0x100;
+		};
+#endif
+#ifdef s12
+		STACK = PRIVATE {
+			SYS_SIZE = 0xA0;
+		};
+#endif
+#ifdef e200zx
+		STACK = PRIVATE {
+			SYS_SIZE = 0x200;
+		};
+#endif
+#ifdef cortex_mx
+		STACK = PRIVATE {
+			SYS_SIZE = 0x100;
+		};
+#endif
+#ifdef rx200
+		STACK = PRIVATE {
+			SYS_SIZE = 0x100;
+		};
+#endif
+#ifdef tricore
+		STACK = PRIVATE {
+			SYS_SIZE = 0x100;
+		};
+#endif
+    };
+    TASK Task10 {
+		PRIORITY = 7;
+		ACTIVATION = 1;
+		SCHEDULE = FULL;
+		AUTOSTART = FALSE;
+		EVENT = Task10_Event1;
+		EVENT = Task10_Event2;
+		EVENT = Task10_Event3;
+		EVENT = Task10_Event4;
+		EVENT = Task10_Event5;
+		EVENT = Task10_Event6;
+		EVENT = Task10_Event7;
+		EVENT = Task10_Event8;
+#ifdef evaluator7t
+		STACK = PRIVATE_ARM7 {
+			SYS_SIZE = 0x100;
+			IRQ_SIZE = 0x100;
+		};
+#endif
+#ifdef janusg_rtdruid
+		STACK = PRIVATE_JANUS {
+			SYS_SIZE = 0x100;
+			IRQ_SIZE = 0x100;
+		};
+#endif
+#ifdef nios2
+		STACK = PRIVATE_NIOSII {
+			SYS_SIZE = 0xF0;
+		};
+#endif
+#ifdef pic30
+		STACK = PRIVATE {
+			SYS_SIZE = 0x100;
+		};
+#endif
+#ifdef s12
+		STACK = PRIVATE {
+			SYS_SIZE = 0xA0;
+		};
+#endif
+#ifdef e200zx
+		STACK = PRIVATE {
+			SYS_SIZE = 0x200;
+		};
+#endif
+#ifdef cortex_mx
+		STACK = PRIVATE {
+			SYS_SIZE = 0x100;
+		};
+#endif
+#ifdef rx200
+		STACK = PRIVATE {
+			SYS_SIZE = 0x100;
+		};
+#endif
+#ifdef tricore
+		STACK = PRIVATE {
+			SYS_SIZE = 0x100;
+		};
+#endif
+    };
+    TASK Task11 {
+		PRIORITY = 6;
+		ACTIVATION = 1;
+		SCHEDULE = FULL;
+		AUTOSTART = FALSE;
+		EVENT = Task11_Event1;
+		EVENT = Task11_Event2;
+		EVENT = Task11_Event3;
+		EVENT = Task11_Event4;
+		EVENT = Task11_Event5;
+		EVENT = Task11_Event6;
+		EVENT = Task11_Event7;
+		EVENT = Task11_Event8;
+#ifdef evaluator7t
+		STACK = PRIVATE_ARM7 {
+			SYS_SIZE = 0x100;
+			IRQ_SIZE = 0x100;
+		};
+#endif
+#ifdef janusg_rtdruid
+		STACK = PRIVATE_JANUS {
+			SYS_SIZE = 0x100;
+			IRQ_SIZE = 0x100;
+		};
+#endif
+#ifdef nios2
+		STACK = PRIVATE_NIOSII {
+			SYS_SIZE = 0xF0;
+		};
+#endif
+#ifdef pic30
+		STACK = PRIVATE {
+			SYS_SIZE = 0x100;
+		};
+#endif
+#ifdef s12
+		STACK = PRIVATE {
+			SYS_SIZE = 0xA0;
+		};
+#endif
+#ifdef e200zx
+		STACK = PRIVATE {
+			SYS_SIZE = 0x200;
+		};
+#endif
+#ifdef cortex_mx
+		STACK = PRIVATE {
+			SYS_SIZE = 0x100;
+		};
+#endif
+#ifdef rx200
+		STACK = PRIVATE {
+			SYS_SIZE = 0x100;
+		};
+#endif
+#ifdef tricore
+		STACK = PRIVATE {
+			SYS_SIZE = 0x100;
+		};
+#endif
+    };
+    TASK Task12 {
+		PRIORITY = 5;
+		ACTIVATION = 1;
+		SCHEDULE = FULL;
+		AUTOSTART = FALSE;
+		EVENT = Task12_Event1;
+		EVENT = Task12_Event2;
+		EVENT = Task12_Event3;
+		EVENT = Task12_Event4;
+		EVENT = Task12_Event5;
+		EVENT = Task12_Event6;
+		EVENT = Task12_Event7;
+		EVENT = Task12_Event8;
+#ifdef evaluator7t
+		STACK = PRIVATE_ARM7 {
+			SYS_SIZE = 0x100;
+			IRQ_SIZE = 0x100;
+		};
+#endif
+#ifdef janusg_rtdruid
+		STACK = PRIVATE_JANUS {
+			SYS_SIZE = 0x100;
+			IRQ_SIZE = 0x100;
+		};
+#endif
+#ifdef nios2
+		STACK = PRIVATE_NIOSII {
+			SYS_SIZE = 0xF0;
+		};
+#endif
+#ifdef pic30
+		STACK = PRIVATE {
+			SYS_SIZE = 0x100;
+		};
+#endif
+#ifdef s12
+		STACK = PRIVATE {
+			SYS_SIZE = 0xA0;
+		};
+#endif
+#ifdef e200zx
+		STACK = PRIVATE {
+			SYS_SIZE = 0x200;
+		};
+#endif
+#ifdef cortex_mx
+		STACK = PRIVATE {
+			SYS_SIZE = 0x100;
+		};
+#endif
+#ifdef rx200
+		STACK = PRIVATE {
+			SYS_SIZE = 0x100;
+		};
+#endif
+#ifdef tricore
+		STACK = PRIVATE {
+			SYS_SIZE = 0x100;
+		};
+#endif
+    };
+    TASK Task13 {
+		PRIORITY = 4;
+		ACTIVATION = 1;
+		SCHEDULE = FULL;
+		AUTOSTART = FALSE;
+		EVENT = Task13_Event1;
+		EVENT = Task13_Event2;
+		EVENT = Task13_Event3;
+		EVENT = Task13_Event4;
+		EVENT = Task13_Event5;
+		EVENT = Task13_Event6;
+		EVENT = Task13_Event7;
+		EVENT = Task13_Event8;
+#ifdef evaluator7t
+		STACK = PRIVATE_ARM7 {
+			SYS_SIZE = 0x100;
+			IRQ_SIZE = 0x100;
+		};
+#endif
+#ifdef janusg_rtdruid
+		STACK = PRIVATE_JANUS {
+			SYS_SIZE = 0x100;
+			IRQ_SIZE = 0x100;
+		};
+#endif
+#ifdef nios2
+		STACK = PRIVATE_NIOSII {
+			SYS_SIZE = 0xF0;
+		};
+#endif
+#ifdef pic30
+		STACK = PRIVATE {
+			SYS_SIZE = 0x100;
+		};
+#endif
+#ifdef s12
+		STACK = PRIVATE {
+			SYS_SIZE = 0xA0;
+		};
+#endif
+#ifdef e200zx
+		STACK = PRIVATE {
+			SYS_SIZE = 0x200;
+		};
+#endif
+#ifdef cortex_mx
+		STACK = PRIVATE {
+			SYS_SIZE = 0x100;
+		};
+#endif
+#ifdef rx200
+		STACK = PRIVATE {
+			SYS_SIZE = 0x100;
+		};
+#endif
+#ifdef tricore
+		STACK = PRIVATE {
+			SYS_SIZE = 0x100;
+		};
+#endif
+    };
+    TASK Task14 {
+		PRIORITY = 3;
+		ACTIVATION = 1;
+		SCHEDULE = FULL;
+		AUTOSTART = FALSE;
+		EVENT = Task14_Event1;
+		EVENT = Task14_Event2;
+		EVENT = Task14_Event3;
+		EVENT = Task14_Event4;
+		EVENT = Task14_Event5;
+		EVENT = Task14_Event6;
+		EVENT = Task14_Event7;
+		EVENT = Task14_Event8;
+#ifdef evaluator7t
+		STACK = PRIVATE_ARM7 {
+			SYS_SIZE = 0x100;
+			IRQ_SIZE = 0x100;
+		};
+#endif
+#ifdef janusg_rtdruid
+		STACK = PRIVATE_JANUS {
+			SYS_SIZE = 0x100;
+			IRQ_SIZE = 0x100;
+		};
+#endif
+#ifdef nios2
+		STACK = PRIVATE_NIOSII {
+			SYS_SIZE = 0xF0;
+		};
+#endif
+#ifdef pic30
+		STACK = PRIVATE {
+			SYS_SIZE = 0x100;
+		};
+#endif
+#ifdef s12
+		STACK = PRIVATE {
+			SYS_SIZE = 0xA0;
+		};
+#endif
+#ifdef e200zx
+		STACK = PRIVATE {
+			SYS_SIZE = 0x200;
+		};
+#endif
+#ifdef cortex_mx
+		STACK = PRIVATE {
+			SYS_SIZE = 0x100;
+		};
+#endif
+#ifdef rx200
+		STACK = PRIVATE {
+			SYS_SIZE = 0x100;
+		};
+#endif
+#ifdef tricore
+		STACK = PRIVATE {
+			SYS_SIZE = 0x100;
+		};
+#endif
+    };
+    TASK Task15 {
+		PRIORITY = 2;
+		ACTIVATION = 1;
+		SCHEDULE = FULL;
+		AUTOSTART = FALSE;
+		EVENT = Task15_Event1;
+		EVENT = Task15_Event2;
+		EVENT = Task15_Event3;
+		EVENT = Task15_Event4;
+		EVENT = Task15_Event5;
+		EVENT = Task15_Event6;
+		EVENT = Task15_Event7;
+		EVENT = Task15_Event8;
+#ifdef evaluator7t
+		STACK = PRIVATE_ARM7 {
+			SYS_SIZE = 0x100;
+			IRQ_SIZE = 0x100;
+		};
+#endif
+#ifdef janusg_rtdruid
+		STACK = PRIVATE_JANUS {
+			SYS_SIZE = 0x100;
+			IRQ_SIZE = 0x100;
+		};
+#endif
+#ifdef nios2
+		STACK = PRIVATE_NIOSII {
+			SYS_SIZE = 0xF0;
+		};
+#endif
+#ifdef pic30
+		STACK = PRIVATE {
+			SYS_SIZE = 0x100;
+		};
+#endif
+#ifdef s12
+		STACK = PRIVATE {
+			SYS_SIZE = 0xA0;
+		};
+#endif
+#ifdef e200zx
+		STACK = PRIVATE {
+			SYS_SIZE = 0x200;
+		};
+#endif
+#ifdef cortex_mx
+		STACK = PRIVATE {
+			SYS_SIZE = 0x100;
+		};
+#endif
+#ifdef rx200
+		STACK = PRIVATE {
+			SYS_SIZE = 0x100;
+		};
+#endif
+#ifdef tricore
+		STACK = PRIVATE {
+			SYS_SIZE = 0x100;
+		};
+#endif
+    };
+    TASK Task16 {
+		PRIORITY = 1;
+		ACTIVATION = 1;
+		SCHEDULE = FULL;
+		AUTOSTART = FALSE;
+		EVENT = Task16_Event1;
+		EVENT = Task16_Event2;
+		EVENT = Task16_Event3;
+		EVENT = Task16_Event4;
+		EVENT = Task16_Event5;
+		EVENT = Task16_Event6;
+		EVENT = Task16_Event7;
+		EVENT = Task16_Event8;
+#ifdef evaluator7t
+		STACK = PRIVATE_ARM7 {
+			SYS_SIZE = 0x100;
+			IRQ_SIZE = 0x100;
+		};
+#endif
+#ifdef janusg_rtdruid
+		STACK = PRIVATE_JANUS {
+			SYS_SIZE = 0x100;
+			IRQ_SIZE = 0x100;
+		};
+#endif
+#ifdef nios2
+		STACK = PRIVATE_NIOSII {
+			SYS_SIZE = 0xF0;
+		};
+#endif
+#ifdef pic30
+		STACK = PRIVATE {
+			SYS_SIZE = 0x100;
+		};
+#endif
+#ifdef s12
+		STACK = PRIVATE {
+			SYS_SIZE = 0xA0;
+		};
+#endif
+#ifdef e200zx
+		STACK = PRIVATE {
+			SYS_SIZE = 0x200;
+		};
+#endif
+#ifdef cortex_mx
+		STACK = PRIVATE {
+			SYS_SIZE = 0x100;
+		};
+#endif
+#ifdef rx200
+		STACK = PRIVATE {
+			SYS_SIZE = 0x100;
+		};
+#endif
+#ifdef tricore
+		STACK = PRIVATE {
+			SYS_SIZE = 0x100;
+		};
+#endif
+	};
+	
+#if 1
+    EVENT Task1_Event1 { MASK = 0x01; };
+    EVENT Task1_Event2 { MASK = 0x02; };
+    EVENT Task1_Event3 { MASK = 0x04; };
+    EVENT Task1_Event4 { MASK = 0x08; };
+    EVENT Task1_Event5 { MASK = 0x10; };
+    EVENT Task1_Event6 { MASK = 0x20; };
+    EVENT Task1_Event7 { MASK = 0x40; };
+    EVENT Task1_Event8 { MASK = 0x80; };
+
+    EVENT Task2_Event1 { MASK = 0x01; };
+    EVENT Task2_Event2 { MASK = 0x02; };
+    EVENT Task2_Event3 { MASK = 0x04; };
+    EVENT Task2_Event4 { MASK = 0x08; };
+    EVENT Task2_Event5 { MASK = 0x10; };
+    EVENT Task2_Event6 { MASK = 0x20; };
+    EVENT Task2_Event7 { MASK = 0x40; };
+    EVENT Task2_Event8 { MASK = 0x80; };
+
+    EVENT Task3_Event1 { MASK = 0x01; };
+    EVENT Task3_Event2 { MASK = 0x02; };
+    EVENT Task3_Event3 { MASK = 0x04; };
+    EVENT Task3_Event4 { MASK = 0x08; };
+    EVENT Task3_Event5 { MASK = 0x10; };
+    EVENT Task3_Event6 { MASK = 0x20; };
+    EVENT Task3_Event7 { MASK = 0x40; };
+    EVENT Task3_Event8 { MASK = 0x80; };
+
+    EVENT Task4_Event1 { MASK = 0x01; };
+    EVENT Task4_Event2 { MASK = 0x02; };
+    EVENT Task4_Event3 { MASK = 0x04; };
+    EVENT Task4_Event4 { MASK = 0x08; };
+    EVENT Task4_Event5 { MASK = 0x10; };
+    EVENT Task4_Event6 { MASK = 0x20; };
+    EVENT Task4_Event7 { MASK = 0x40; };
+    EVENT Task4_Event8 { MASK = 0x80; };
+
+    EVENT Task5_Event1 { MASK = 0x01; };
+    EVENT Task5_Event2 { MASK = 0x02; };
+    EVENT Task5_Event3 { MASK = 0x04; };
+    EVENT Task5_Event4 { MASK = 0x08; };
+    EVENT Task5_Event5 { MASK = 0x10; };
+    EVENT Task5_Event6 { MASK = 0x20; };
+    EVENT Task5_Event7 { MASK = 0x40; };
+    EVENT Task5_Event8 { MASK = 0x80; };
+
+    EVENT Task6_Event1 { MASK = 0x01; };
+    EVENT Task6_Event2 { MASK = 0x02; };
+    EVENT Task6_Event3 { MASK = 0x04; };
+    EVENT Task6_Event4 { MASK = 0x08; };
+    EVENT Task6_Event5 { MASK = 0x10; };
+    EVENT Task6_Event6 { MASK = 0x20; };
+    EVENT Task6_Event7 { MASK = 0x40; };
+    EVENT Task6_Event8 { MASK = 0x80; };
+
+    EVENT Task7_Event1 { MASK = 0x01; };
+    EVENT Task7_Event2 { MASK = 0x02; };
+    EVENT Task7_Event3 { MASK = 0x04; };
+    EVENT Task7_Event4 { MASK = 0x08; };
+    EVENT Task7_Event5 { MASK = 0x10; };
+    EVENT Task7_Event6 { MASK = 0x20; };
+    EVENT Task7_Event7 { MASK = 0x40; };
+    EVENT Task7_Event8 { MASK = 0x80; };
+
+    EVENT Task8_Event1 { MASK = 0x01; };
+    EVENT Task8_Event2 { MASK = 0x02; };
+    EVENT Task8_Event3 { MASK = 0x04; };
+    EVENT Task8_Event4 { MASK = 0x08; };
+    EVENT Task8_Event5 { MASK = 0x10; };
+    EVENT Task8_Event6 { MASK = 0x20; };
+    EVENT Task8_Event7 { MASK = 0x40; };
+    EVENT Task8_Event8 { MASK = 0x80; };
+
+    EVENT Task9_Event1 { MASK = 0x01; };
+    EVENT Task9_Event2 { MASK = 0x02; };
+    EVENT Task9_Event3 { MASK = 0x04; };
+    EVENT Task9_Event4 { MASK = 0x08; };
+    EVENT Task9_Event5 { MASK = 0x10; };
+    EVENT Task9_Event6 { MASK = 0x20; };
+    EVENT Task9_Event7 { MASK = 0x40; };
+    EVENT Task9_Event8 { MASK = 0x80; };
+
+    EVENT Task10_Event1 { MASK = 0x01; };
+    EVENT Task10_Event2 { MASK = 0x02; };
+    EVENT Task10_Event3 { MASK = 0x04; };
+    EVENT Task10_Event4 { MASK = 0x08; };
+    EVENT Task10_Event5 { MASK = 0x10; };
+    EVENT Task10_Event6 { MASK = 0x20; };
+    EVENT Task10_Event7 { MASK = 0x40; };
+    EVENT Task10_Event8 { MASK = 0x80; };
+
+    EVENT Task11_Event1 { MASK = 0x01; };
+    EVENT Task11_Event2 { MASK = 0x02; };
+    EVENT Task11_Event3 { MASK = 0x04; };
+    EVENT Task11_Event4 { MASK = 0x08; };
+    EVENT Task11_Event5 { MASK = 0x10; };
+    EVENT Task11_Event6 { MASK = 0x20; };
+    EVENT Task11_Event7 { MASK = 0x40; };
+    EVENT Task11_Event8 { MASK = 0x80; };
+
+    EVENT Task12_Event1 { MASK = 0x01; };
+    EVENT Task12_Event2 { MASK = 0x02; };
+    EVENT Task12_Event3 { MASK = 0x04; };
+    EVENT Task12_Event4 { MASK = 0x08; };
+    EVENT Task12_Event5 { MASK = 0x10; };
+    EVENT Task12_Event6 { MASK = 0x20; };
+    EVENT Task12_Event7 { MASK = 0x40; };
+    EVENT Task12_Event8 { MASK = 0x80; };
+
+    EVENT Task13_Event1 { MASK = 0x01; };
+    EVENT Task13_Event2 { MASK = 0x02; };
+    EVENT Task13_Event3 { MASK = 0x04; };
+    EVENT Task13_Event4 { MASK = 0x08; };
+    EVENT Task13_Event5 { MASK = 0x10; };
+    EVENT Task13_Event6 { MASK = 0x20; };
+    EVENT Task13_Event7 { MASK = 0x40; };
+    EVENT Task13_Event8 { MASK = 0x80; };
+
+    EVENT Task14_Event1 { MASK = 0x01; };
+    EVENT Task14_Event2 { MASK = 0x02; };
+    EVENT Task14_Event3 { MASK = 0x04; };
+    EVENT Task14_Event4 { MASK = 0x08; };
+    EVENT Task14_Event5 { MASK = 0x10; };
+    EVENT Task14_Event6 { MASK = 0x20; };
+    EVENT Task14_Event7 { MASK = 0x40; };
+    EVENT Task14_Event8 { MASK = 0x80; };
+
+    EVENT Task15_Event1 { MASK = 0x01; };
+    EVENT Task15_Event2 { MASK = 0x02; };
+    EVENT Task15_Event3 { MASK = 0x04; };
+    EVENT Task15_Event4 { MASK = 0x08; };
+    EVENT Task15_Event5 { MASK = 0x10; };
+    EVENT Task15_Event6 { MASK = 0x20; };
+    EVENT Task15_Event7 { MASK = 0x40; };
+    EVENT Task15_Event8 { MASK = 0x80; };
+
+    EVENT Task16_Event1 { MASK = 0x01; };
+    EVENT Task16_Event2 { MASK = 0x02; };
+    EVENT Task16_Event3 { MASK = 0x04; };
+    EVENT Task16_Event4 { MASK = 0x08; };
+    EVENT Task16_Event5 { MASK = 0x10; };
+    EVENT Task16_Event6 { MASK = 0x20; };
+    EVENT Task16_Event7 { MASK = 0x40; };
+    EVENT Task16_Event8 { MASK = 0x80; };
+#else
+    EVENT Task1_Event1 { MASK = AUTO; };
+    EVENT Task1_Event2 { MASK = AUTO; };
+    EVENT Task1_Event3 { MASK = AUTO; };
+    EVENT Task1_Event4 { MASK = AUTO; };
+    EVENT Task1_Event5 { MASK = AUTO; };
+    EVENT Task1_Event6 { MASK = AUTO; };
+    EVENT Task1_Event7 { MASK = AUTO; };
+    EVENT Task1_Event8 { MASK = AUTO; };
+
+    EVENT Task2_Event1 { MASK = AUTO; };
+    EVENT Task2_Event2 { MASK = AUTO; };
+    EVENT Task2_Event3 { MASK = AUTO; };
+    EVENT Task2_Event4 { MASK = AUTO; };
+    EVENT Task2_Event5 { MASK = AUTO; };
+    EVENT Task2_Event6 { MASK = AUTO; };
+    EVENT Task2_Event7 { MASK = AUTO; };
+    EVENT Task2_Event8 { MASK = AUTO; };
+
+    EVENT Task3_Event1 { MASK = AUTO; };
+    EVENT Task3_Event2 { MASK = AUTO; };
+    EVENT Task3_Event3 { MASK = AUTO; };
+    EVENT Task3_Event4 { MASK = AUTO; };
+    EVENT Task3_Event5 { MASK = AUTO; };
+    EVENT Task3_Event6 { MASK = AUTO; };
+    EVENT Task3_Event7 { MASK = AUTO; };
+    EVENT Task3_Event8 { MASK = AUTO; };
+
+    EVENT Task4_Event1 { MASK = AUTO; };
+    EVENT Task4_Event2 { MASK = AUTO; };
+    EVENT Task4_Event3 { MASK = AUTO; };
+    EVENT Task4_Event4 { MASK = AUTO; };
+    EVENT Task4_Event5 { MASK = AUTO; };
+    EVENT Task4_Event6 { MASK = AUTO; };
+    EVENT Task4_Event7 { MASK = AUTO; };
+    EVENT Task4_Event8 { MASK = AUTO; };
+
+    EVENT Task5_Event1 { MASK = AUTO; };
+    EVENT Task5_Event2 { MASK = AUTO; };
+    EVENT Task5_Event3 { MASK = AUTO; };
+    EVENT Task5_Event4 { MASK = AUTO; };
+    EVENT Task5_Event5 { MASK = AUTO; };
+    EVENT Task5_Event6 { MASK = AUTO; };
+    EVENT Task5_Event7 { MASK = AUTO; };
+    EVENT Task5_Event8 { MASK = AUTO; };
+
+    EVENT Task6_Event1 { MASK = AUTO; };
+    EVENT Task6_Event2 { MASK = AUTO; };
+    EVENT Task6_Event3 { MASK = AUTO; };
+    EVENT Task6_Event4 { MASK = AUTO; };
+    EVENT Task6_Event5 { MASK = AUTO; };
+    EVENT Task6_Event6 { MASK = AUTO; };
+    EVENT Task6_Event7 { MASK = AUTO; };
+    EVENT Task6_Event8 { MASK = AUTO; };
+
+    EVENT Task7_Event1 { MASK = AUTO; };
+    EVENT Task7_Event2 { MASK = AUTO; };
+    EVENT Task7_Event3 { MASK = AUTO; };
+    EVENT Task7_Event4 { MASK = AUTO; };
+    EVENT Task7_Event5 { MASK = AUTO; };
+    EVENT Task7_Event6 { MASK = AUTO; };
+    EVENT Task7_Event7 { MASK = AUTO; };
+    EVENT Task7_Event8 { MASK = AUTO; };
+
+    EVENT Task8_Event1 { MASK = AUTO; };
+    EVENT Task8_Event2 { MASK = AUTO; };
+    EVENT Task8_Event3 { MASK = AUTO; };
+    EVENT Task8_Event4 { MASK = AUTO; };
+    EVENT Task8_Event5 { MASK = AUTO; };
+    EVENT Task8_Event6 { MASK = AUTO; };
+    EVENT Task8_Event7 { MASK = AUTO; };
+    EVENT Task8_Event8 { MASK = AUTO; };
+
+    EVENT Task9_Event1 { MASK = AUTO; };
+    EVENT Task9_Event2 { MASK = AUTO; };
+    EVENT Task9_Event3 { MASK = AUTO; };
+    EVENT Task9_Event4 { MASK = AUTO; };
+    EVENT Task9_Event5 { MASK = AUTO; };
+    EVENT Task9_Event6 { MASK = AUTO; };
+    EVENT Task9_Event7 { MASK = AUTO; };
+    EVENT Task9_Event8 { MASK = AUTO; };
+
+    EVENT Task10_Event1 { MASK = AUTO; };
+    EVENT Task10_Event2 { MASK = AUTO; };
+    EVENT Task10_Event3 { MASK = AUTO; };
+    EVENT Task10_Event4 { MASK = AUTO; };
+    EVENT Task10_Event5 { MASK = AUTO; };
+    EVENT Task10_Event6 { MASK = AUTO; };
+    EVENT Task10_Event7 { MASK = AUTO; };
+    EVENT Task10_Event8 { MASK = AUTO; };
+
+    EVENT Task11_Event1 { MASK = AUTO; };
+    EVENT Task11_Event2 { MASK = AUTO; };
+    EVENT Task11_Event3 { MASK = AUTO; };
+    EVENT Task11_Event4 { MASK = AUTO; };
+    EVENT Task11_Event5 { MASK = AUTO; };
+    EVENT Task11_Event6 { MASK = AUTO; };
+    EVENT Task11_Event7 { MASK = AUTO; };
+    EVENT Task11_Event8 { MASK = AUTO; };
+
+    EVENT Task12_Event1 { MASK = AUTO; };
+    EVENT Task12_Event2 { MASK = AUTO; };
+    EVENT Task12_Event3 { MASK = AUTO; };
+    EVENT Task12_Event4 { MASK = AUTO; };
+    EVENT Task12_Event5 { MASK = AUTO; };
+    EVENT Task12_Event6 { MASK = AUTO; };
+    EVENT Task12_Event7 { MASK = AUTO; };
+    EVENT Task12_Event8 { MASK = AUTO; };
+
+    EVENT Task13_Event1 { MASK = AUTO; };
+    EVENT Task13_Event2 { MASK = AUTO; };
+    EVENT Task13_Event3 { MASK = AUTO; };
+    EVENT Task13_Event4 { MASK = AUTO; };
+    EVENT Task13_Event5 { MASK = AUTO; };
+    EVENT Task13_Event6 { MASK = AUTO; };
+    EVENT Task13_Event7 { MASK = AUTO; };
+    EVENT Task13_Event8 { MASK = AUTO; };
+
+    EVENT Task14_Event1 { MASK = AUTO; };
+    EVENT Task14_Event2 { MASK = AUTO; };
+    EVENT Task14_Event3 { MASK = AUTO; };
+    EVENT Task14_Event4 { MASK = AUTO; };
+    EVENT Task14_Event5 { MASK = AUTO; };
+    EVENT Task14_Event6 { MASK = AUTO; };
+    EVENT Task14_Event7 { MASK = AUTO; };
+    EVENT Task14_Event8 { MASK = AUTO; };
+
+    EVENT Task15_Event1 { MASK = AUTO; };
+    EVENT Task15_Event2 { MASK = AUTO; };
+    EVENT Task15_Event3 { MASK = AUTO; };
+    EVENT Task15_Event4 { MASK = AUTO; };
+    EVENT Task15_Event5 { MASK = AUTO; };
+    EVENT Task15_Event6 { MASK = AUTO; };
+    EVENT Task15_Event7 { MASK = AUTO; };
+    EVENT Task15_Event8 { MASK = AUTO; };
+
+    EVENT Task16_Event1 { MASK = AUTO; };
+    EVENT Task16_Event2 { MASK = AUTO; };
+    EVENT Task16_Event3 { MASK = AUTO; };
+    EVENT Task16_Event4 { MASK = AUTO; };
+    EVENT Task16_Event5 { MASK = AUTO; };
+    EVENT Task16_Event6 { MASK = AUTO; };
+    EVENT Task16_Event7 { MASK = AUTO; };
+    EVENT Task16_Event8 { MASK = AUTO; };
+#endif
+
+
+};
+

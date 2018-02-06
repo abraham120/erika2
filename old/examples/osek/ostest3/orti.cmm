@@ -1,0 +1,38 @@
+;--------------------------------------------------------------------------
+;
+;	OSEK/ORTI Example for TRACE32 multitask debugger
+;
+;--------------------------------------------------------------------------
+
+
+; Reset
+; winpage.reset
+; SYStem.Down
+
+; System Settings
+; SYStem.Up
+
+; load application
+; print "loading application..."
+; Data.LOAD myApplication            ; load app and symbols
+; ;Data.LOAD myApplication /nocode   ; load only symbols
+
+; create menu with external program
+OS.Area /usr/local/t32/demo/kernel/orti/genmenu.exe ostest3.orti
+
+; initialize ORTI support
+ print "initializing ORTI support..."
+ TASK.ORTI ostest3.orti      ; ORTI awareness
+ MENU.ReProgram orti        ; OSEK objects menu
+ MENU.ReProgram ortiperf    ; trace and performance menu
+
+; open some windows
+; TASK.DOS 
+; TASK.DTASK
+; TASK.DALARMS 
+; TASK.DSTACK
+; TASK.STACK
+
+ print "load complete."
+
+ enddo

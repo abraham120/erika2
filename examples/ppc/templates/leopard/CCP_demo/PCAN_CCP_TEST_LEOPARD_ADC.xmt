@@ -1,0 +1,21 @@
+; C:\Users\francesco\Desktop\PCAN_CCP_TEST_LEOPARD_ADC.xmt
+; CAN messages saved by PCAN-View 3.2.0
+;
+; Columns descriptions:
+; ~~~~~~~~~~~~~~~~~~~~~
+; +Message ID
+; |            +Cycle time in ms (0=manual)
+; |            |  +Length of message
+; |            |  |  +Frame type: D)ata or R)emote request
+; |            |  |  |  +Message data
+; |            |  |  |  |
+201h           0  8  D 01h 45h 39h 00h 00h 00h 00h 00h ; CCP 0: Connect
+201h           0  8  D 0Ch 46h 01h 00h 00h 00h 00h 00h ; CCP 1: SET_S_STATUS
+201h           0  8  D 14h 47h 00h 00h 00h 00h 02h 00h ; CCP 2: GET_DAQ_SIZE (id = 200)
+201h           0  8  D 08h 4Eh 00h 00h 00h 00h 00h 00h ; CCP 3: START_STOP_ALL
+201h           0  8  D 15h 56h 00h 00h 00h 00h 00h 00h ; CCP 4: SET_DAQ_PTR (daq=0, odt=0, event=0)
+201h           0  8  D 16h 57h 02h 00h 40h 00h 00h 10h ; CCP 5: WRITE_DAQ (lenght=2, address=0x40 00 00 10)
+201h           0  8  D 0Ch 64h 04h 03h 40h 00h 00h 10h ; CCP 6: SET_S_STATUS (daq and cal initialized)
+201h           0  8  D 06h 56h 01h 00h 00h 01h 00h 02h ; CCP 7: START_STOP (start=1, daq=0, odt=0, channel=1, rate=0x0002)
+201h           0  8  D 08h 67h 00h 00h 00h 00h 00h 00h ; CCP 8: START_STOP_ALL (stop daq)
+201h           0  8  D 07h 69h 01h 00h 39h 00h 00h 00h ; CCP 9: DISCONNECT (board=39 session end=1)

@@ -1,0 +1,4 @@
+This is a list of the demo we should do:
+- a demo that uses CancelAlarm
+- a demo that uses Schedule - inspired on the Nios II Demo
+- a demo that uses non preemptive tasks

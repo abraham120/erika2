@@ -1,0 +1,5 @@
+actor led(dynamicSZ)
+
+	int(size=dynamicSZ) inp ==> :
+
+end

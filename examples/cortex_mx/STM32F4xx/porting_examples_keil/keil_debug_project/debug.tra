@@ -1,0 +1,20 @@
+*** Creating Trace Output File 'debug.tra' Ok.
+### Preparing for ADS-LD.
+### Creating ADS-LD Command Line
+### List of Objects: adding '"startup_stm32f4xx.o"'
+### List of Objects: adding '"code.o"'
+### ADS-LD Command completed:
+--cpu Cortex-M4.fp "startup_stm32f4xx.o" "code.o" --strict --scatter "debug.sct" 
+--summary_stderr --info summarysizes --map --xref --callgraph --symbols 
+--info sizes --info totals --info unused --info veneers 
+ --list ".\debug.map" -o "debug.axf"### Preparing Environment (PrepEnvAds)
+### ADS-LD Output File: 'debug.axf'
+### ADS-LD Command File: 'debug.lnp'
+### Checking for dirty Components...
+### Creating CmdFile 'debug.lnp', Handle=0x00000670
+### Writing '.lnp' file
+### ADS-LD Command file 'debug.lnp' is ready.
+### ADS-LD: About to start ADS-LD Thread.
+### ADS-LD: executed with 0 errors
+### Updating obj list
+### LDADS_file() completed.

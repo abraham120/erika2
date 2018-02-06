@@ -1,0 +1,161 @@
+/* ###*B*###
+ * ERIKA Enterprise - a tiny RTOS for small microcontrollers
+ *
+ * Copyright (C) 2002-2008  Evidence Srl
+ *
+ * This file is part of ERIKA Enterprise.
+ *
+ * ERIKA Enterprise is free software; you can redistribute it
+ * and/or modify it under the terms of the GNU General Public License
+ * version 2 as published by the Free Software Foundation, 
+ * (with a special exception described below).
+ *
+ * Linking this code statically or dynamically with other modules is
+ * making a combined work based on this code.  Thus, the terms and
+ * conditions of the GNU General Public License cover the whole
+ * combination.
+ *
+ * As a special exception, the copyright holders of this library give you
+ * permission to link this code with independent modules to produce an
+ * executable, regardless of the license terms of these independent
+ * modules, and to copy and distribute the resulting executable under
+ * terms of your choice, provided that you also meet, for each linked
+ * independent module, the terms and conditions of the license of that
+ * module.  An independent module is a module which is not derived from
+ * or based on this library.  If you modify this code, you may extend
+ * this exception to your version of the code, but you are not
+ * obligated to do so.  If you do not wish to do so, delete this
+ * exception statement from your version.
+ *
+ * ERIKA Enterprise is distributed in the hope that it will be
+ * useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License version 2 for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * version 2 along with ERIKA Enterprise; if not, write to the
+ * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ * Boston, MA 02110-1301 USA.
+ * ###*E*### */
+
+CPU mySystem {
+	OS myOs {
+	
+		/*
+		STRING EE_OPT[];
+		STRING CFLAGS[];
+		STRING ASFLAGS[];
+		STRING LDFLAGS[];
+		STRING LDDEPS[];
+		STRING LIBS[];
+		*/       
+
+		EE_OPT = "DEBUG";
+		EE_OPT = "__LEDS_USED__";
+		STATUS = EXTENDED;
+
+		STARTUPHOOK = FALSE;
+		ERRORHOOK = FALSE;
+		SHUTDOWNHOOK = FALSE;
+		PRETASKHOOK = FALSE;
+		POSTTASKHOOK = FALSE;
+		USEGETSERVICEID = FALSE;
+		USEPARAMETERACCESS = FALSE;
+		USERESSCHEDULER = FALSE;
+        
+ 		CPU_DATA = AVR_5 {
+			APP_SRC = "code.c";
+			MULTI_STACK = FALSE;
+
+			STACK_BOTTOM = 0x10FF;
+			SYS_SIZE = 0x1000; 
+			SHARED_MIN_SYS_SIZE = 0x100;
+			
+			TIMER0 = DIV32;
+			TIMER1 = DIV256;
+			TIMER2 = DIV64;
+			TIMER3 = DIV64;
+				
+			/*
+			ENUM [STOP, DIV1, DIV8, DIV32, DIV64, DIV256, DIV1024] TIMER0 = STOP;
+			ENUM [STOP, DIV1, DIV8,        DIV64, DIV256, DIV1024] TIMER1 = STOP;
+			ENUM [STOP, DIV1, DIV8,        DIV64, DIV256, DIV1024] TIMER2 = STOP;
+			ENUM [STOP, DIV1, DIV8,        DIV64, DIV256, DIV1024] TIMER3 = STOP;
+
+			/ * Interrupt Handlers * /
+			STRING HANDLER_IRQ0;	// external interrupt request 0
+			STRING HANDLER_IRQ1;	// external interrupt request 1
+			STRING HANDLER_IRQ2;	// external interrupt request 2
+			STRING HANDLER_IRQ3;	// external interrupt request 3
+			STRING HANDLER_IRQ4;	// external interrupt request 4
+			STRING HANDLER_IRQ5;	// external interrupt request 5
+			STRING HANDLER_IRQ6;	// external interrupt request 6
+			STRING HANDLER_IRQ7;	// external interrupt request 7
+                
+			STRING HANDLER_T0_MATCH;	// Timer/Counter 0 Compare Match
+			STRING HANDLER_T0_OVERFLW;	// Timer/Counter 0 Overflow
+			STRING HANDLER_T1_EVENT;	// Timer/Counter 1 Capture Event
+			STRING HANDLER_T1_MATCH_A;	// Timer/Counter 1 Compare Match A
+			STRING HANDLER_T1_MATCH_B;	// Timer/Counter 1 Compare Match B
+			STRING HANDLER_T1_MATCH_C;	// Timer/Counter 1 Compare Match C
+			STRING HANDLER_T1_OVERFLW;	// Timer/Counter 1 Overflow
+			STRING HANDLER_T2_MATCH;	// Timer/Counter 2 Compare Match
+			STRING HANDLER_T2_OVERFLW;	// Timer/Counter 2 Overflow
+			STRING HANDLER_T3_EVENT;	// Timer/Counter 3 Capture Event
+			STRING HANDLER_T3_MATCH_A;	// Timer/Counter 3 Compare Match A
+			STRING HANDLER_T3_MATCH_B;	// Timer/Counter 3 Compare Match B
+			STRING HANDLER_T3_MATCH_C;	// Timer/Counter 3 Compare Match C
+			STRING HANDLER_T3_OVERFLW;	// Timer/Counter 3 Overflow
+
+			STRING HANDLER_SPI; 	// SPI Serial Transfer Complete
+                
+			STRING HANDLER_US0_RX;  	// USART0 Rx complete
+			STRING HANDLER_US0_EMPTY;	// USART0 Data Register Empty
+			STRING HANDLER_US0_TX;  	// Usart0 Tx complete
+                
+			STRING HANDLER_US1_RX;  	// USART1 Rx complete
+			STRING HANDLER_US1_EMPTY;	// USART1 Data Register Empty
+			STRING HANDLER_US1_TX;  	// Usart1 Tx complete
+                
+			STRING HANDLER_ADC; 	// ADC Conversion Complete
+			STRING HANDLER_EEPROM;	// EEPROM Ready
+			STRING HANDLER_ANALOG_COMP;	// Analog Comparator
+			STRING HANDLER_2WSI;	// Two-wire serial Interface
+			STRING HANDLER_SPM_READY;	// Store program Memory Ready
+
+			STRING FUNCTION;
+			INT32[1,2] TYPE = 1;
+			*/
+
+			HANDLER = HANDLER_T1_MATCH_A {	// timer 1 match interrupt
+				FUNCTION = "irq_1_f__type2";
+				TYPE = 2;
+			};
+		};
+		
+		BOARD_DATA = XBOW_MIB5X0{};
+
+		KERNEL_TYPE = FP;
+
+		EE_OPT = "__ADD_LIBS__";
+		LIB = ENABLE {
+			NAME = "CONSOLE";
+		};	
+		EE_OPT = "__USE_UART__";
+		EE_OPT = "USE_CONSOLE";
+		EE_OPT = "USE_CONSOLE_SERIAL";
+	};
+  	
+	COUNTER myCounter;
+	
+	ALARM AlarmSend {
+		COUNTER = myCounter;
+		ACTION = ACTIVATETASK { TASK = TaskSend; };
+	};
+
+    TASK TaskSend {
+		PRIORITY = 1;
+		STACK = SHARED;
+		SCHEDULE = FULL;
+	};
+};

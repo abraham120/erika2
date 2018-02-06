@@ -1,0 +1,47 @@
+-i /opt/case/diabdata/5.5.1.0/include
+
+/* Do not use explicit inline */
+-D__NO_INLINE__
+
+/* Bug workaround: no side effects for terminal function */
+-esym(522,EE_oo_shutdown)
+-sem(EE_oo_shutdown, pure)
+
+/* No side effects for inline asm functions */
+-esym(522,EE_e200z7_enableIRQ, EE_e200z7_disableIRQ, EE_hal_enableIRQ,
+ EE_hal_disableIRQ)
+-sem(EE_e200z7_enableIRQ, pure)
+-sem(EE_e200z7_disableIRQ, pure)
+-sem(EE_hal_enableIRQ, pure)
+-sem(EE_hal_disableIRQ, pure)
+
+/* Definition without prototype for inline asm functions */
+-esym(957,EE_e200zx_get_tcr, EE_e200zx_set_tcr, EE_e200z7_disableIRQ,
+ EE_ISR2_prestub, EE_ISR2_poststub, mmu_write_mas, mmu_write_sync,
+ EE_e200zx_get_tbl)
+
+/* Duplicate definition of inline asm functions */
+-esym(14, EE_e200zx_get_tcr, EE_e200zx_set_tcr, EE_e200z7_disableIRQ,
+ EE_ISR2_prestub, EE_ISR2_poststub, EE_e200zx_get_tbl)
+
+/* Macros defined to access hardware registers */
+-emacro(923,INTC)
+--emacro((960),INTC)
+--emacro((960),INTC_EOIR)
+
+/* removes the error concerning the maximum conditional inclusion level. This value is provided by a bash script and is documented */
+-"esym(793, conditional inclusion levels)"
+
+/* New MISRA deviations will be added below */
+
+/* 
+ * No side effects for inline asm functions: added after merge from MM to Tuxfamily.
+ * These rules are not present in MM repository because the functions have been added after merge
+ * For this family of errors the policy is to remove them through the following rules
+ */
+-esym(522,EE_e200zx_mbar, EE_e200zx_isync)
+-sem(EE_e200zx_mbar, pure)
+-sem(EE_e200zx_isync, pure)
+
+
+

@@ -1,0 +1,35 @@
+// *** modistarc_task_10 ***
+//modistarc_task_10/_STATUS_STD
+//modistarc_task_10/_STATUS_EXT
+
+
+// STATUS_STD
+cd ..\..\modistarc_task_10\out_s12xs_STATUS_STD
+load "Debug\hs12xs.elf" NOPRELOADCMD NOPOSTLOADCMD NORUNAFTERLOAD
+BS 0xC779 P E
+GO
+// Wait the breakpoint or a similar pause
+WAIT 10 ;s
+STOP
+IF EE_assertions[0]==1
+printf("OK!!!")
+ELSE
+printf("FAILURE!!!")
+ENDIF
+
+// STATUS_EXT
+cd ..\out_s12xs_STATUS_EXT
+load "Debug\hs12xs.elf" NOPRELOADCMD NOPOSTLOADCMD NORUNAFTERLOAD
+BS 0xC779 P E
+GO
+// Wait the breakpoint or a similar pause
+WAIT 10 ;s
+STOP
+IF EE_assertions[0]==1
+printf("OK!!!")
+ELSE
+printf("FAILURE!!!")
+ENDIF
+
+// end
+cd ..\..\common\s12xs

@@ -1,0 +1,67 @@
+JDF B
+// Created by Version 8.0 
+PROJECT mico32_test_base
+DESIGN mico32_test_base Normal
+DEVKIT LFXP2-17E-5QN208C
+ENTRY Pure Verilog HDL
+MODULE ..\..\platforms\test_base\soc\test_base.v
+MODSTYLE lm32_top Normal
+MODSTYLE lm32_cpu Normal
+MODSTYLE pmi_ram_dp_true Normal
+MODSTYLE i2cm_opencores Normal
+MODSTYLE pmi_fifo_dc Normal
+MODSTYLE sdr_fifo_intf Normal
+MODSTYLE spi_flash_intf Normal
+MODSTYLE lm32_mc_arithmetic Normal
+MODSTYLE ER1 Normal
+MODSTYLE wb_ebr_ctrl Normal
+MODSTYLE jtag_cores Normal
+MODSTYLE wb_sdr_ctrl Normal
+MODSTYLE spi_flash Normal
+MODSTYLE test_base Normal
+MODSTYLE wb_fifo_intf Normal
+MODSTYLE pmi_addsub Normal
+MODSTYLE asram_core Normal
+MODSTYLE lm32_monitor_ram Normal
+MODSTYLE lm32_load_store_unit Normal
+MODSTYLE uart_core Normal
+MODSTYLE pmi_pll_fp Normal
+MODSTYLE pmi_ram_dq Normal
+MODSTYLE pmi_ram_dp Normal
+MODSTYLE intface Normal
+MODSTYLE lm32_instruction_unit Normal
+MODSTYLE wb_intf Normal
+MODSTYLE arbiter2 Normal
+MODSTYLE asram_top Normal
+MODSTYLE rxcver Normal
+MODSTYLE lm32_logic_op Normal
+MODSTYLE lm32_shifter Normal
+MODSTYLE sdr_ctrl Normal
+MODSTYLE TRI_PIO Normal
+MODSTYLE TYPEA Normal
+MODSTYLE TYPEB Normal
+MODSTYLE sdr_data Normal
+MODSTYLE gpio Normal
+MODSTYLE i2c_master_bit_ctrl Normal
+MODSTYLE sdr_sig Normal
+MODSTYLE lm32_interrupt Normal
+MODSTYLE lm32_addsub Normal
+MODSTYLE lm32_decoder Normal
+MODSTYLE lm32_adder Normal
+MODSTYLE jtag_lm32 Normal
+MODSTYLE lm32_multiplier Normal
+MODSTYLE timer Normal
+MODSTYLE spi Normal
+MODSTYLE i2c_master_byte_ctrl Normal
+MODSTYLE txmitt Normal
+MODSTYLE pmi_distributed_dpram Normal
+MODSTYLE jtagconn16 Normal
+MODSTYLE lm32_monitor Normal
+MODSTYLE lm32_debug Normal
+MODSTYLE lm32_jtag Normal
+MODULE mico32_test_base_wrapper.v
+MODSTYLE mico32_base_wrapper Normal
+SYNTHESIS_TOOL Synplify
+SIMULATOR_TOOL ActiveHDL
+AUTO_READ_DESIGN TRUE
+TOPMODULE mico32_base_wrapper

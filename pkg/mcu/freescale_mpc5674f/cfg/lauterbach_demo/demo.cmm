@@ -1,0 +1,68 @@
+;
+; Script to run ERIKA in PowerPC TRACE32 simulator
+;
+
+RESet
+
+; ERIKA binary object and VLE setting
+&filename="ppc.elf"
+&use_vle=1
+
+AREA.CLEAR
+SYStem.RESet
+SYStem.BdmClock 4.0MHz
+SYStem.CPU MPC5674
+NExus.PORTSIze MDO12
+NExus.Dtm ReadWrite
+NExus.PORTMode 1/1
+SYStem.Option.WATCHDOG OFF
+SYStem.Up
+
+; initialize SRAM
+Data.Set EA:0x40000000--0x4003ffff %Quad 0
+
+; setup MMU for flash, RAM and register access, as BAM does
+GOSUB setup_mmu &use_vle
+
+; load the program
+Data.LOAD.Elf &filename /PlusVM
+sYmbol.SourcePATH.SetRecurseDir .
+
+; setup simulator disassemble mode
+SYStem.Option DisMode VLE
+
+Break.RESet
+Break.Set   FuncTask2 /Program /Spot
+
+; setup TRACE32 OSEK/ORTI awareness
+TASK.ORTI system.orti
+
+; setup maximum Trace size in simulator
+Trace.SIZE 16777215.
+
+sYmbol.NEW.Label LED3 0xC3F90696
+sYmbol.NEW.Label LED7 0xC3F9069A
+
+; open some windows
+do win
+
+PRINT
+PRINT "Start demo using Go"
+PRINT "then press the PER button to run Task2"
+PRINT "push AUTO button in Data.PROfile windows"
+PRINT
+
+ENDDO
+
+setup_mmu:
+	ENTRY &set_vle
+	if &set_vle==1
+		&vle_flag=0x20
+	else
+		&vle_flag=0
+	MMU.TLB1.SET 0x0 0xC0000500 0xFFF0000A 0xFFF0003F
+	MMU.TLB1.SET 0x1 0xC0000700 0x00000000+&vle_flag 0x0000003F
+	MMU.TLB1.SET 0x2 0xC0000700 0x20000000+&vle_flag 0x0000003F
+	MMU.TLB1.SET 0x3 0xC0000400 0x40000008+&vle_flag 0x4000003F
+	MMU.TLB1.SET 0x4 0xC0000500 0xC3F0000A+&vle_flag 0xC3F0003F
+	RETURN

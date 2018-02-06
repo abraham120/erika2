@@ -1,0 +1,133 @@
+/* ###*B*###
+ * ERIKA Enterprise - a tiny RTOS for small microcontrollers
+ *
+ * Copyright (C) 2002-2011  Evidence Srl
+ *
+ * This file is part of ERIKA Enterprise.  ERIKA Enterprise is free software;
+ * you can redistribute it and/or modify it under the terms of the
+ * GPLv2 + Linking Exception license (contained in the file `ee/LICENSE').
+ *
+ * ERIKA Enterprise is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE.  See the license for more details.
+ *
+ * ###*E*### */
+
+
+CPU test_application {
+
+	OS EE {
+		CFLAGS = "";
+		ASFLAGS = "";
+		LDFLAGS = ""; 
+
+		EE_OPT = "__E200ZX_EXECUTE_FROM_RAM__";
+		EE_OPT = "DEBUG";
+		EE_OPT = "EE_ISR_DYNAMIC_TABLE";
+        EE_OPT = "MPC5643L_STD_SW_MMU_CONFIG";
+        EE_OPT = "__OO_STARTOS_OLD__";
+
+		EE_OPT = "__CODEWARRIOR__";
+
+		EE_OPT = "__USE_LEDS__";
+		EE_OPT = "__USE_BUTTONS__";
+
+		MASTER_CPU = "master";
+
+		CPU_DATA = PPCE200ZX {
+			ID = "master";
+			MODEL = E200Z4;
+			APP_SRC = "master.c";
+			APP_SRC = "tasks.c";
+			MULTI_STACK = FALSE;
+			VLE = TRUE;
+			SYS_STACK_SIZE = 4096;
+		};
+
+		MCU_DATA = PPCE200ZX {
+			MODEL = MPC5643L;
+		};
+
+		STATUS = EXTENDED;
+		STARTUPHOOK = FALSE;
+		ERRORHOOK = FALSE;
+		SHUTDOWNHOOK = FALSE;
+		PRETASKHOOK = FALSE;
+		POSTTASKHOOK = FALSE;
+		USEGETSERVICEID = FALSE;
+		USEPARAMETERACCESS = FALSE;
+		USERESSCHEDULER = FALSE;
+
+		KERNEL_TYPE = BCC1;
+	};
+	
+	TASK TaskZ6_1 {
+		CPU_ID = "master";
+		PRIORITY = 0x03;
+		AUTOSTART = TRUE;
+		STACK = PRIVATE {
+			SYS_SIZE = 128;
+		};
+		ACTIVATION = 1;
+		SCHEDULE = FULL;
+	};
+ 
+	TASK TaskZ6_2 {
+		CPU_ID = "master";
+		PRIORITY = 0x02;
+		AUTOSTART = FALSE;
+		STACK = PRIVATE {
+			SYS_SIZE = 128;
+		};
+		ACTIVATION = 1;
+		SCHEDULE = FULL;
+		RESOURCE = shared_var2;
+	};
+
+	TASK TaskZ6_3 {
+		CPU_ID = "master";
+		PRIORITY = 0x02;
+		AUTOSTART = FALSE;
+		STACK = PRIVATE {
+			SYS_SIZE = 128;
+		};
+		ACTIVATION = 1;
+		SCHEDULE = FULL;
+	};
+
+	TASK TaskZ6_4 {
+		CPU_ID = "master";
+		PRIORITY = 0x03;
+		AUTOSTART = FALSE;
+		STACK = PRIVATE {
+			SYS_SIZE = 128;
+		};
+		ACTIVATION = 1;
+		SCHEDULE = FULL;
+	};
+
+	TASK disturbing_task {
+		CPU_ID = "master";
+		PRIORITY = 0x03;
+		AUTOSTART = FALSE;
+		STACK = PRIVATE {
+			SYS_SIZE = 128;
+		};
+		ACTIVATION = 1;
+		SCHEDULE = FULL;
+		RESOURCE = shared_var2;
+	};
+
+	TASK CheckOK_task {
+		CPU_ID = "master";
+		PRIORITY = 0x03;
+		AUTOSTART = FALSE;
+		STACK = PRIVATE {
+			SYS_SIZE = 128;
+		};
+		ACTIVATION = 1;
+		SCHEDULE = FULL;
+	};
+
+	RESOURCE shared_var2 { RESOURCEPROPERTY = STANDARD; };
+};

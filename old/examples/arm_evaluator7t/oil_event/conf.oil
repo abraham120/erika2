@@ -1,0 +1,136 @@
+/* ###*B*###
+ * ERIKA Enterprise - a tiny RTOS for small microcontrollers
+ *
+ * Copyright (C) 2002-2008  Evidence Srl
+ *
+ * This file is part of ERIKA Enterprise.
+ *
+ * ERIKA Enterprise is free software; you can redistribute it
+ * and/or modify it under the terms of the GNU General Public License
+ * version 2 as published by the Free Software Foundation, 
+ * (with a special exception described below).
+ *
+ * Linking this code statically or dynamically with other modules is
+ * making a combined work based on this code.  Thus, the terms and
+ * conditions of the GNU General Public License cover the whole
+ * combination.
+ *
+ * As a special exception, the copyright holders of this library give you
+ * permission to link this code with independent modules to produce an
+ * executable, regardless of the license terms of these independent
+ * modules, and to copy and distribute the resulting executable under
+ * terms of your choice, provided that you also meet, for each linked
+ * independent module, the terms and conditions of the license of that
+ * module.  An independent module is a module which is not derived from
+ * or based on this library.  If you modify this code, you may extend
+ * this exception to your version of the code, but you are not
+ * obligated to do so.  If you do not wish to do so, delete this
+ * exception statement from your version.
+ *
+ * ERIKA Enterprise is distributed in the hope that it will be
+ * useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License version 2 for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * version 2 along with ERIKA Enterprise; if not, write to the
+ * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ * Boston, MA 02110-1301 USA.
+ * ###*E*### */
+
+CPU test_application {
+	
+    OS EE {
+	        EE_OPT = "__TIMER_0_USED__";
+	        EE_OPT = "__TIMER_1_USED__";
+	        EE_OPT = "__BUTTON_USED__";
+	        EE_OPT = "__LEDS_USED__";
+	        EE_OPT = "__LCD_USED__";
+	        EE_OPT = "__DIP_SWITCH_USED__";
+	        EE_OPT = "DEBUG";
+
+		STATUS = EXTENDED;
+
+		STARTUPHOOK = FALSE;
+		ERRORHOOK = TRUE;
+		SHUTDOWNHOOK = FALSE;
+		PRETASKHOOK = FALSE;
+		POSTTASKHOOK = FALSE;
+		USEGETSERVICEID = FALSE;
+		USEPARAMETERACCESS = FALSE;
+		USERESSCHEDULER = TRUE;
+
+		CPU_DATA = ARM7 {
+			APP_SRC = "code.c";
+	
+			STACK_TOP    = 0x80000;
+			STACK_BOTTOM = 0x20000;
+			SYS_SIZE     = 0x4000;
+			IRQ_SIZE     = 0x4000;
+			SVC_SIZE     = 0x4000;
+			FIQ_SIZE     = 0x4000;
+			ABT_SIZE     = 0x4000;
+			UND_SIZE     = 0x4000;
+
+			MULTI_STACK = TRUE {
+				IRQ_STACK = TRUE {
+					SYS_SIZE=512;
+				};
+				DUMMY_STACK = SHARED;
+			};
+
+		};
+
+		MCU_DATA = SAMSUNG_KS32C50100 {
+			IRQ_EXT0   = "ISR_Button";
+		  	IRQ_TIMER0 = "ISR_Timer";
+		};
+
+	        KERNEL_TYPE = ECC2;
+
+		ORTI_SECTIONS = ALL;
+
+    };
+
+    TASK Task1 {
+		PRIORITY = 0x01;
+		ACTIVATION = 1;
+		SCHEDULE = FULL;
+		AUTOSTART = TRUE;
+		STACK = PRIVATE {
+			SYS_SIZE = 1024;
+		};
+		EVENT = TimerEvent;
+		EVENT = ButtonEvent;
+    };
+
+    TASK Task2 {
+		PRIORITY = 0x02;
+		ACTIVATION = 1;
+		SCHEDULE = FULL;
+		AUTOSTART = FALSE;
+		STACK = SHARED;
+    };
+
+    EVENT TimerEvent  { MASK = AUTO; };
+    EVENT ButtonEvent { MASK = AUTO; };
+
+    COUNTER Counter1 {
+        MINCYCLE = 2;
+        MAXALLOWEDVALUE = 16 ;
+        TICKSPERBASE = 1;
+    };
+
+    ALARM AlarmTask1 {
+                COUNTER = Counter1;
+                ACTION = SETEVENT { TASK = Task1; EVENT = TimerEvent; };
+                AUTOSTART = TRUE { ALARMTIME = 16; CYCLETIME = 16; };
+    };
+
+    ALARM AlarmTask2 {
+                COUNTER = Counter1;
+                ACTION = ACTIVATETASK { TASK = Task2; };
+                AUTOSTART = FALSE;
+    };
+};
+

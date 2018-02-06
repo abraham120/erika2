@@ -1,0 +1,78 @@
+##################################################################################################
+#	*** Link command file for MC9HC12XS128 ***
+#	Author: ...
+#	Notes:
+#	.ftext 	-> executable code in paged area 			(@far)
+#	.text 	-> code (or program) section 				(@near)
+#	.const 	-> constant and literal data 				(const,e.g. ROM)
+#	.gconst 	-> constants in global pages			(@gpage)
+#	.fdata 	-> large initialized variables 				(@far)
+#	.data 	-> initialized static data					(...)
+#	.bss 		-> all non initialized static data		(...)
+#	.bsct 	-> initialized data in the direct page 		(@dir)
+#	.ubsct 	-> non initialized data in the direct page	(@dir)
+#	.fbss 	-> large non initialized variables 			(@far)
+#	.eeprom 	-> any variable in eeprom 				(@eeprom)
+##################################################################################################
+
+#
++seg .bsct -b 0xfe000 -o 0x2000 -m 0x1c00 -n .direct -id	   				# Direct page start address (no banked data)
++seg .stack -b0xffc00 -o0x3c00 -m0xb0										# Stack segment
++seg .nvram -b0xffcb0 -o0x3cb0 -m0x170										# non volatile ram (???)
++seg .ram_high -b0xffe20 -o0x3e20 -m0x1E0									# High RAM (???)
+
+#
++def __sbss=@.bss															# start address of bss
++def __subsct=@.ubsct														# start address of bsct
++def __sgconst=start(.gconst)												# start address of global constants
++def __sdirect=start(.direct)												# start address of direct page
++def __sgdflt=__sgconst														# default value
+
+#
+#+def __memory=@.bss														# end of bss
++seg .bss -n .bss															# name bss
++def __memory=end(.bss)														# end of bss
+
+#
+#+def __eubsct=@.ubsct														# end of ubsct
++seg .ubsct -n .ubsct														# name ubsct
++def __eubsct=end(.ubsct)													# end of ubsct
+
+#
++def __stack=0x3cb0															# stack pointer initial value
+#
++seg .data_flash -b 0x100000 -o 0x800 -w 0x400 -n .data_flash -f 0xFF -m 0x2000		# data flash start address (banked)
+
+#
++seg .flash_eeprom -b 0x7f4000 -o 0x4000 -m 0xc00  -n .flash_eeprom -f 0xA7			# simulated EEPROM for params
++grp .flash_eeprom=.setting_ee												# grouping
+
+# Place obj files for the unbanked section here
++seg .text -b 0x7f4c00 -o 0x4c00 -m 0x33fa  -n .code -f 0xFF				# unbanked code 
+
+#
++seg .gconst -b 0x7fc000 -ds16 -o 0xc000 -m 0x0700 -n .gconst -f 0xFF		# global constants
++seg .const -a .gconst -n .const -f 0xFF    								# constants
+#
++seg .sec_flash -b0x7F7FFA -o0x7FFA -m0x06
++seg .backdoor -b 0x7fff00 -o 0xff00 -m 0x08 -n .backdoor					# Backdoor programming Key
++seg .protection -b 0x7fff0d -o 0xff0d -m 0x03 -n .protection				# Protection bytes
+
+#
++seg .ftext -b 0x7e0000 -o 0x8000 -w 0x4000 -n .ftext -f 0xFF -m 0x14000	# banked - 5th bank
+# Place obj files for the banked section here
+"obj\main.o"
+
+#
++seg .ftext -b 0x7f8000 -o 0x8000 -w 0x4000 -n .ftext -f 0xFF -m 0x4000		# banked - 6th bank
+# Place obj files for the last banked section here
+
+#
++seg .vector -b 0x7fff10 -o 0xff10 -n .vector								# vectors start address
+
+# Place here obj file for interrupt vectors
+"obj\vector_s12x.o"
+
+#
++seg .text -b 0x7fc700 -ds14 -o 0xc700 -m 0x16ee -n .code2 -it -f 0xFF		# unbanked code
+

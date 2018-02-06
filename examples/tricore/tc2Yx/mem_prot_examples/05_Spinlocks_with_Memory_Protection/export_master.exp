@@ -1,0 +1,2 @@
+EXPORT FUNCTION shared_slave1 ;
+EXPORT FUNCTION shared_slave2 ;

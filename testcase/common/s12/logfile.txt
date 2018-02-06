@@ -1,0 +1,146 @@
+MODISTARC regression tests in progress...
+executing script\modistarc_alarm_1_script.txt
+
+C:\cygwin\home\Dario\repos\ee\trunk\ee\testcase\modistarc_alarm_1\out_s12xs_CONF_B1
+FP: FLASH parameters loaded for MC9S12XS128_V1(NVMIF2 rev 3,3,4,6,1) from C:\Programmi\Freescale\CodeWarriorHCS12V4_7\Prog\FPP\mcu02E1.fpp
+Reset command file does not exist.
+
+      MCU clock speed: 1996000 Hz
+Block Module Name      Address Range   Status
+   0  FLASH_4000        4000 -  7FFF   Programmed - Unselected
+   1  FLASH_8000        8000 -  BFFF   Programmed - Unselected
+   2  FLASH_C000        C000 -  FFFF   Programmed - Unselected
+   3  ALL_PPAGES      F88000 -FFBFFF   Programmed - Unselected
+   4  DFLASH             800 - 70BFF   Programmed - Unselected
+
+FP: The UNPROTECT command is not available for the FLASH_4000 flash module => Skipped.
+
+FP: The UNPROTECT command is not available for the FLASH_8000 flash module => Skipped.
+
+FP: The UNPROTECT command is not available for the FLASH_C000 flash module => Skipped.
+
+FP: The UNPROTECT command is not available for the ALL_PPAGES flash module => Skipped.
+
+FP: The UNPROTECT command is not available for the DFLASH flash module => Skipped.
+Vppon command file does not exist.
+Vppoff command file does not exist.
+FP: Arm FLASH for loading.
+Vppon command file does not exist.
+Vppoff command file does not exist.
+FP: FLASH disarmed.
+Reset command file does not exist.
+RESET
+Line Info from 0xc700 to 0xc77a 0xC779'L P
+STARTED
+RUNNING
+Breakpoint
+Warning: Target is not running
+OK!!!
+C:\cygwin\home\Dario\repos\ee\trunk\ee\testcase\modistarc_alarm_1\out_s12xs_CONF_B2
+FP: FLASH parameters loaded for MC9S12XS128_V1(NVMIF2 rev 3,3,4,6,1) from C:\Programmi\Freescale\CodeWarriorHCS12V4_7\Prog\FPP\mcu02E1.fpp
+Reset command file does not exist.
+
+      MCU clock speed: 1996000 Hz
+Block Module Name      Address Range   Status
+   0  FLASH_4000        4000 -  7FFF   Programmed - Unselected
+   1  FLASH_8000        8000 -  BFFF   Programmed - Unselected
+   2  FLASH_C000        C000 -  FFFF   Programmed - Unselected
+   3  ALL_PPAGES      F88000 -FFBFFF   Programmed - Unselected
+   4  DFLASH             800 - 70BFF   Programmed - Unselected
+
+FP: The UNPROTECT command is not available for the FLASH_4000 flash module => Skipped.
+
+FP: The UNPROTECT command is not available for the FLASH_8000 flash module => Skipped.
+
+FP: The UNPROTECT command is not available for the FLASH_C000 flash module => Skipped.
+
+FP: The UNPROTECT command is not available for the ALL_PPAGES flash module => Skipped.
+
+FP: The UNPROTECT command is not available for the DFLASH flash module => Skipped.
+Vppon command file does not exist.
+Vppoff command file does not exist.
+FP: Arm FLASH for loading.
+Vppon command file does not exist.
+Vppoff command file does not exist.
+FP: FLASH disarmed.
+Reset command file does not exist.
+RESET
+Line Info from 0xc700 to 0xc77a 0xC779'L P
+STARTED
+RUNNING
+Breakpoint
+Warning: Target is not running
+OK!!!
+C:\cygwin\home\Dario\repos\ee\trunk\ee\testcase\modistarc_alarm_1\out_s12xs_CONF_E1
+FP: FLASH parameters loaded for MC9S12XS128_V1(NVMIF2 rev 3,3,4,6,1) from C:\Programmi\Freescale\CodeWarriorHCS12V4_7\Prog\FPP\mcu02E1.fpp
+Reset command file does not exist.
+
+      MCU clock speed: 1996000 Hz
+Block Module Name      Address Range   Status
+   0  FLASH_4000        4000 -  7FFF   Programmed - Unselected
+   1  FLASH_8000        8000 -  BFFF   Programmed - Unselected
+   2  FLASH_C000        C000 -  FFFF   Programmed - Unselected
+   3  ALL_PPAGES      F88000 -FFBFFF   Programmed - Unselected
+   4  DFLASH             800 - 70BFF   Programmed - Unselected
+
+FP: The UNPROTECT command is not available for the FLASH_4000 flash module => Skipped.
+
+FP: The UNPROTECT command is not available for the FLASH_8000 flash module => Skipped.
+
+FP: The UNPROTECT command is not available for the FLASH_C000 flash module => Skipped.
+
+FP: The UNPROTECT command is not available for the ALL_PPAGES flash module => Skipped.
+
+FP: The UNPROTECT command is not available for the DFLASH flash module => Skipped.
+Vppon command file does not exist.
+Vppoff command file does not exist.
+FP: Arm FLASH for loading.
+Vppon command file does not exist.
+Vppoff command file does not exist.
+FP: FLASH disarmed.
+Reset command file does not exist.
+RESET
+Line Info from 0xc700 to 0xc77a 0xC779'L P
+STARTED
+RUNNING
+Breakpoint
+Warning: Target is not running
+OK!!!
+C:\cygwin\home\Dario\repos\ee\trunk\ee\testcase\modistarc_alarm_1\out_s12xs_CONF_E2
+FP: FLASH parameters loaded for MC9S12XS128_V1(NVMIF2 rev 3,3,4,6,1) from C:\Programmi\Freescale\CodeWarriorHCS12V4_7\Prog\FPP\mcu02E1.fpp
+Reset command file does not exist.
+
+      MCU clock speed: 1996000 Hz
+Block Module Name      Address Range   Status
+   0  FLASH_4000        4000 -  7FFF   Programmed - Unselected
+   1  FLASH_8000        8000 -  BFFF   Programmed - Unselected
+   2  FLASH_C000        C000 -  FFFF   Programmed - Unselected
+   3  ALL_PPAGES      F88000 -FFBFFF   Programmed - Unselected
+   4  DFLASH             800 - 70BFF   Programmed - Unselected
+
+FP: The UNPROTECT command is not available for the FLASH_4000 flash module => Skipped.
+
+FP: The UNPROTECT command is not available for the FLASH_8000 flash module => Skipped.
+
+FP: The UNPROTECT command is not available for the FLASH_C000 flash module => Skipped.
+
+FP: The UNPROTECT command is not available for the ALL_PPAGES flash module => Skipped.
+
+FP: The UNPROTECT command is not available for the DFLASH flash module => Skipped.
+Vppon command file does not exist.
+Vppoff command file does not exist.
+FP: Arm FLASH for loading.
+Vppon command file does not exist.
+Vppoff command file does not exist.
+FP: FLASH disarmed.
+Reset command file does not exist.
+RESET
+Line Info from 0xc700 to 0xc77a 0xC779'L P
+STARTED
+RUNNING
+Breakpoint
+Warning: Target is not running
+OK!!!
+C:\cygwin\home\Dario\repos\ee\trunk\ee\testcase\common\s12xs
+done script\modistarc_alarm_1_script.txt
+

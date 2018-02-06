@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<evidence_example version="1" ID="lpc12xx_base_demo">
+
+ <category>Cortex-MX/STM32F4 Discovery Board</category>
+ <title>PWM Output Demo</title>
+   
+ <small_descr>
+ This is a basic demo producing PWM outputs.
+ </small_descr>
+
+ <long_descr>
+This example shows how to configure the TIM peripheral in PWM (Pulse Width Modulation) mode.&lt;br&gt;
+&lt;br&gt;
+The TIM3CLK frequency is set to SystemCoreClock / 2 (Hz), to get TIM3 counter clock at 28 MHz the Prescaler is computed as following: Prescaler = (TIM3CLK / TIM3 counter clock) - 1&lt;br&gt;
+&lt;br&gt;
+SystemCoreClock is set to 168 MHz for STM32F4xx Devices Revision A.&lt;br&gt;
+&lt;br&gt;
+The TIM3 is running at 42 KHz: TIM3 Frequency = TIM3 counter clock/(ARR + 1) = 28 MHz / 666 = 42 KHz&lt;br&gt;
+&lt;br&gt;
+The TIM3 CCR1 register value is equal to 333, so the TIM3 Channel 1 generates a PWM signal with a frequency equal to 30 KHz and a duty cycle equal to 50%: TIM3 Channel1 duty cycle = (TIM3_CCR1/ TIM3_ARR + 1)* 100 = 50%&lt;br&gt;
+&lt;br&gt;
+The TIM3 CCR2 register value is equal to 249, so the TIM3 Channel 2 generates a PWM signal with a frequency equal to 30 KHz and a duty cycle equal to 37.5%: TIM3 Channel2 duty cycle = (TIM3_CCR2/ TIM3_ARR + 1)* 100 = 37.5%&lt;br&gt;
+&lt;br&gt;
+The TIM3 CCR3 register value is equal to 166, so the TIM3 Channel 3 generates a PWM signal with a frequency equal to 30 KHz and a duty cycle equal to 25%: TIM3 Channel3 duty cycle = (TIM3_CCR3/ TIM3_ARR + 1)* 100 = 25%&lt;br&gt;
+&lt;br&gt;
+The TIM3 CCR4 register value is equal to 83, so the TIM3 Channel 4 generates a PWM signal with a frequency equal to 30 KHz and a duty cycle equal to 12.5%: TIM3 Channel4 duty cycle = (TIM3_CCR4/ TIM3_ARR + 1)* 100 = 12.5%&lt;br&gt;
+&lt;br&gt;
+The PWM waveform can be displayed using an oscilloscope.
+ </long_descr>
+
+ <file_section>
+  <file     name="code.c"/> 
+  <file     name="conf.oil"/>
+ </file_section>
+
+</evidence_example>

@@ -1,0 +1,102 @@
+/* ###*B*###
+ * ERIKA Enterprise - a tiny RTOS for small microcontrollers
+ *
+ * Copyright (C) 2002-2008  Evidence Srl
+ *
+ * This file is part of ERIKA Enterprise.
+ *
+ * ERIKA Enterprise is free software; you can redistribute it
+ * and/or modify it under the terms of the GNU General Public License
+ * version 2 as published by the Free Software Foundation, 
+ * (with a special exception described below).
+ *
+ * Linking this code statically or dynamically with other modules is
+ * making a combined work based on this code.  Thus, the terms and
+ * conditions of the GNU General Public License cover the whole
+ * combination.
+ *
+ * As a special exception, the copyright holders of this library give you
+ * permission to link this code with independent modules to produce an
+ * executable, regardless of the license terms of these independent
+ * modules, and to copy and distribute the resulting executable under
+ * terms of your choice, provided that you also meet, for each linked
+ * independent module, the terms and conditions of the license of that
+ * module.  An independent module is a module which is not derived from
+ * or based on this library.  If you modify this code, you may extend
+ * this exception to your version of the code, but you are not
+ * obligated to do so.  If you do not wish to do so, delete this
+ * exception statement from your version.
+ *
+ * ERIKA Enterprise is distributed in the hope that it will be
+ * useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License version 2 for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * version 2 along with ERIKA Enterprise; if not, write to the
+ * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ * Boston, MA 02110-1301 USA.
+ * ###*E*### */
+
+CPU mySystem {
+
+	OS myOs {
+		EE_OPT = "DEBUG";
+
+		CPU_DATA = PIC30 {
+			APP_SRC = "code.c";
+			MULTI_STACK = FALSE;
+			ICD2 = TRUE;
+		};
+
+		MCU_DATA = PIC30 {
+			MODEL = PIC24FJ32GA004;
+		};
+		EE_OPT = "__PIC24FJ32GA004__";
+
+		//BOARD_DATA = EE_MINIFLEX {
+		EE_OPT = "__EE_MINIFLEX__";
+			EE_OPT = "__USE_LEDS__";
+			EE_OPT = "__USE_UART__";
+			EE_OPT = "__USE_ANALOG_IN__";
+			EE_OPT = "__USE_BATTERY_MONITOR__";
+			EE_OPT = "__USE_TEMPERATURE__";
+
+			EE_OPT = "__USE_DEMOBOARD__";
+				EE_OPT = "__USE_BUZZER__";
+				EE_OPT = "__USE_ACCELEROMETER__";
+				EE_OPT = "__USE_LIGHT__";
+		//};
+		EE_OPT = "EE_UART_PORT_1_ISR_ENABLE";
+		KERNEL_TYPE = FP;
+		
+	};
+
+	COUNTER myCounter;
+	
+	/* ****************************************************************** */
+	/*                      Application TASKs                             */
+	/* ****************************************************************** */
+	TASK LED_BLINK {
+		PRIORITY = 1;
+		STACK = SHARED;
+		SCHEDULE = FULL;
+	};
+
+	TASK UART_ECO {
+		PRIORITY = 2;
+		STACK = SHARED;
+		SCHEDULE = FULL;
+	};
+	
+	ALARM LED_ALARM {
+		COUNTER = myCounter;
+		ACTION = ACTIVATETASK { TASK =  LED_BLINK; };
+	};
+	
+	ALARM UART_ALARM {
+		COUNTER = myCounter;
+		ACTION = ACTIVATETASK { TASK =  UART_ECO; };
+	};
+};
+

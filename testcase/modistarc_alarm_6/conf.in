@@ -1,0 +1,9 @@
+# these are the configurations that have to be considered
+conf = CONF=E1,E2 STATUS=STD,EXT
+worksfor = e7t
+worksfor += nios2
+worksfor += pic30
+worksfor += s12xs_cosmic s12xs_cw s12g128_cw s12g48_cw s12gn48_cw e200zx_diab_5_5_1_fle e200zx_diab_5_5_1_vle e200zx_codewarrior_10_0_2_vle e200zx_codewarrior_10_0_2_fle e200zx_diab_5_8_vle e200zx_diab_5_8_fle e200zx_hightec_4_6_4_0_vle e200zx_gnu_fle
+worksfor += cortexm0_lpc12xx_iar cortexm4_lm4f232xxxx_ccs cortexm4_lm4f232xxxx_keil cortexm4_stm32f4xx_keil cortexm4_stm32f4xx_gnu
+worksfor += rx200_ccrx
+worksfor += tricore_tc27x_tasking tricore_tc27x_gnu tricore_tc29x_gnu

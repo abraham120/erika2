@@ -1,0 +1,207 @@
+ST10 and Kernel Optimizations...
+--------------------------------
+
+Author & Date: 28 Aug 2002, Paolo Gai
+$Id: st10opt.txt,v 1.2 2006/01/17 13:14:46 pj Exp $
+
+--------------------------------------------------
+NOTE: This file only apply to the ST10 platform!!!
+--------------------------------------------------
+
+Abstract: 
+
+This file explains how to optimize a small part of the EE Kernel to
+improve the execution time of the thread termination and of the IRQ
+termination by 2-3 microseconds. This optimization must be done by
+hand and should as simple than dangerous ;-).
+
+
+1 - What to optimize
+--------------------
+
+Basically, the thread termination functions does not need the use of
+the ST10 user stack. The purpose of the optimization is to remove by
+hand some small parts of code that handle the ST10 user stack in these
+functions.
+
+Please note that a compiler option that disables the user stack usage
+is available; however, using that option typically produces more code
+than what can be obtained using this method.
+
+2 - How to optimize
+-------------------
+
+First, write your application and compile it using the __ST10_OPTIMIZED__
+parameter into the Makefile's EEOPT variable.
+
+When your application works, remove __ST10_OPTIMIZED__ from your
+EEOPT variable.
+
+Type:
+
+make clean
+make st10_opt
+
+the makefile should compile two files into the opt directory called
+opt/optirqsc.src and opt/optthend.src
+
+Then, edit these files and remove every usage of the user stack :-),
+EXCEPT the usage of the user stack for function call in the Segmented model.
+
+After that, typing make as usual will produce the correct result.
+
+3 - Hints
+---------
+
+Here are some hints... 
+
+Note that these hints do not apply when you compile using the large memory
+model... To do the same thing on the large model, you must identify
+the meaning of the R0 usage, because R0 is not used only for scratch
+registers but also for managing function call/return.
+
+Note the "COMMENT THIS LINE!!!!" comment ;-)
+
+Hint 1: Function definition
+
+Typically, The compiler produces something like...
+
+----------------------------------------------------
+; thendin.c   20	#ifndef __PRIVATE_THREAD_END_INSTANCE__
+; thendin.c   21	void EE_fp_thread_end_instance(void)
+; thendin.c   22	{
+THENDIN_1_PR	SECTION	CODE WORD PUBLIC 'CPROGRAM'
+	?LINE	22
+	PUBLIC	_EE_st10_thread_end_instance
+	?SYMB	'EE_st10_thread_end_instance',_EE_st10_thread_end_instance,37,1
+	?SYMB	'',22,8,34
+_EE_st10_thread_end_instance	PROC	NEAR
+	?SYMB	'',0300H,95,0
+	MOV	[-R0],R9
+	?SYMB	'',$,96,2
+	MOV	[-R0],R8
+	?SYMB	'',$,96,4
+	SUB	R0,#02h
+	?SYMB	'',$,96,6
+----------------------------------------------------
+
+Modify it in:
+
+----------------------------------------------------
+; thendin.c   20	#ifndef __PRIVATE_THREAD_END_INSTANCE__
+; thendin.c   21	void EE_fp_thread_end_instance(void)
+; thendin.c   22	{
+THENDIN_1_PR	SECTION	CODE WORD PUBLIC 'CPROGRAM'
+	?LINE	22
+	PUBLIC	_EE_st10_thread_end_instance
+	?SYMB	'EE_st10_thread_end_instance',_EE_st10_thread_end_instance,37,1
+	?SYMB	'',22,8,34
+_EE_st10_thread_end_instance	PROC	NEAR
+	?SYMB	'',0300H,95,0
+;	MOV	[-R0],R9           COMMENT THIS LINE!!!!
+	?SYMB	'',$,96,2
+;	MOV	[-R0],R8           COMMENT THIS LINE!!!!
+	?SYMB	'',$,96,4
+;	SUB	R0,#02h            COMMENT THIS LINE!!!!
+	?SYMB	'',$,96,6
+----------------------------------------------------
+
+
+Hint 2: Function termination
+
+Modify
+
+--------------------------------------------------
+; thendin.c   83	}  
+	?LINE	83
+	ADD	R0,#02h
+	?SYMB	'',$,96,4
+	MOV	R8,[R0+]
+	?SYMB	'',$,96,2
+	MOV	R9,[R0+]
+	?SYMB	'',$,96,0
+	RET
+_EE_st10_thread_end_instance	ENDP
+--------------------------------------------------
+
+In
+
+--------------------------------------------------
+; thendin.c   83	}  
+	?LINE	83
+;	ADD	R0,#02h            COMMENT THIS LINE!!!!
+	?SYMB	'',$,96,4
+;	MOV	R8,[R0+]           COMMENT THIS LINE!!!!
+	?SYMB	'',$,96,2
+;	MOV	R9,[R0+]           COMMENT THIS LINE!!!!
+	?SYMB	'',$,96,0
+;	RET                        COMMENT THIS LINE AND INSERT A RETV!!!!
+	RETV
+_EE_st10_thread_end_instance	ENDP
+--------------------------------------------------
+
+Hint 3: Miscellaneous R0 usage
+
+Sometimes the compiler uses the user stack to save registers that may
+be used by the caller. In that case, there is no caller, because the
+thread (or the IRQ routine) is ending. So, remove all the other
+Assembler instructions that use R0. Typically, I found them here:
+
+--------------------------------------------------
+; thendin.c   80	    EE_hal_endcycle_ready(EE_rq2stk_exchange());
+	?LINE	80
+	CALLA	cc_UC,_EE_rq2stk_exchange
+	MOV	R8,R4
+	?SYMB	'R8',$,100,1
+	SHL	R8,#01h
+	?SYMB	'',$,102,1
+	MOV	[R0],R8
+	MOV	R12,[R8+#_EE_st10_thread_cp]
+	MOV	R13,[R8+#_EE_hal_thread_body]
+	CALLA	cc_UC,_EE_st10_endcycle_ready
+--------------------------------------------------
+
+... comment the "MOV [R0],R8" in that way
+
+--------------------------------------------------
+; thendin.c   80	    EE_hal_endcycle_ready(EE_rq2stk_exchange());
+	?LINE	80
+	CALLA	cc_UC,_EE_rq2stk_exchange
+	MOV	R8,R4
+	?SYMB	'R8',$,100,1
+	SHL	R8,#01h
+	?SYMB	'',$,102,1
+;	MOV	[R0],R8                 COMMENT THIS LINE!!!!
+	MOV	R12,[R8+#_EE_st10_thread_cp]
+	MOV	R13,[R8+#_EE_hal_thread_body]
+	CALLA	cc_UC,_EE_st10_endcycle_ready
+--------------------------------------------------
+
+
+
+4 - How to know that it works
+-----------------------------
+
+Well... This optimization worked in all the situation I used it so
+far.  Anyway, strange situations may happen with new revisions of the
+compiler, so, be careful!
+
+As an hint, I noted that the compiler only push registers on the user
+stack to preserve the value put by the caller.  Remember that all the
+function calls in that fase do not return to the caller, and so all
+that can be wiped out...
+
+
+5 - Add interrupt disabling inside the endcycle functions
+---------------------------------------------------------
+
+REMEMBER:  Since the  thread  and IRQ  endinstance  function -is-  the
+function generated by  the compiler and then optimized  by hand, there
+is the need to add as the  first instruction a "BCLR IEN" to clear the
+interrupts.
+
+
+
+
+
+

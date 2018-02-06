@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<evidence_example version="1" ID="pic30_empty">
+
+ <category>pic30/Empty</category>
+ <title>Empty</title>
+   
+ <small_descr>
+ This is the skeleton of an EEB demo configured for the EE_FLEX board.
+ </small_descr>
+
+ <long_descr>
+ This is not a complete demo but works as an empty template to be used as a starting point for a new application.
+ The part already present are:
+ &lt;ul&gt;
+ &lt;li&gt;Include EEB header files; &lt;/li&gt;
+ &lt;li&gt;Configure the timer for tasks activation; &lt;/li&gt;
+ &lt;li&gt;Set an empty main function; &lt;/li&gt;
+ &lt;li&gt;Set the HW inside the OIL file; &lt;/li&gt;
+ &lt;/ul&gt;
+
+ </long_descr>
+
+ <file_section>
+  <file     name="code.c"/> 
+  <file     name="conf.oil"/>
+ </file_section>
+
+</evidence_example>

@@ -1,0 +1,154 @@
+/* ###*B*###
+ * ERIKA Enterprise - a tiny RTOS for small microcontrollers
+ *
+ * Copyright (C) 2002-2008  Evidence Srl
+ *
+ * This file is part of ERIKA Enterprise.
+ *
+ * ERIKA Enterprise is free software; you can redistribute it
+ * and/or modify it under the terms of the GNU General Public License
+ * version 2 as published by the Free Software Foundation, 
+ * (with a special exception described below).
+ *
+ * Linking this code statically or dynamically with other modules is
+ * making a combined work based on this code.  Thus, the terms and
+ * conditions of the GNU General Public License cover the whole
+ * combination.
+ *
+ * As a special exception, the copyright holders of this library give you
+ * permission to link this code with independent modules to produce an
+ * executable, regardless of the license terms of these independent
+ * modules, and to copy and distribute the resulting executable under
+ * terms of your choice, provided that you also meet, for each linked
+ * independent module, the terms and conditions of the license of that
+ * module.  An independent module is a module which is not derived from
+ * or based on this library.  If you modify this code, you may extend
+ * this exception to your version of the code, but you are not
+ * obligated to do so.  If you do not wish to do so, delete this
+ * exception statement from your version.
+ *
+ * ERIKA Enterprise is distributed in the hope that it will be
+ * useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License version 2 for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * version 2 along with ERIKA Enterprise; if not, write to the
+ * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ * Boston, MA 02110-1301 USA.
+ * ###*E*### */
+
+/*
+ * OIL Configuration file
+ *
+ * This OIL file is very similar to the OIL file used in the ERIKA Enterprise
+ * Tutorial.
+ *
+ * Please note that the three tasks only use the resources they need. In this way
+ * a resource is more likely to be considered local when needed!
+ */
+
+
+CPU test_application {
+
+	OS EE {
+	
+		CFLAGS = "-DALT_DEBUG -O0 -g";
+		CFLAGS = "-Wall";
+		LDFLAGS = "-Wl,-Map -Wl,project.map";
+		ASFLAGS = "-g";
+		LDDEPS = "\\";
+		LIBS = "-lm";
+		NIOS2_SYS_CONFIG = "Debug";
+		NIOS2_APP_CONFIG = "Debug";
+		NIOS2_DO_MAKE_OBJDUMP = TRUE;
+		MASTER_CPU = "cpu0";			
+		IPIC_GLOBAL_NAME = "IPIC_OUTPUT";
+		NIOS2_PTF_FILE = "C:/altera/80/nios2eds/examples/vhdl/niosII_stratixII_2s60_RoHS/frsh_multi/Stratix_II_ROHS_Multi_CPU/multi_cpu_2s60.ptf";
+		
+
+		CPU_DATA = NIOSII {
+			ID = "cpu0";
+			MULTI_STACK = FALSE;
+			APP_SRC = "cpu0_main.c";
+			APP_SRC = "fifo.c";
+			STACK_TOP = "__alt_stack_pointer";
+			SYS_SIZE = 0x1000; 
+			SYSTEM_LIBRARY_NAME = "evidence_2cpu_syslib_cpu0";
+			SYSTEM_LIBRARY_PATH = "C:/Users/pj/workspaceNios_Nicola/evidence_2cpu_syslib_cpu0";
+			IPIC_LOCAL_NAME = "IPIC_INPUT_0";
+		};
+	
+		CPU_DATA = NIOSII {
+			ID = "cpu1";
+			MULTI_STACK = FALSE;
+			APP_SRC = "cpu1_main.c";
+			APP_SRC = "fifo.c";
+			STACK_TOP = "__alt_stack_pointer";
+			SYS_SIZE = 0x1000; 
+			SYSTEM_LIBRARY_NAME = "evidence_2cpu_syslib_cpu1";
+			SYSTEM_LIBRARY_PATH = "C:/Users/pj/workspaceNios_Nicola/evidence_2cpu_syslib_cpu1";
+			IPIC_LOCAL_NAME = "IPIC_INPUT_1";
+		};
+	  
+		STARTUPSYNC = TRUE;
+
+		STATUS = EXTENDED;
+		STARTUPHOOK = FALSE;
+		ERRORHOOK = FALSE;
+		SHUTDOWNHOOK = FALSE;
+		PRETASKHOOK = FALSE;
+		POSTTASKHOOK = FALSE;
+		USEGETSERVICEID = FALSE;
+		USEPARAMETERACCESS = FALSE;
+		USERESSCHEDULER = FALSE;
+        	
+		USEREMOTETASK = ALWAYS;
+		NIOS2_MUTEX_BASE = "MUTEX_BASE";
+
+		KERNEL_TYPE = BCC1;
+                EE_OPT = "__OO_STARTOS_OLD__";
+	};
+
+	TASK ReadTask {
+		CPU_ID = "cpu1";
+		APP_SRC = "readtask.c";
+		PRIORITY = 1;
+		ACTIVATION = 1;
+		SCHEDULE = FULL;
+		AUTOSTART = FALSE;
+		STACK = SHARED;
+		RESOURCE = myfifo_readmutex;
+	};
+
+	TASK WriteTask {
+		CPU_ID = "cpu0";
+		APP_SRC = "writetask.c";
+		PRIORITY = 2;
+		ACTIVATION = 1;
+		SCHEDULE = FULL;
+		AUTOSTART = FALSE;
+		STACK = SHARED;
+		RESOURCE = myfifo_writemutex;
+	};
+
+	TASK ButtonReadTask {
+		CPU_ID = "cpu0";
+		APP_SRC = "buttonreadtask.c";
+		PRIORITY = 3;
+		ACTIVATION = 1;
+		SCHEDULE = FULL;
+		AUTOSTART = FALSE;
+		STACK = SHARED;
+		RESOURCE = myfifo_readmutex;
+	};
+
+   
+	RESOURCE myfifo_readmutex {
+		RESOURCEPROPERTY = STANDARD;
+	};
+
+	RESOURCE myfifo_writemutex {
+		RESOURCEPROPERTY = STANDARD;
+	};
+};

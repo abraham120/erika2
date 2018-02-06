@@ -1,0 +1,66 @@
+
+print_test_result();
+/* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
+/* ------------------------------ embOS 3.86e ------------------------------- */
+/* ------ Benchmark running on NXP LPC1227 (LPCXpresso) and embOS RTOS ------ */
+/* ----------------------------- CPU clock 12MHz ---------------------------- */
+/* ----------------------- IRQ latency register: 0x10 ----------------------- */
+/* ------------------------------ Scheduler: FP ----------------------------- */
+/* ----------------------- Stack handling:MULTI_STACK ----------------------- */
+/* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
+ISR1 Latency (30 samples):
+
+  Mean:    2.625 usec   - 63 ticks
+  Minimum: 2.625 usec   - 63 ticks
+  Maximum: 2.625 usec   - 63 ticks
+
+ISR1 exit (30 samples):
+
+  Mean:    2.458 usec   - 59 ticks
+  Minimum: 2.458 usec   - 59 ticks
+  Maximum: 2.458 usec   - 59 ticks
+
+ISR2 Latency (30 samples):
+
+  Mean:    3.583 usec   - 86 ticks
+  Minimum: 3.583 usec   - 86 ticks
+  Maximum: 3.583 usec   - 86 ticks
+
+ISR2 exit (30 samples):
+
+  Mean:    3.833 usec   - 92 ticks
+  Minimum: 3.833 usec   - 92 ticks
+  Maximum: 3.833 usec   - 92 ticks
+
+New task from ISR (30 samples):
+
+  Mean:    11.291 usec   - 271 ticks
+  Minimum: 11.291 usec   - 271 ticks
+  Maximum: 11.291 usec   - 271 ticks
+
+New task with preemption (30 samples):
+
+  Mean:    19.875 usec   - 477 ticks
+  Minimum: 19.875 usec   - 477 ticks
+  Maximum: 19.875 usec   - 477 ticks
+
+New task without preemption (30 samples):
+
+  Mean:    11.916 usec   - 286 ticks
+  Minimum: 11.625 usec   - 279 ticks
+  Maximum: 11.958 usec   - 287 ticks
+
+Task (not activated from IRQ) exit (30 samples):
+
+  Mean:    15.291 usec   - 367 ticks
+  Minimum: 15.291 usec   - 367 ticks
+  Maximum: 15.291 usec   - 367 ticks
+
+Task (activated from IRQ) exit (30 samples):
+
+  Mean:    30.375 usec   - 729 ticks
+  Minimum: 30.375 usec   - 729 ticks
+  Maximum: 30.375 usec   - 729 ticks
+
+/* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
+LOG OFF

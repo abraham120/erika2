@@ -1,0 +1,164 @@
+CPU test_application {
+
+  OS EE {
+    EE_OPT = "EE_DEBUG";
+    //EE_OPT = "EE_EXECUTE_FROM_RAM";
+    EE_OPT = "EE_SAVE_TEMP_FILES";
+
+    //EE_OPT = "EE_ICACHE_ENABLED";
+    //EE_OPT = "EE_DCACHE_ENABLED";
+
+    REMOTENOTIFICATION = USE_RPC;
+
+    //SPINLOCKS = QUEUED;
+
+    MASTER_CPU = "master";
+
+    CPU_DATA = TRICORE {
+      ID = "master";
+      CPU_CLOCK = 200.0;
+      APP_SRC = "master.c";
+      MULTI_STACK = TRUE;
+      SYS_STACK_SIZE = 256;
+      COMPILER_TYPE = GNU;
+    };
+
+    CPU_DATA = TRICORE {
+      ID = "slave1";
+      APP_SRC = "slave1.c";
+      MULTI_STACK = TRUE;
+      SYS_STACK_SIZE = 256;
+      COMPILER_TYPE = GNU;
+    };
+
+    CPU_DATA = TRICORE {
+      ID = "slave2";
+      APP_SRC = "slave2.c";
+      MULTI_STACK = TRUE;
+      SYS_STACK_SIZE = 256;
+      SYS_CSA_SIZE   = 0x4000;
+      COMPILER_TYPE  = GNU;
+    };
+
+    MCU_DATA = TRICORE {
+      MODEL = TC27x;
+    };
+
+    BOARD_DATA = TRIBOARD_TC2X5;
+
+    STATUS = EXTENDED;
+    ERRORHOOK = TRUE;
+    USERESSCHEDULER = FALSE;
+    ORTI_SECTIONS = ALL;
+
+    KERNEL_TYPE = BCC1;
+  };
+
+  TASK Task1 {
+    CPU_ID = "master";
+    PRIORITY = 1;
+    AUTOSTART = FALSE;
+    STACK = PRIVATE {
+      SYS_SIZE = 64;
+    };
+    ACTIVATION = 1;
+    SCHEDULE = FULL;
+  };
+
+  TASK Task2 {
+    CPU_ID = "master";
+    PRIORITY = 2;
+    AUTOSTART = FALSE;
+    STACK = PRIVATE {
+      SYS_SIZE = 64;
+    };
+    ACTIVATION = 1;
+    SCHEDULE = FULL;
+  };
+
+  TASK Task3 {
+    CPU_ID = "master";
+    PRIORITY = 3;
+    AUTOSTART = FALSE;
+    STACK = PRIVATE {
+      SYS_SIZE = 64;
+    };
+    ACTIVATION = 1;
+    SCHEDULE = FULL;
+  };
+
+  TASK Task4 {
+    CPU_ID = "slave1";
+    PRIORITY = 4;
+    AUTOSTART = FALSE;
+    STACK = SHARED;
+    ACTIVATION = 1;
+    SCHEDULE = FULL;
+  };
+
+  TASK Task5 {
+    CPU_ID = "slave1";
+    PRIORITY = 5;
+    AUTOSTART = FALSE;
+    STACK = SHARED;
+    ACTIVATION = 1;
+    SCHEDULE = FULL;
+  };
+
+  TASK Task6 {
+    CPU_ID = "slave1";
+    PRIORITY = 6;
+    AUTOSTART = FALSE;
+    STACK = SHARED;
+    ACTIVATION = 1;
+    SCHEDULE = FULL;
+  };  
+  
+  TASK Task7 {
+    CPU_ID = "slave2";
+    PRIORITY = 7;
+    AUTOSTART = FALSE;
+    STACK = SHARED;
+    ACTIVATION = 1;
+    SCHEDULE = FULL;
+  };
+
+  TASK Task8 {
+    CPU_ID = "slave2";
+    PRIORITY = 8;
+    AUTOSTART = FALSE;
+    STACK = PRIVATE {
+      SYS_SIZE = 64;
+    };
+    ACTIVATION = 1;
+    SCHEDULE = FULL;
+  };
+
+  TASK Task9 {
+    CPU_ID = "slave2";
+    PRIORITY = 9;
+    AUTOSTART = FALSE;
+    STACK = SHARED;
+    ACTIVATION = 1;
+    SCHEDULE = FULL;
+  };
+  
+  COUNTER system_timer_master {
+    CPU_ID = "master";
+    MINCYCLE = 1;
+    MAXALLOWEDVALUE = 2147483647;
+    TICKSPERBASE = 1;
+    TYPE = HARDWARE {
+      DEVICE = "STM_SR0";
+      SYSTEM_TIMER = TRUE;
+      PRIORITY = 2;
+    };
+    SECONDSPERTICK = 0.001;
+  };
+
+  ALARM AlarmMaster_2ms {
+    COUNTER = system_timer_master;
+    ACTION = ACTIVATETASK { TASK = Task1; };
+    AUTOSTART = TRUE { ALARMTIME = 2; CYCLETIME = 2; };
+  };
+};

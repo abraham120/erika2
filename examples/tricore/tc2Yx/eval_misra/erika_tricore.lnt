@@ -1,0 +1,185 @@
+/* Lin additinal coinfiguration flag */
+-i /opt/case/Hightec/hightec_v4.6.2.0/toolchains/tricore/v4.6.2.0/tricore/include
+-i /opt/case/Hightec/hightec_v4.6.2.0/toolchains/tricore/v4.6.2.0/tricore/include/machine
+
+/* Added to handle "#error directive" */
+/* +fce */
+
+/* Added for a full monitoring capability */
+-vf
+
+/* Defined by compiler */
+-D__TC161__=1
+
+/* Library Files */
++libh(*Ifx*.h)
++libh(*ee_tc27x_gnu_sfr.h)
++libh(*intrinsics.h)
++libh(*ioc_common.h)
++libm(*ioc_common.c)	/* This allows this module to be treated as library since it will be generated */
++libm(*ioc_slave.c)	/* This allows this module to be treated as library since it will be generated */
+
+/*
+ * Prevent from this errors related to a library macro (to be revised):
+ *
+ *  e.g.: __mtcr(X,Y);
+ *  e.g.: __mfcr(X);
+ */
+--emacro({160}, __mfcr)
+--emacro((732), __mfcr)
+--emacro({34}, __mfcr)
+--emacro({64}, __mfcr)
+--emacro({960}, __mtcr)
+--emacro({960}, __mfcr)
+--emacro((713), __mtcr)
+--emacro((923), __mtcr)
+--emacro((923), __mfcr)
+--emacro({530}, __mfcr)
+
+/*
+ * Prevent from this error related to a library macro:
+ *
+ * return (EE_UREG)__CLZ(data);
+ * /home/francesco/mm_aurix/mm_ee/pkg/cpu/tricore/inc/ee_tc_cpu.h 359 Error 718:
+ *     Symbol '__builtin_clz' of type 'void' undeclared, assumed to return int
+ *     [MM-PWT 2: MISRA 8.1]
+ */
+-emacro((718), __CLZ)
+
+/*
+ * Prevent from these errors related to a library macro:
+ *
+ * EE_tc_unreachable();
+ * /home/francesco/mm_aurix/mm_ee/pkg/cpu/tricore/src/ee_tc_oo.c 204 Error 718:
+ *   Symbol '__builtin_unreachable' of type 'void' undeclared, assumed to return
+ *   int [MM-PWT 2: MISRA 8.1]
+ */
+--emacro({718}, EE_tc_unreachable)
+
+// 160 serve per inibre l'errore di uno stetement GNU, esempio:
+//#define __mfcr(regaddr) __tric_mfcr(regaddr)
+//#define __tric_mfcr(regaddr) \
+//  ({ int res; __asm__ volatile ("mfcr %0,"STRINGIFY(regaddr) : "=d" (res) : : "memory"); res; })
+
+// 732 sono errori di questo tipo:
+//register EE_UREG r = __mfcr(CPU_ID);
+///home/francesco/mm_aurix/mm_ee/pkg/cpu/tricore/inc/ee_tc_cpu.h 437 Error 732:
+//    Loss of sign (initialization) (int to unsigned int) [MM-PWT 2: MISRA 10.1]
+
+// 34 sono errori di questo tipo:
+//register EE_ICR icr = { .reg = __mfcr(ICR)};
+///home/francesco/mm_aurix/mm_ee/pkg/cpu/tricore/inc/ee_tc_cpu.h 460 Error 34:
+//    Non-constant Initializer [MM-PWT 0: MISRA 1.1]
+
+/* handle Hightec (library) macros in conversion from unsigned int to pointer: __mfcr and __mtcr */
+--emacro((923), SCU_PLLSTAT)
+--emacro((923), SCU_OSCCON)
+--emacro((923), SCU_EICR2)
+--emacro((923), SCU_IGCR0)
+--emacro((923), SCU_FMR)
+--emacro((923), SCU_CCUCON0)
+--emacro((923), SCU_CCUCON1)
+--emacro((923), SCU_PLLCON1)
+--emacro((923), SCU_PLLCON0)
+--emacro((923), SCU_WDTSCON0)
+--emacro((923), SCU_WDTSCON1)
+--emacro((923), SRC_SCUERU0)
+--emacro((923), P15_IN)
+--emacro((923), STM0_TIM0)
+--emacro((923), STM0_CAP)
+--emacro((923), STM1_TIM0)
+--emacro((923), STM1_CAP)
+--emacro((923), STM2_TIM0)
+--emacro((923), STM2_CAP)
+--emacro((923), P33_OUT)
+--emacro((923), P33_IOCR*)
+--emacro((923), SCU_WDTCPU0CON0)
+--emacro((923), SCU_WDTCPU1CON0)
+--emacro((923), SCU_WDTCPU2CON0)
+--emacro((923), SCU_WDTCPU0CON1)
+--emacro((923), SCU_WDTCPU1CON1)
+--emacro((923), SCU_WDTCPU2CON1)
+--emacro((923), SCU_WDTCPU0CON2)
+--emacro((923), SCU_WDTCPU1CON2)
+--emacro((923), SCU_WDTCPU2CON2)
+--emacro((923), STM0_TIM0)
+--emacro((923), STM1_TIM0)
+--emacro((923), STM2_TIM0)
+--emacro((923), STM0_CAP)
+--emacro((923), STM1_CAP)
+--emacro((923), STM2_CAP)
+--emacro((923), STM0_CMP0)
+--emacro((923), STM0_CMP1)
+--emacro((923), STM1_CMP0)
+--emacro((923), STM1_CMP1)
+--emacro((923), STM2_CMP0)
+--emacro((923), STM2_CMP1)
+--emacro((923), STM0_CMCON)
+--emacro((923), STM1_CMCON)
+--emacro((923), STM2_CMCON)
+--emacro((923), STM0_ICR)
+--emacro((923), STM1_ICR)
+--emacro((923), STM2_ICR)
+--emacro((923), SRC_STM0SR0)
+--emacro((923), SRC_STM1SR0)
+--emacro((923), SRC_STM2SR0)
+--emacro((923), SRC_STM0SR1)
+--emacro((923), SRC_STM1SR1)
+--emacro((923), SRC_STM2SR1)
+--emacro((923), SRC_STM0SR2)
+--emacro((923), SRC_STM1SR2)
+--emacro((923), SRC_STM2SR2)
+--emacro((923), SRC_GPSR*)
+--emacro((923), CPU0_PC)
+--emacro((923), CPU1_PC)
+--emacro((923), CPU2_PC)
+
+/* Function embedding assembly inline. Error: "Highest String ’Name’ lacks side-effects" */
+-esym(522,EE_tc_disableIRQ)			/* embeds _disable(); */
+-esym(522,EE_tc_isync)				/* embeds _isync(); */
+-esym(522,EE_tc_set_ICR)			/* embeds __mtcr and _isync */
+-esym(522,EE_tc_set_fcx)			/* embeds EE_tc_isync() */
+-esym(522,EE_tc_set_pcxi)			/* embeds EE_tc_isync() */
+-esym(522,EE_tc_set_psw)			/* embeds EE_tc_isync */
+-esym(522,EE_tc_enableIRQ)			/* embeds _enable(); */
+-esym(522,EE_tc_resumeIRQ)			/* embeds EE_tc_set_ICR() */
+-esym(522,EE_tc_dsync)				/* embeds _dsync(); */
+-esym(522,EE_tc_set_int_prio)			/* embeds EE_tc_get_ICR() and EE_tc_set_ICR() */
+-esym(522,EE_hal_disableIRQ)			/* embeds EE_tc_disableIRQ() */
+-esym(522,EE_hal_enableIRQ)			/* embeds EE_tc_enableIRQ() */
+-esym(522,EE_hal_resumeIRQ)			/* embeds EE_tc_resumeIRQ() that embeds EE_tc_set_ICR() */
+-esym(522,EE_hal_end_nested_primitive)		/* embeds __mtcr */
+-esym(522,EE_tc_csa_set_fcx)			/* embeds EE_tc_set_fcx() */
+-esym(522,EE_tc_csa_set_pcxi)			/* embeds EE_tc_set_pcxi() */
+-esym(522,EE_tc_set_RA)				/* embeds asm construct: __asm volatile ("mov.aa %%a11, %0" : : "a"(reg)); */
+-esym(522,EE_tc_set_SP)				/* embeds asm construct: __asm volatile ("mov.aa %%a10, %0" : : "a"(reg) : "memory"); */
+-esym(522,EE_tc_call_dummy_context)		/* embeds asm construct: __asm volatile ("call EE_tc_dummy_context"); */
+-esym(522,EE_tc_set_psw_user_stack)		/* embeds EE_tc_set_psw */
+-esym(522,EE_tc_stack_restore)			/* embeds EE_tc_set_SP */
+-esym(522,EE_tc_task_restore)           	/* embeds EE_tc_set_RA*/
+-esym(522,EE_tc_spin_in)			/* Implements spin_in (embeds EE_tc_swapw) */
+
+/* The following rules double line buffer thrice (required by HW-specific header files) */
++linebuf
++linebuf
++linebuf
+
+/* The following allows __asm syntax form as inline assembly */
+-esym(950, __asm)
+
+/*
+ * List of (controversial) rules. They require final endorsements
+ */
+
+/* temporary disable "Error 793: ANSI/ISO limit of 511 'external identifiers' exceeded" */
+-estring(793,*external identifiers*)
+
+/* Temporary disable Non-ANSI reserved word for __attribute__ keyword */
+-esym(950, __attribute__)
+
+/* Allow pragma section */
+-esym(975, section)
+
+/* removes the error concerning the maximum conditional inclusion level. This value is provided by a bash script and is documented */
+-"esym(793, conditional inclusion levels)"
+

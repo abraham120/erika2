@@ -1,0 +1,198 @@
+;
+; Script to run ERIKA in MPC5643L from FLASH in single core mode (both LSM or DPM & VLE or FLE)
+;
+; Francesco Esposito 23-03-2012
+;
+; Internal Flash Memory 1.5 MByte:
+;   Flash low address range   256 kByte (16+48+48+16+64+64 kByte)
+;                               0x00000000--0x0003FFFF
+;   Flash Mid address range   256 kByte (2 * 128 kByte)
+;                               0x00040000--0x0007FFFF
+;   Flash High address range          512 KByte (2 * 256 kByte)
+;                               0x00080000--0x001FFFFF
+;   Shadow row 0 	      1024 kByte
+;                               0x00F00000--0x000FFFFF
+;
+; Internal SRAM                 128 kByte (evi: 64 + 64 in Lock-Step)
+;                               0x40000000--0x4001FFFF
+;
+; Flash register base address is
+;   Flash A                     0xxC3F88000
+;
+; NOTES:
+; 
+;   Flash register base addresses cannot be remapped, because target
+;   program does currently not support another base address.
+;
+; wrd - 01.10.2008
+; evi - 18.05.2010 Evidence Modifications, for t32 ver (4/12/2009)
+; evi - 08.03.2012 Evidence Modifications, for MPC5643L porting
+;
+
+; evi - ERIKA binary object and VLE setting (from the makefile)
+&filename="#EXE_NAME#"
+&use_vle=#USE_VLE#
+&lock_step=#USE_LOCK_STEP#
+
+&flashbase=0x00000000
+&flashsize=0x00100000 ; 1 MByte
+&shadowbase=0x00F00000
+&shadowsize=0x00100000  ; 1 MByte
+&rambase=0x40000000
+
+; Optimize flash programming time by switching on PLL
+&optimize=0
+
+;========================================================================
+; CPU setup
+
+SYStem.RESet
+SYStem.BdmClock 4.0MHz
+SYStem.CPU MPC5643L
+
+; evi - configure the NEXUS port
+NExus.PORTSIze MDO4
+NExus.Dtm ReadWrite
+NExus.PORTMode 1/2
+
+SYStem.Option.WATCHDOG OFF
+SYStem.Up
+
+if &optimize==1
+(
+  ; TBD
+  ; setup PLL
+  ; Data.Set ASD:0xC3F80000 %LONG 0x06000000
+  ; set JTAG clock to 25 MHz
+  ; SYStem.BdmClock 25MHz
+)
+
+; initialize internal SRAM
+if &lock_step==1
+(
+    Data.Set EA:0x40000000--0x4001FFFF %quad 0x0
+)
+else
+(
+    Data.Set EA:0x40000000--0x4000FFFF %quad 0x0
+)
+
+; setup MMU for flash, RAM and register access, as BAM does
+; Flash programming wants the VLE flag cleared
+GOSUB setup_mmu 0
+
+;========================================================================
+; Flash declaration
+
+FLASH.RESet
+
+; Low address blocks (16 KB)
+FLASH.Create 1. (&flashbase+0x00000000)++0x03FFF TARGET Quad 0. ; L0 - 16 kB
+
+; L4 and L5 areas (64Kb + 64Kb)
+FLASH.Create 1. (&flashbase+0x00020000)++0x0FFFF TARGET Quad 4. ; L4 - 64 kB
+FLASH.Create 1. (&flashbase+0x00030000)++0x0FFFF TARGET Quad 5. ; L5 - 64 kB
+
+FLASH.Create 1. (&flashbase+0x00004000)++0x0BFFF TARGET Quad 1. ; L1 - 48 kB
+FLASH.Create 1. (&flashbase+0x00010000)++0x0BFFF TARGET Quad 2. ; L2 - 48 kB
+FLASH.Create 1. (&flashbase+0x0001c000)++0x03FFF TARGET Quad 3. ; L3 - 16 kB
+
+; Mid address blocks (256 KB)
+FLASH.Create 2. (&flashbase+0x00040000)++0x1FFFF TARGET Quad 0. ; L6 - 128 kB
+FLASH.Create 2. (&flashbase+0x00060000)++0x1FFFF TARGET Quad 1. ; L7 - 128 kB
+
+; Mid address blocks (512 KB)
+FLASH.Create 3. (&flashbase+0x00080000)++0x3FFFF TARGET Quad 0. ; L8 - 256 kB
+FLASH.Create 3. (&flashbase+0x000C0000)++0x3FFFF TARGET Quad 1. ; L9 - 256 kB
+FLASH.Create 4. (&flashbase+0x00F00000)++0xFFFFF NOP Quad ; L10 - 1024 kB
+; Flash-memory emulation mapping: 507904 kB (reserved)
+
+; Inform the debugger about the location of FLASH programming routine
+FLASH.TARGET E:&rambase E:&rambase+0x2000 0x1000 ~~/demo/powerpc/flash/quad/c90fl564xl.bin /STACKSIZE 0x0200
+
+;========================================================================
+; Flash programming example
+;
+; Flash programming speed is about three times faster when memory class E:
+; is used for data buffer (DUALPORT memory access). For DUALPORT access it
+; is required to setup MemAccess NEXUS for both, NEXUS and JTAG debugger. 
+
+DIALOG.YESNO "Flash programming prepared. Program flash memory now?"
+entry &progflash
+
+; evi - prepare VM for the copy
+Data.Set VM:0--(&flashsize-1) 0xff
+Data.LOAD &filename /VM
+
+if &progflash 
+(
+  FLASH.ReProgram ALL /Erase
+  Data.COPY VM:0x0--(&flashsize-1) E:0x0
+  FLASH.ReProgram OFF
+)
+
+; Setup the MMU with the correct VLE flag
+GOSUB setup_mmu &use_vle
+
+; Add symbol for BAM memory
+sYmbol.NEW.Function _BAM 0XFFFFC000--0xFFFFDFFF ;(BAM dimension: 8 Kbyte)
+
+; Add symbol for SSCM memory
+sYmbol.NEW.Function _SSCM 0xC3FD8000--0xC3FDBFFF ;(SSCM dimension: 16 Kbyte)
+
+;set JTAG clock back to default
+SYStem.BdmClock 4MHz
+
+; evi - call orti.cmm if needed
+#ORTICMD#
+
+; Evidence - Francesco E: check if the symbol exist
+if symbol.exist(mem_write_code)
+(
+    if &use_vle==1
+    (
+        ; Evidence - Francesco E. Mark 3 crazy instructions in boot code
+        ; as VLE to prevent Lauterbach from uncorrect VLE decoding
+        sYmbol.NEW.ATTRibute VLE mem_write_code++0xB
+    )
+    else
+    (
+        ; Evidence - Francesco E. Mark 3 crazy instructions in boot code
+        ; as FLE to prevent Lauterbach from uncorrect FLE decoding
+        sYmbol.NEW.ATTRibute FLE mem_write_code++0xB
+    )
+)
+
+; Francesco E: enable HTM feature
+NEXUS.HTM ON
+
+ENDDO
+
+setup_mmu:
+	ENTRY &set_vle
+	if &set_vle==1
+		&vle_flag=0x20
+	else
+		&vle_flag=0
+
+	MMU.TLB1.SET 0x0 0xC0000500 0x00000008+&vle_flag 0x0000003F
+	MMU.TLB1.SET 0x1 0xC0000500 0x00F00008+&vle_flag 0x00F0003F
+
+if &lock_step==1
+(
+	MMU.TLB1.SET 0x2 0xC0000380 0x40000008+&vle_flag 0x4000003F
+)
+else
+(
+    MMU.TLB1.SET 0x2 0xC0000300 0x40000008+&vle_flag 0x4000003F
+	MMU.TLB1.SET 0x3 0xC0000300 0x50000008+&vle_flag 0x5000003F
+)
+
+	MMU.TLB1.SET 0x4 0xC0000500 0x8FF0000A+&vle_flag 0x8FF0003F
+	MMU.TLB1.SET 0x5 0xC0000500 0xC3F0000A+&vle_flag 0xC3F0003F
+	MMU.TLB1.SET 0x6 0xC0000500 0xFFE00008+&vle_flag 0xFFE0003F
+	MMU.TLB1.SET 0x7 0xC0000480 0xFFF00008+&vle_flag 0xFFF0003F
+	MMU.TLB1.SET 0x8 0xC0000300 0xFFF90008+&vle_flag 0xFFF9003F
+	MMU.TLB1.SET 0x9 0xC0000400 0xFFFC0008+&vle_flag 0xFFFC003F
+
+	RETURN

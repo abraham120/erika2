@@ -1,0 +1,381 @@
+/*
+ * ERIKA Enterprise - a tiny RTOS for small microcontrollers
+ *
+ * Copyright (C) 2002-2010  Evidence Srl
+ *
+ * This file is part of ERIKA Enterprise.
+ *
+ * ERIKA Enterprise is free software; you can redistribute it
+ * and/or modify it under the terms of the GNU General Public License
+ * version 2 as published by the Free Software Foundation, 
+ * (with a special exception described below).
+ *
+ * Linking this code statically or dynamically with other modules is
+ * making a combined work based on this code.  Thus, the terms and
+ * conditions of the GNU General Public License cover the whole
+ * combination.
+ *
+ * As a special exception, the copyright holders of this library give you
+ * permission to link this code with independent modules to produce an
+ * executable, regardless of the license terms of these independent
+ * modules, and to copy and distribute the resulting executable under
+ * terms of your choice, provided that you also meet, for each linked
+ * independent module, the terms and conditions of the license of that
+ * module.  An independent module is a module which is not derived from
+ * or based on this library.  If you modify this code, you may extend
+ * this exception to your version of the code, but you are not
+ * obligated to do so.  If you do not wish to do so, delete this
+ * exception statement from your version.
+ *
+ * ERIKA Enterprise is distributed in the hope that it will be
+ * useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License version 2 for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * version 2 along with ERIKA Enterprise; if not, write to the
+ * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ * Boston, MA 02110-1301 USA.
+ */
+
+CPU mySystem {
+
+	OS myOs {
+
+		EE_OPT = "DEBUG";
+		EE_OPT = "NODEPS";
+		//EE_OPT = "VERBOSE";
+		EE_OPT = "__ADD_LIBS__";
+#ifdef __USE_UDP__
+		EE_OPT = "__C30__";
+		EE_OPT = "__dsPIC33F__";
+		EE_OPT = "__USE_MCHP_TCPIP_531__";
+		CFLAGS = "-I $(PIC30_GCCDIR)/support/h";
+		LIB = ENABLE { NAME = "TCPIP"; };
+#endif		
+#ifdef __USE_SIMPLE802154__
+		EE_OPT = "__USE_SPI__";
+		EE_OPT = "USE_CC2420";
+		EE_OPT = "EE_TYPETICK=EE_INT32"; /* Mandatory! */
+		EE_OPT = "UWL_USE_SIMPLE_802154";
+		EE_OPT = "UWL_GTS_MANIPULATION"; /* Makes sense if Coord. */
+#endif // __USE_SIMPLE802154__
+#ifdef __USE_MIWI2P2__
+		//EE_OPT = "__USE_PICDEMZ_WITH_INT4__";
+		EE_OPT = "__USE_PICDEMZ_WITH_CN20INT__";
+#endif //__USE_MIWIP2P__
+
+#ifdef __USE_ZIGBEE__
+		CFLAGS = "-DDEVICE_TYPE_COORDINATOR";
+		CFLAGS = "-DOPENZB_CHANNEL=25";
+#endif // __USE_ZIGBEE__
+		CFLAGS = "-mlarge-data";
+#ifndef __NO_MALLOC__
+		LDFLAGS = "--heap=2048";
+#endif // __NO_MALLOC__
+
+		CPU_DATA = PIC30 {
+			APP_SRC = "dspic_main.c";
+			APP_SRC = "common.c";
+			MULTI_STACK = FALSE;
+			ICD2 = TRUE;
+		};
+
+		MCU_DATA = PIC30 {
+			MODEL = PIC33FJ256MC710;
+		};
+		
+		BOARD_DATA = EE_FLEX {
+		};
+		
+		KERNEL_TYPE = FP;
+		
+		LIB = ENABLE {
+			NAME = "SCICOS";
+#ifdef __USE_ZIGBEE__
+			NAME = "ieee802154";
+#endif // __USE_ZIGBEE__
+#ifdef __USE_SIMPLE802154__
+			NAME = "CC2420";
+			NAME = "UWIRELESS";
+#endif // __USE_SIMPLE802154__
+#if defined(__USE_SIMPLE802154__) | defined(__EE_UART_PORT1_CBUFFER__) |  defined(__EE_UART_PORT2_CBUFFER__)
+			NAME = "MEMORY";
+#endif
+#ifdef __USE_MIWIP2P__	//Start GF		
+			NAME = "MIWIP2P";
+#endif // __USE_MIWIP2P__ //End GF
+#ifdef __USE_TOUCH__
+			NAME = "TOUCH";
+#endif // __USE_TOUCH__
+#ifdef __USE_AMAZING__
+			NAME = "AMAZING";
+			NAME = "DEE_EMULATION";
+#endif // __USE_AMAZING__
+		};
+	};
+	
+#ifdef __RECEIVING_FROM_UART__
+    TASK receiving_from_uart {
+        PRIORITY = 1;
+        STACK = SHARED;
+        SCHEDULE = FULL;
+    };
+#endif
+
+#ifdef __USE_LCD__
+ 	TASK rt_LCD {
+		PRIORITY = 3;
+		STACK = SHARED;
+		SCHEDULE = FULL;
+	};
+
+	ALARM AlarmLcd {
+		COUNTER = sciCounter;
+		ACTION = ACTIVATETASK { TASK = rt_LCD; };
+	};
+#endif // __USE_LCD__
+
+#ifdef __USE_TOUCH__
+	//TASK TASK_TOUCH_MANAGER {
+	//	PRIORITY = 3;
+	//	STACK = SHARED;
+	//	SCHEDULE = FULL;
+	//};
+	TASK TASK_TOUCH_MANAGER_1 {
+		PRIORITY = 3;
+		STACK = SHARED;
+		SCHEDULE = FULL;
+	};
+	TASK TASK_TOUCH_MANAGER_2 {
+		PRIORITY = 3;
+		STACK = SHARED;
+		SCHEDULE = FULL;
+	};
+	
+#endif// __USE_TOUCH__
+
+#ifdef __USE_USB__
+	TASK rx_USB {
+		PRIORITY = 8;
+		STACK = SHARED;
+		SCHEDULE = FULL;
+		RESOURCE = scicosUSB_rx_buffer_mutex;
+		RESOURCE = scicosUSB_tx_buffer_mutex;
+	};	
+	
+	ALARM AlarmUSB {
+		COUNTER = sciCounter;
+		ACTION = ACTIVATETASK { TASK = rx_USB; };		
+	};
+
+	RESOURCE scicosUSB_rx_buffer_mutex {
+		RESOURCEPROPERTY = STANDARD; 
+	};
+	RESOURCE scicosUSB_tx_buffer_mutex {
+		RESOURCEPROPERTY = STANDARD;
+	};
+#endif // __USE_USB__
+
+#ifdef __USE_SIMPLE802154__
+	/* -------------------------------------------------------------------- 
+	|                  --  uWireless OIL Section  --                       |
+	|                                                                      |
+	|  - 1 Global Task counter                                             |
+	|  - 1 PHY Task (read from radio)                                      |
+	|  - 7 MAC Tasks (superframe management + rx parsing)                  |
+	|  - 5 Resources (rx parsing tasks + general mac protection)           |
+	 -------------------------------------------------------------------- */
+
+	COUNTER UWL_EE_TASK_COUNTER;
+	
+	TASK UWL_EE_TASK_PHY_READ_DISPATCHER {
+		PRIORITY = 30;
+		STACK = SHARED;
+		SCHEDULE = FULL;
+		RESOURCE = UWL_EE_RESOURCE_MAC_RX_BEACON_MUTEX;
+		RESOURCE = UWL_EE_RESOURCE_MAC_RX_DATA_MUTEX;
+		RESOURCE = UWL_EE_RESOURCE_MAC_RX_COMMAND_MUTEX;
+		RESOURCE =UWL_EE_RESOURCE_MAC_SEND_MUTEX;
+	};
+
+	TASK UWL_EE_TASK_MAC_PROCESS_RX_BEACON {
+		PRIORITY = 25;
+		STACK = SHARED;
+		SCHEDULE = FULL;
+		RESOURCE = UWL_EE_RESOURCE_MAC_RX_BEACON_MUTEX;
+	};
+
+	TASK UWL_EE_TASK_MAC_PROCESS_RX_DATA {
+		PRIORITY = 20;
+		STACK = SHARED;
+		SCHEDULE = FULL;
+		RESOURCE = UWL_EE_RESOURCE_MAC_RX_DATA_MUTEX;
+	};
+
+	TASK UWL_EE_TASK_MAC_PROCESS_RX_COMMAND {
+		PRIORITY = 20;
+		STACK = SHARED;
+		SCHEDULE = FULL;
+		RESOURCE = UWL_EE_RESOURCE_MAC_RX_COMMAND_MUTEX;
+		RESOURCE =UWL_EE_RESOURCE_MAC_SEND_MUTEX;
+		RESOURCE =UWL_EE_RESOURCE_MAC_SEND_MUTEX;
+	};
+
+	TASK UWL_EE_TASK_MAC_TIMESLOT {
+		PRIORITY = 20;
+		STACK = SHARED;
+		SCHEDULE = FULL;
+		RESOURCE = UWL_EE_RESOURCE_MAC_MUTEX;
+		RESOURCE = UWL_EE_RESOURCE_MAC_GTS_SEND_MUTEX;
+	};
+	ALARM UWL_EE_ALARM_MAC_TIMESLOT {
+		COUNTER = UWL_EE_TASK_COUNTER;
+		ACTION = ACTIVATETASK {TASK=UWL_EE_TASK_MAC_TIMESLOT;};
+	};
+
+	TASK UWL_EE_TASK_MAC_BEFORE_TIMESLOT {
+		PRIORITY = 20;
+		STACK = SHARED;
+		SCHEDULE = FULL;
+	};
+	ALARM UWL_EE_ALARM_MAC_BEFORE_TIMESLOT {
+		COUNTER = UWL_EE_TASK_COUNTER;
+		ACTION = ACTIVATETASK {TASK=UWL_EE_TASK_MAC_BEFORE_TIMESLOT;};
+	};
+
+	TASK UWL_EE_TASK_MAC_BACKOFF_PERIOD {
+		PRIORITY = 20;
+		STACK = SHARED;
+		SCHEDULE = FULL;
+		RESOURCE =UWL_EE_RESOURCE_MAC_SEND_MUTEX;
+	};
+	ALARM UWL_EE_ALARM_MAC_BACKOFF_PERIOD {
+		COUNTER = UWL_EE_TASK_COUNTER;
+		ACTION = ACTIVATETASK {TASK=UWL_EE_TASK_MAC_BACKOFF_PERIOD;};
+	};
+
+	TASK UWL_EE_TASK_MAC_GTS_SEND {
+		PRIORITY = 15;
+		STACK = SHARED;
+		SCHEDULE = FULL;
+		RESOURCE = UWL_EE_RESOURCE_MAC_GTS_SEND_MUTEX;
+	};
+	ALARM UWL_EE_ALARM_MAC_GTS_SEND {
+		COUNTER = UWL_EE_TASK_COUNTER;
+		ACTION = ACTIVATETASK {TASK=UWL_EE_TASK_MAC_GTS_SEND;};
+	};
+	
+	/* ****************************************************************** */
+	/*                    Resources Declaration                           */
+	/* ****************************************************************** */
+	RESOURCE UWL_EE_RESOURCE_MAC_MUTEX { 
+		RESOURCEPROPERTY = STANDARD; 
+	};
+	RESOURCE UWL_EE_RESOURCE_MAC_SEND_MUTEX {
+                RESOURCEPROPERTY = STANDARD;
+        };
+	RESOURCE UWL_EE_RESOURCE_MAC_GTS_SEND_MUTEX { 
+		RESOURCEPROPERTY = STANDARD; 
+	};
+	RESOURCE UWL_EE_RESOURCE_MAC_RX_BEACON_MUTEX { 
+		RESOURCEPROPERTY = STANDARD; 
+	};
+	RESOURCE UWL_EE_RESOURCE_MAC_RX_DATA_MUTEX { 
+		RESOURCEPROPERTY = STANDARD; 
+	};
+	RESOURCE UWL_EE_RESOURCE_MAC_RX_COMMAND_MUTEX { 
+		RESOURCEPROPERTY = STANDARD; 
+	};
+	RESOURCE flex_simple802154_rx_buffer_mutex {
+		RESOURCEPROPERTY=STANDARD;
+	};
+#endif // __USE_SIMPLE802154__
+
+/* **************************************************************/
+/*						MIWIP2P OIL Section																*/
+/* **************************************************************/
+#ifdef __USE_MIWIP2P__	//Start GF	
+
+	TASK TaskSend {
+		PRIORITY = 2;
+		STACK = SHARED;
+		SCHEDULE = FULL;
+		RESOURCE = S0;
+	};
+	
+	TASK TaskMiWiOP {
+		PRIORITY = 3;
+		STACK = SHARED;
+		SCHEDULE = FULL;
+		RESOURCE = S0;
+		RESOURCE = S1;
+	};
+	
+	TASK TaskRec {
+		PRIORITY = 4;
+		STACK = SHARED;
+		SCHEDULE = FULL;
+		RESOURCE = S0;
+		RESOURCE = S1;
+	};
+	
+	TASK TaskInt {
+		PRIORITY = 5;
+		STACK = SHARED;
+		SCHEDULE = FULL;
+		RESOURCE = S0;
+	};
+	
+	COUNTER miwip2p_counter;
+	
+	ALARM AlarmProt {
+		COUNTER = miwip2p_counter;
+		ACTION = ACTIVATETASK { TASK = TaskMiWiOP; };
+		
+	};
+	
+	RESOURCE S0 { RESOURCEPROPERTY = STANDARD; };
+	RESOURCE S1 { RESOURCEPROPERTY = STANDARD; };
+	
+#endif //__USE_MIWIP2P__ //End GF
+		
+	TASK rt_sci {
+		PRIORITY = 100;
+		STACK = SHARED;
+		SCHEDULE = FULL;
+		
+#ifdef __USE_USB__
+		RESOURCE = scicosUSB_rx_buffer_mutex;
+		RESOURCE = scicosUSB_tx_buffer_mutex;
+#endif	// __USE_USB__
+		
+#ifdef __USE_ZIGBEE__
+		RESOURCE = scicosOpenZB_rx_buffer_mutex;		
+#endif // __USE_ZIGBEE__
+
+#ifdef __USE_SIMPLE802154__
+		RESOURCE = UWL_EE_RESOURCE_MAC_MUTEX;
+		RESOURCE = "UWL_EE_RESOURCE_MAC_SEND_MUTEX ";
+		RESOURCE = flex_simple802154_rx_buffer_mutex;
+#endif // __USE_SIMPLE802154__
+	};
+
+#ifdef __USE_UDP__				
+	// This task never ends and thus it must be the lowest priority task when present.
+	TASK UDP_TASK {			
+		PRIORITY = 1;
+		STACK = SHARED;
+		SCHEDULE = FULL;
+	};
+#endif
+
+	COUNTER sciCounter;
+
+	ALARM AlarmSci {
+		COUNTER = sciCounter;
+		ACTION = ACTIVATETASK { TASK = rt_sci; };
+	};
+
+};
+

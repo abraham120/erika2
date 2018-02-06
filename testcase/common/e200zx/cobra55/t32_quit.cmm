@@ -1,0 +1,25 @@
+; script used to load t32_jobs.cmm.
+; DO NOT MODIFY this script. Modify common/e200z7/t32_quit.cmm instead
+
+area
+area.create Messages
+area.view Messages
+
+open #1 report.log /Create
+
+&failed=0
+&count=0
+do t32_jobs.cmm
+
+area.select Messages
+print
+print
+print "Done."
+print "-------------------------------------------------------"
+print "-------------------------------------------------------"
+print "-------------------------------------------------------"
+print "-------------------------------------------------------"
+area.select A000
+
+write #1 "Done."
+close #1

@@ -1,0 +1,128 @@
+CPU test_application {
+
+	OS EE {
+		CFLAGS = "";
+		ASFLAGS = "";
+		LDFLAGS = ""; 
+
+		EE_OPT = "__E200ZX_EXECUTE_FROM_RAM__";
+		EE_OPT = "DEBUG";
+		EE_OPT = "EE_ISR_DYNAMIC_TABLE";
+
+		EE_OPT = "__CODEWARRIOR__";
+
+		MASTER_CPU = "master";
+
+		CPU_DATA = PPCE200ZX {
+			ID = "master";
+			MODEL = E200Z6;
+			APP_SRC = "master.c";
+			MULTI_STACK = FALSE;
+			VLE = TRUE;
+			SYS_STACK_SIZE = 4096;
+		};
+
+		CPU_DATA = PPCE200ZX {
+			MODEL = E200Z0;
+			ID = "slave";
+			APP_SRC = "slave.c";
+			APP_SRC = "tasks.c";
+			MULTI_STACK = FALSE;
+			VLE = TRUE;
+			SYS_STACK_SIZE = 4096;
+		};
+
+		MCU_DATA = PPCE200ZX {
+			MODEL = MPC5668G;
+		};
+
+		STATUS = EXTENDED;
+		STARTUPHOOK = FALSE;
+		ERRORHOOK = FALSE;
+		SHUTDOWNHOOK = FALSE;
+		PRETASKHOOK = FALSE;
+		POSTTASKHOOK = FALSE;
+		USEGETSERVICEID = FALSE;
+		USEPARAMETERACCESS = FALSE;
+		USERESSCHEDULER = FALSE;
+
+		USEREMOTETASK = ALWAYS;
+
+		KERNEL_TYPE = BCC1;
+                EE_OPT = "__OO_STARTOS_OLD__";
+	};
+	
+	TASK TaskZ6_1 {
+		CPU_ID = "master";
+		PRIORITY = 0x03;
+		AUTOSTART = TRUE;
+		STACK = PRIVATE {
+			SYS_SIZE = 128;
+		};
+		ACTIVATION = 1;
+		SCHEDULE = FULL;
+	};
+
+	TASK TaskZ6_2 {
+		CPU_ID = "master";
+		PRIORITY = 0x02;
+		AUTOSTART = FALSE;
+		STACK = PRIVATE {
+			SYS_SIZE = 128;
+		};
+		ACTIVATION = 1;
+		SCHEDULE = FULL;
+	};
+
+	TASK TaskZ6_3 {
+		CPU_ID = "master";
+		PRIORITY = 0x02;
+		AUTOSTART = FALSE;
+		STACK = PRIVATE {
+			SYS_SIZE = 128;
+		};
+		ACTIVATION = 1;
+		SCHEDULE = FULL;
+	};
+
+	TASK TaskZ6_4 {
+		CPU_ID = "master";
+		PRIORITY = 0x03;
+		AUTOSTART = FALSE;
+		STACK = PRIVATE {
+			SYS_SIZE = 128;
+		};
+		ACTIVATION = 1;
+		SCHEDULE = FULL;
+	};
+
+	TASK disturbing_task {
+		CPU_ID = "slave";
+		PRIORITY = 0x03;
+		AUTOSTART = FALSE;
+		STACK = PRIVATE {
+			SYS_SIZE = 128;
+		};
+		ACTIVATION = 1;
+		SCHEDULE = FULL;
+	};
+
+	TASK CheckOK_task {
+		CPU_ID = "slave";
+		PRIORITY = 0x03;
+		AUTOSTART = FALSE;
+		STACK = PRIVATE {
+			SYS_SIZE = 128;
+		};
+		ACTIVATION = 1;
+		SCHEDULE = FULL;
+	};
+
+	ISR timer_interrupt {
+        CATEGORY = 2;
+		PRIORITY = 3;   // this is required by RT-druid but it is ignored
+		ENTRY = "DECREMENTER";   // Decrementer
+        CPU_ID = "master";
+	};
+
+};

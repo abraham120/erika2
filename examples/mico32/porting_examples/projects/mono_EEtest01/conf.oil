@@ -1,0 +1,45 @@
+CPU test_application {
+
+	OS EE {		
+		CFLAGS = "-g2";
+		ASFLAGS = "";
+		LDFLAGS = ""; 
+
+		CPU_DATA = LM32 {
+			APP_SRC = "main.c";
+			MULTI_STACK = FALSE;
+			USESTANDALONEPRINTF = TRUE; // Optional, default is FALSE
+			USESMALLC = FALSE; // Optional, defautl is FALSE
+		};
+		
+
+		MCU_DATA = LATTICE_PLATFORM {
+   			MODEL = LIBRARY {
+				PLATFORM_LIB_PATH = "../onchipramtimer_lib";
+				PLATFORM_NAME = "onchipramtimer";
+				PLATFORM_BLD_CFG = "Release"; // Optional, default is ""
+   			};
+  		};
+
+		STATUS = EXTENDED;
+		STARTUPHOOK = FALSE;
+		ERRORHOOK = FALSE;
+		SHUTDOWNHOOK = FALSE;
+		PRETASKHOOK = FALSE;
+		POSTTASKHOOK = FALSE;
+		USEGETSERVICEID = FALSE;
+		USEPARAMETERACCESS = FALSE;
+		USERESSCHEDULER = FALSE;
+		
+    };
+    
+    /* this is the OIL part for the first task */
+    TASK Task1 {
+		PRIORITY = 0x01;   /* Low priority */
+		AUTOSTART = FALSE;
+		STACK = SHARED;
+		ACTIVATION = 1;    /* only one pending activation */
+	};	
+
+    OS EE { KERNEL_TYPE = FP; }; 	
+};

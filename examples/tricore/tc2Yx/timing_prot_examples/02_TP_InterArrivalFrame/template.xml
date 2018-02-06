@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<evidence_example version="1" ID="tricore_tc27x_oo_event">
+  <category>tricore/infineon_TriBoard-TC2X5_V2.0/Timing Protection automatic tests</category>
+  <title>Timing Protection inter-arrival protection automatic tests </title>
+
+  <small_descr>
+  </small_descr>
+
+  <long_descr>
+    Timing Protection inter-arrival protection automatic tests. This test cannot be completed without soldering a button on TriBoard.
+    (check http://erika.tuxfamily.org/wiki/index.php?title=Infineon_Aurix#BOARD, for instructions)
+  </long_descr>
+
+  <file_section>
+    <file     name="conf.oil"/>
+    <file     name="code.c"/>
+    <file     name="test.h"/>
+  </file_section>
+
+</evidence_example>

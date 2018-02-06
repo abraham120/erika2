@@ -1,0 +1,10 @@
+actor gen(dynamicSZ)
+==> int(size=dynamicSZ) outp:
+
+int(size=dynamicSZ+11) i := -1;
+
+action ==> outp:[i>>10]
+	do
+		if i < 262144 then i := i + 1; else i := 0; end
+	end
+end

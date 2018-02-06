@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<evidence_example version="1" ID="eicaslab_flex">
+
+ <category>pic30/Empty</category>
+ <title>EICASLab Flex base application</title>
+   
+ <small_descr>
+ This is the skeleton of a EICASLab demo configured for the EE_FLEX board.
+ </small_descr>
+
+ <long_descr>
+ This is not a complete demo but works as an empty template to be used as a starting point for a new EICASLab application.
+ </long_descr>
+
+ <file_section>
+  <file     name="code.c"/>
+  <file     name="conf_eicaslab.oil"/>
+ </file_section>
+
+</evidence_example>

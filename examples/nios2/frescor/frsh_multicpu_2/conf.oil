@@ -1,0 +1,182 @@
+CPU test_application {
+
+	OS EE {
+	
+		CFLAGS = "-DALT_DEBUG -O0 -g";
+		CFLAGS = "-Wall";
+		LDFLAGS = "-Wl,-Map -Wl,project.map";
+		ASFLAGS = "-g";
+		LDDEPS = "\\";
+		LIBS = "-lm";
+		NIOS2_SYS_CONFIG = "Debug";
+		NIOS2_APP_CONFIG = "Debug";
+		NIOS2_DO_MAKE_OBJDUMP = TRUE;
+		MASTER_CPU = "cpu0";			
+		IPIC_GLOBAL_NAME = "IPIC_OUTPUT";
+		NIOS2_JAM_FILE = "C:/altera/81/nios2eds/examples/verilog/niosII_stratixII_2s60_RoHS/frsh_multi4/fpga.jam";
+		NIOS2_PTF_FILE = "C:/altera/81/nios2eds/examples/verilog/niosII_stratixII_2s60_RoHS/frsh_multi4/NiosII_stratixII_2s60_RoHS_small_sopc.ptf";
+
+		CPU_DATA = NIOSII {
+			ID = "cpu0";
+			APP_SRC = "cpu0_main.c";
+			STACK_TOP = "__alt_stack_pointer";
+			SYSTEM_LIBRARY_NAME = "frsh_multi4_syslib_0";
+			SYSTEM_LIBRARY_PATH = "/cygdrive/c/Users/pj/workspaceFRSH81/frsh_multi4_syslib_0";
+			IPIC_LOCAL_NAME = "IPIC_INPUT_0";
+			
+			SYS_SIZE = 100000;			
+			MULTI_STACK = TRUE {
+				IRQ_STACK = TRUE {
+					SYS_SIZE=512;
+				};
+				DUMMY_STACK = SHARED;
+			};
+			TIMER_FREERUNNING = "HIGH_RES_TIMER_0";
+			FRSH_TIMERS = MULTIPLE {
+				TIMER_IRQ_BUDGET = "TIMER_CAPACITY_0";
+				TIMER_IRQ_RECHARGE = "TIMER_RECHARGING_0";
+				TIMER_IRQ_DLCHECK = "TIMER_DLCHECK_0";
+				TIMER_IRQ_SEM = "TIMER_SEM_0";
+		     };
+
+		};
+	
+		CPU_DATA = NIOSII {
+			ID = "cpu1";
+			APP_SRC = "cpu1_main.c";
+			STACK_TOP = "__alt_stack_pointer";
+			SYSTEM_LIBRARY_NAME = "frsh_multi4_syslib_1";
+			SYSTEM_LIBRARY_PATH = "/cygdrive/c/Users/pj/workspaceFRSH81/frsh_multi4_syslib_1";
+			IPIC_LOCAL_NAME = "IPIC_INPUT_1";
+			
+			SYS_SIZE = 100000;			
+			MULTI_STACK = TRUE {
+				IRQ_STACK = TRUE {
+					SYS_SIZE=512;
+				};
+				DUMMY_STACK = SHARED;
+			};
+			TIMER_FREERUNNING = "HIGH_RES_TIMER_1";
+			FRSH_TIMERS = MULTIPLE {
+				TIMER_IRQ_BUDGET = "TIMER_CAPACITY_1";
+				TIMER_IRQ_RECHARGE = "TIMER_RECHARGING_1";
+				TIMER_IRQ_DLCHECK = "TIMER_DLCHECK_1";
+				TIMER_IRQ_SEM = "TIMER_SEM_1";
+		     };
+			
+		};
+
+		CPU_DATA = NIOSII {
+			ID = "cpu2";
+			APP_SRC = "cpu2_main.c";
+			STACK_TOP = "__alt_stack_pointer";
+			SYSTEM_LIBRARY_NAME = "frsh_multi4_syslib_2";
+			SYSTEM_LIBRARY_PATH = "/cygdrive/c/Users/pj/workspaceFRSH81/frsh_multi4_syslib_2";
+			IPIC_LOCAL_NAME = "IPIC_INPUT_2";
+			
+			SYS_SIZE = 100000;			
+			MULTI_STACK = TRUE {
+				IRQ_STACK = TRUE {
+					SYS_SIZE=512;
+				};
+				DUMMY_STACK = SHARED;
+			};
+			TIMER_FREERUNNING = "HIGH_RES_TIMER_2";
+			FRSH_TIMERS = MULTIPLE {
+				TIMER_IRQ_BUDGET = "TIMER_CAPACITY_2";
+				TIMER_IRQ_RECHARGE = "TIMER_RECHARGING_2";
+				TIMER_IRQ_DLCHECK = "TIMER_DLCHECK_2";
+				TIMER_IRQ_SEM = "TIMER_SEM_2";
+		     };
+			
+		};
+
+		CPU_DATA = NIOSII {
+			ID = "cpu3";
+			APP_SRC = "cpu3_main.c";
+			STACK_TOP = "__alt_stack_pointer";
+			SYSTEM_LIBRARY_NAME = "frsh_multi4_syslib_3";
+			SYSTEM_LIBRARY_PATH = "/cygdrive/c/Users/pj/workspaceFRSH81/frsh_multi4_syslib_3";
+			IPIC_LOCAL_NAME = "IPIC_INPUT_3";
+			
+			SYS_SIZE = 100000;			
+			MULTI_STACK = TRUE {
+				IRQ_STACK = TRUE {
+					SYS_SIZE=512;
+				};
+				DUMMY_STACK = SHARED;
+			};
+			TIMER_FREERUNNING = "HIGH_RES_TIMER_3";
+			FRSH_TIMERS = MULTIPLE {
+				TIMER_IRQ_BUDGET = "TIMER_CAPACITY_3";
+				TIMER_IRQ_RECHARGE = "TIMER_RECHARGING_3";
+				TIMER_IRQ_DLCHECK = "TIMER_DLCHECK_3";
+				TIMER_IRQ_SEM = "TIMER_SEM_3";
+		     };
+
+		};
+
+		STARTUPSYNC = TRUE;
+        	
+		USEREMOTETASK = ALWAYS;
+		NIOS2_MUTEX_BASE = "MUTEX_BASE";
+
+		ORTI_SECTIONS = ALL;
+		
+        KERNEL_TYPE = FRSH {
+        		TICK_TIME = "20ns";
+        		USE_SYNC_OBJ = TRUE;
+        		CONTRACTS = CONTRACT {
+        				CPU_ID = "cpu0";	NAME = "c1_0";
+        				BUDGET = 20000;		PERIOD = 100000;        			};
+
+        		CONTRACTS = CONTRACT {
+        				CPU_ID = "cpu1";	NAME = "c1_1";
+        				BUDGET = 20000;		PERIOD = 100000;        			};
+
+        		CONTRACTS = CONTRACT {
+        				CPU_ID = "cpu2";	NAME = "c1_2";
+        				BUDGET = 20000;		PERIOD = 100000;        			};
+
+        		CONTRACTS = CONTRACT {
+        				CPU_ID = "cpu3";	NAME = "c1_3";
+        				BUDGET = 20000;		PERIOD = 100000;        			};
+        	};
+	};
+
+    TASK Task1 {
+		CPU_ID = "cpu0";
+    	CONTRACT = "c1_0";
+		PRIORITY = 0x01;
+		STACK = PRIVATE {
+			SYS_SIZE = 10000;
+		};
+    };
+
+    TASK Task2 {
+		CPU_ID = "cpu1";
+    	CONTRACT = "c1_1";
+		PRIORITY = 0x01;
+		STACK = PRIVATE {
+			SYS_SIZE = 10000;
+		};
+    };
+
+    TASK Task3 {
+		CPU_ID = "cpu2";
+    	CONTRACT = "c1_2";
+		PRIORITY = 0x01;
+		STACK = PRIVATE {
+			SYS_SIZE = 10000;
+		};
+    };
+
+    TASK Task4 {
+		CPU_ID = "cpu3";
+    	CONTRACT = "c1_3";
+		PRIORITY = 0x01;
+		STACK = PRIVATE {
+			SYS_SIZE = 10000;
+		};
+    };
+};

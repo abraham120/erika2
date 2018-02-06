@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<evidence_example version="1" ID="avr5_first">
+
+ <category>avr5/XBOW MIB5X0</category>
+ <title>simple demo</title>
+   
+ <small_descr>
+ Task1 are activated.
+ </small_descr>
+
+ <long_descr>
+ The task activated switch on a led.
+ </long_descr>
+
+ <file_section>
+  <file     name="code.c"/> 
+  <file     name="conf.oil"/>
+  <file     name="threads.c"/>
+  <file     name="handler.c"/>
+ </file_section>
+
+</evidence_example>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SYSLIB>
+<MSB_FILE name="fpg_eye_mico32.msb" path="../msb/soc"/>
+<MemorySections Deployflag="false" UCflag="true">
+<Section DEPLOY="yes" Load="false" Name=".text" Value="sram"/>
+<Section Load="false" Name=".rodata" Value="sram"/>
+<Section Load="false" Name=".data" Value="sram"/>
+</MemorySections>
+<LinkerSettings>
+<Param Name="UserDefinedLinkerFile" Value=""/>
+</LinkerSettings>
+<STDIO_Redirection>
+<Param InstanceName="uart" Name="stdin" Text="RS-232"/>
+<Param InstanceName="uart" Name="stdout" Text="RS-232"/>
+<Param InstanceName="uart" Name="stderr" Text="RS-232"/>
+</STDIO_Redirection>
+<LibSettings>
+<Param Name="SyslibOption" Value="on"/>
+<Param Name="USE_SMALL_LIBC" Value="FALSE"/>
+<Param Name="USE_STANDALONE_SMALL_PRINTF" Value="TRUE"/>
+</LibSettings>
+</SYSLIB>

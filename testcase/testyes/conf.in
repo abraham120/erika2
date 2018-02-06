@@ -1,0 +1,2 @@
+conf = "CONF=default"
+worksfor = e7t_manual st10_manual

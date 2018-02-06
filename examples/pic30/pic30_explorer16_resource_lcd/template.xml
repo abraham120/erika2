@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<evidence_example version="1" ID="pic30_explorer16_resource_lcd">
+
+ <category>pic30/Explorer16</category>
+ <title>Resource usage and LCD</title>
+   
+ <small_descr>
+ This small demo shows the usage of Resources by displaying characters
+ on an LCD. This example has been published in the Firmware Magazine in
+ March 2007.
+
+ </small_descr>
+
+ <long_descr>
+ This small demo shows the usage of Resources by displaying characters
+ on an LCD. The demo uses the fact that every access to the LCD is not
+ atomic, and it is composed by two commands, the first one which
+ selects the column and the row of the LCD, the second command which
+ prints a character.
+ &lt;br&gt;
+ The usefulness of using the resources is highlighted by the fact that
+ they can avoid race conditions, which result in the demo with a
+ display of 3 characters instead of two.
+ &lt;bt&gt;
+ The demo uses the LCD of the Microchip Explorer16 Evaluation Board.
+ &lt;bt&gt;
+ This example has been published in the Firmware Magazine in
+ March 2007.
+ </long_descr>
+
+ <file_section>
+  <file     name="code.c"/> 
+  <file     name="conf.oil"/>
+  <file     name="readme.txt"/>
+ </file_section>
+
+</evidence_example>

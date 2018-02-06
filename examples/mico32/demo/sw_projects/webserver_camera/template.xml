@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<evidence_example version="1" ID="fpg_eye_mico32_web_camera">
+
+ <category>mico32/FPG-EYE/fpg_eye_mico32</category>
+ <title>Web-Server with Camera support</title>
+
+ <small_descr>
+ This is the demo to test Web-Server with Camera support.
+ </small_descr>
+
+ <long_descr>
+ This is the demo to test the Web-Server with Camera support on FPG-EYE Board
+ devices.
+ </long_descr>
+
+ <file_section>
+  <file     name="adler32.c"/>
+  <file     name="color_image.c"/>
+  <file     name="color_image.h"/>
+  <file     name="conf.oil"/>
+  <file     name="conf.oil.enc28j60"/>
+  <file     name="conf.oil.lwip"/>
+  <file     name="crc32.c"/>
+  <file     name="fs.c"/>
+  <file     name="fs.h"/>
+  <file     name="fsdata.c"/>
+  <file     name="fsdata.h"/>
+  <file     name="graph.ld"/>
+  <file     name="html2c"/>
+  <file     name="httpd.c"/>
+  <file     name="httpd.h"/>
+  <file     name="httpd_structs.h"/>
+  <file     name="index.html"/>
+  <file     name="lwip.h"/>
+  <file     name="main.c"/>
+  <file     name="makefile"/>
+ </file_section>
+
+</evidence_example>

@@ -1,0 +1,57 @@
+
+print_test_result();
+/* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
+/* --------- Erika Enterprise - Erika Enterprise - Erika Enterprise --------- */
+/* -- Benchmark running on NXP LPC1227 (LPCXpresso) and ERIKA Enterp. RTOS -- */
+/* ----------------------------- CPU clock 12MHz ---------------------------- */
+/* ----------------------- IRQ latency register: 0x10 ----------------------- */
+/* --------------------------- Scheduler: OO_BCC1 --------------------------- */
+/* ----------------------- Stack handling:MULTI_STACK ----------------------- */
+/* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
+ISR1 Latency (50 samples):
+  Mean:    2.583 usec   - 62 ticks
+  Minimum: 2.583 usec   - 62 ticks
+  Maximum: 2.583 usec   - 62 ticks
+
+ISR1 exit (50 samples):
+  Mean:    2.500 usec   - 60 ticks
+  Minimum: 2.500 usec   - 60 ticks
+  Maximum: 2.500 usec   - 60 ticks
+
+ISR2 Latency (50 samples):
+  Mean:    3.791 usec   - 91 ticks
+  Minimum: 3.791 usec   - 91 ticks
+  Maximum: 3.791 usec   - 91 ticks
+
+ISR2 exit (50 samples):
+  Mean:    8.083 usec   - 194 ticks
+  Minimum: 8.083 usec   - 194 ticks
+  Maximum: 8.083 usec   - 194 ticks
+
+New task from ISR (50 samples):
+  Mean:    15.458 usec   - 371 ticks
+  Minimum: 15.458 usec   - 371 ticks
+  Maximum: 15.458 usec   - 371 ticks
+
+New task with preemption (50 samples):
+  Mean:    14.041 usec   - 337 ticks
+  Minimum: 14.041 usec   - 337 ticks
+  Maximum: 14.041 usec   - 337 ticks
+
+New task without preemption (50 samples):
+  Mean:    7.375 usec   - 177 ticks
+  Minimum: 7.375 usec   - 177 ticks
+  Maximum: 7.375 usec   - 177 ticks
+
+Task (not activated from IRQ) exit (50 samples):
+  Mean:    12.250 usec   - 294 ticks
+  Minimum: 12.250 usec   - 294 ticks
+  Maximum: 12.250 usec   - 294 ticks
+
+Task (activated from IRQ) exit (50 samples):
+  Mean:    30.625 usec   - 735 ticks
+  Minimum: 30.625 usec   - 735 ticks
+  Maximum: 30.625 usec   - 735 ticks
+
+/* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
+LOG OFF

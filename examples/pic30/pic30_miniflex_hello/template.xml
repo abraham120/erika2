@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<evidence_example version="1" ID="pic30_miniflex_hello">
+
+ <category>pic30/MiniFlex</category>
+ <title>Hello World</title>
+   
+ <small_descr>
+ This is the Hello World demo for the EE_MINIFLEX board.
+ </small_descr>
+
+ <long_descr>
+ This is a demo that prints "Hello World" on UART1, uses the accelerometer, the buzzer, timers, ...
+ </long_descr>
+
+ <file_section>
+  <file     name="code.c"/> 
+  <file     name="conf.oil"/>
+ </file_section>
+
+</evidence_example>

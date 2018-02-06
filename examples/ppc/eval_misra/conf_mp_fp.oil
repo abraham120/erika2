@@ -1,0 +1,115 @@
+CPU test_application {
+
+	OS EE {
+		EE_OPT = "DEBUG";
+		EE_OPT = "NODEPS";
+		EE_OPT = "__ASSERT__";
+		EE_OPT = "__USE_LEDS__";
+		EE_OPT = "__USE_BUTTONS__";
+		EE_OPT = "EE_ISR_DYNAMIC_TABLE";
+
+		EE_OPT = "USE_PRAGMAS";
+
+		MASTER_CPU = "master";
+
+		CPU_DATA = PPCE200ZX {
+			ID = "master";
+			MODEL = E200Z6;
+			APP_SRC = "main.c";
+			MULTI_STACK = FALSE;
+			VLE = TRUE;
+		};
+
+		CPU_DATA = PPCE200ZX {
+			ID = "slave";
+			MODEL = E200Z0;
+			APP_SRC = "main.c";
+			MULTI_STACK = FALSE;
+			VLE = TRUE;
+		};
+
+		MCU_DATA = PPCE200ZX {
+			MODEL = MPC5668G;
+		};
+
+		STATUS = EXTENDED;
+		STARTUPHOOK = FALSE;
+		ERRORHOOK = FALSE;
+		SHUTDOWNHOOK = FALSE;
+		PRETASKHOOK = FALSE;
+		POSTTASKHOOK = FALSE;
+		USEGETSERVICEID = FALSE;
+		USEPARAMETERACCESS = FALSE;
+		USERESSCHEDULER = FALSE;
+
+		USEREMOTETASK = ALWAYS;
+
+//		ORTI_SECTIONS = ALL;
+		KERNEL_TYPE = FP;
+	};
+
+	TASK Task1 {
+		PRIORITY = 0x01;
+		SCHEDULE = NON;
+		AUTOSTART = FALSE;
+		STACK = SHARED;
+		ACTIVATION = 1;
+		RESOURCE = MyResource;
+		CPU_ID = "master";
+	};
+
+	TASK Task2 {
+		PRIORITY = 0x02;
+		SCHEDULE = FULL;
+		AUTOSTART = TRUE;
+		STACK = SHARED;
+		ACTIVATION = 1;
+		RESOURCE = MyResource;
+		CPU_ID = "master";
+	};
+
+	TASK Task3 {
+		PRIORITY = 0x02;
+		SCHEDULE = FULL;
+		AUTOSTART = TRUE;
+		STACK = SHARED;
+		ACTIVATION = 1;
+		RESOURCE = MyOtherResource;
+		CPU_ID = "slave";
+	};
+
+
+	RESOURCE MyResource { RESOURCEPROPERTY = STANDARD; };
+
+	RESOURCE MyOtherResource { RESOURCEPROPERTY = STANDARD; };
+
+	COUNTER MainTimer {
+		MINCYCLE = 2;
+		MAXALLOWEDVALUE = 100;
+		TICKSPERBASE = 1;
+		CPU_ID = "master";
+	};
+
+	ALARM MyAlarm {
+		COUNTER = MainTimer;
+		ACTION = ACTIVATETASK {
+			TASK = Task1;
+		};
+		AUTOSTART = FALSE;
+	};
+
+	COUNTER OtherTimer {
+		MINCYCLE = 2;
+		MAXALLOWEDVALUE = 100;
+		TICKSPERBASE = 1;
+		CPU_ID = "slave";
+	};
+
+	ALARM OtherAlarm {
+		COUNTER = OtherTimer;
+		ACTION = ACTIVATETASK {
+			TASK = Task1;
+		};
+		AUTOSTART = FALSE;
+	};
+};

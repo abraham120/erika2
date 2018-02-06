@@ -1,0 +1,37 @@
+# conf contains the configurations that have to be considered
+
+MUX = $(EEBASE)/testcase/common/confparser/confparser_mux
+DEMUX = $(EEBASE)/testcase/common/confparser/confparser_demux
+
+# Note: I have to test the existence of MUX before executing it
+prefix_conf = $(addprefix prefix_, $(shell test -e $(MUX) && $(MUX) $(conf)))
+
+THE_EXPERIMENT = $(notdir $(shell cd ..;pwd)) $(shell $(DEMUX) $*)
+
+all: $(MUX)
+	@make -C . all2
+
+# Note: prefix_conf depends on MUX, so I need to make MUX before, then
+# recall make
+all2: $(prefix_conf)
+	@rm -rf ../out
+
+prefix_%: ../out
+	@echo EXPERIMENT $(notdir $(shell cd ..;pwd)) $(shell $(DEMUX) $*)
+	@echo CLEAN
+	@make $(shell $(DEMUX) $*) -C ../out clean
+	@echo COMPILE
+	@make $(shell $(DEMUX) $*) -C ../out
+	@echo TESTDEBUG
+	@cp ../../common/triscend/testdebug .
+	@testdebug
+	@rm -f `ls | grep -v makefile | grep -v CVS`
+
+../out:
+	@echo OUT
+	@mkdir ../out
+	@cd ../out; cp -sf ../*.* .
+	@cd ../out; cp -sf ../manual/*.* ../manual/makefile .
+
+$(MUX):
+	make -C $(EEBASE)/testcase/common/confparser

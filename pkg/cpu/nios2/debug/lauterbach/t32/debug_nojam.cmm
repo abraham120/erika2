@@ -1,0 +1,20 @@
+; ERIKA Enterprise debug script for Lauterbach Trace32
+;
+; this version of the script DO NOT download the JAM file on the FPGA
+
+do ../t32\windowsreset
+do ../t32\load
+do ../t32\go
+do ../t32\windows
+
+print "done."
+
+enddo
+
+
+
+
+
+
+
+

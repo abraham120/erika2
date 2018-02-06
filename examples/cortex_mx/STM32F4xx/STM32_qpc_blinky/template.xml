@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<evidence_example version="1" ID="STM32_qpc_blinky">
+
+ <category>Cortex-MX/STM32F4 Discovery Board/QP Framework</category>
+ <title>Demo QP Blinky  </title>
+   
+ <small_descr>
+ This demo implements a state machine that blinks the leds on 
+ STM32F407 Discovery board.  
+ </small_descr>
+
+ <long_descr>
+ Simple demo that shows how to use the QP framework. This demo implements a simple 
+ state machine that blinks the leds of STM32F407 Discovery board.
+ </long_descr>
+
+ <file_section>
+  <file     name="blinky.c"/> 
+  <file     name="bsp.c"/> 
+  <file     name="bsp.h"/> 
+  <file     name="conf.oil"/>
+ </file_section>
+
+</evidence_example>

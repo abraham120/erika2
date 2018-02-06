@@ -1,0 +1,34 @@
+// *** modistarc_event_1 ***
+//modistarc_event_1/ out_s12xs_CONF_E1
+//modistarc_event_1/ out_s12xs_CONF_E2
+
+// E1
+cd ..\..\modistarc_event_1\out_s12xs_CONF_E1
+load "Debug\hs12xs.elf" AUTOERASEANDFLASH NOPRELOADCMD NOPOSTLOADCMD NORUNAFTERLOAD
+BS 0xC779 P E
+GO
+// Wait the breakpoint or a similar pause
+WAIT 10 ;s
+STOP
+IF EE_assertions[0]==1
+printf("OK!!!")
+ELSE
+printf("FAILURE!!!")
+ENDIF
+
+// E2
+cd ..\out_s12xs_CONF_E2
+load "Debug\hs12xs.elf" AUTOERASEANDFLASH NOPRELOADCMD NOPOSTLOADCMD NORUNAFTERLOAD
+BS 0xC779 P E
+GO
+// Wait the breakpoint or a similar pause
+WAIT 10 ;s
+STOP
+IF EE_assertions[0]==1
+printf("OK!!!")
+ELSE
+printf("FAILURE!!!")
+ENDIF
+
+// end
+cd ..\..\common\s12xs

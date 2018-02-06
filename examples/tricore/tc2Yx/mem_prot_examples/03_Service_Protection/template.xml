@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<evidence_example version="1" ID="tricore_tc27x_oo_event">
+  <category>tricore/infineon_TriBoard-TC2X5_V2.0/Stack Monitoring, Service Protection and Memory Protection automatic tests</category>
+  <title>Service Protection test </title>
+
+  <small_descr>
+  </small_descr>
+
+  <long_descr>
+    This code test the Service Protection feature.
+  </long_descr>
+
+  <file_section>
+    <file     name="conf.oil"/>
+    <file     name="code.c"/>
+    <file     name="app1.c"/>
+    <file     name="app2.c"/>
+    <file     name="app3.c"/>
+    <file     name="test.h"/>
+  </file_section>
+
+</evidence_example>

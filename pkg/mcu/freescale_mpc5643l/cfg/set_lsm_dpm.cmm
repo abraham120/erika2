@@ -1,0 +1,1083 @@
+; Example script to program non-volatile registers in shadow row (MPC55XX/56XX, SPC56XX)
+; 
+; WARNING: This script allows to program the censorship control (system censoring 
+;          information) register. Carefully study the processor's reference manual
+;          before using or changing this script. 
+;          
+;          If the target processor is not supported by this script, please contact 
+;          technical support and ask for an updated version.
+;
+; $Author: rweiss $
+; $Date: 2011-10-20 19:12:00 +0200 (Do, 20 Okt 2011) $
+; $Rev: 1455 $
+
+;initialize constants and variables
+  &dialogtype="tbd"
+  &flashdriver="tbd"
+  &shadowbase="tbd"
+  &shadowsize="tbd"
+  &NVPWD_addr="tbd"
+  &NVSCI_addr="tbd"
+  &NVSCI_layout="tbd"
+  &NVUSR_addr="unavailable"
+  &has_mmu="tbd"
+  &NVSCI_length=64. ;it is always safe to write 64-bit (0x55aa55aa55aa55aa), while 32-bit (0x55aa55aaffffffff) is not allowed on C90LC flash modules.
+
+;constants
+  &NVUSR_default=0xFFFFFFFF
+  &NVUSR_PAD="tbd"
+  &NVUSR_XMA="tbd"
+  &NVUSR_SWT="tbd"
+  &NVUSR_LSM="tbd"
+
+;look for any opened nv_config dialog windows and close them
+  WHILE DIALOG.EXIST(NVSCIWARNINGBUTTON)
+    DIALOG.END
+
+;initialize debugger and detect CPU
+  AREA.SELECT A000
+  SYStem.RESet
+  Break.RESet
+  SYStem.BdmClock 1.MHz
+  FLASH.RESet
+  SYStem.CPU MPC55XX
+  
+  ON ERROR GOTO ERROR_DetectFail
+  SYStem.DETECT CPU
+  ON ERROR NOTHING
+  
+sysup_tryagain:  
+  ON ERROR GOTO ERROR_SysUpFail
+  SYStem.UP
+  
+  WAIT 1.s ; wait some time to check if external watchdog is active
+  IF !SYSTEM.UP()
+    GOTO ERROR_SysUpFail
+  ON ERROR NOTHING
+
+;CPU dependent initialization
+  IF SIMULATOR()
+  (
+    DIALOG.OK "This script does not run on a simulator."
+    ENDDO
+  )
+  ELSE IF (CPU()=="MPC5632M")||(CPU()=="MPC5633M")||(CPU()=="MPC5634M")||(CPU()=="SPC563M54")||(CPU()=="SPC563M60")||(CPU()=="SPC563M64")
+  (
+    ;check processor revision
+    &NPC_DID=data.long(DBG:0x80)
+    IF (&NPC_DID&0x0FFFF000)==0x08200000 ;revision 0
+    (
+      &flashdriver="c90fl.bin"
+      &NVSCI_length=32.
+    )
+    ELSE
+    (
+      &flashdriver="c90fl563xm.bin"
+      &NVSCI_length=64.
+    )
+    &dialogtype="v1"
+    &has_mmu="YES"
+    &shadowbase=0x00FFC000
+    &shadowsize=0x00003FFF
+    &NVPWD_addr=0x00FFFDD8
+    &NVSCI_addr=0x00FFFDE0
+    &NVSCI_layout="CCW_SCW"
+    
+    ;rev 0 verified 21.12.2010
+  )
+  ELSE IF (CPU()=="SPC560D30")||(CPU()=="MPC5601D")||(CPU()=="SPC560D40")||(CPU()=="MPC5602D")||(CPU()=="SPC560P34")||(CPU()=="MPC5601P")||(CPU()=="SPC560P40")||(CPU()=="MPC5602P")
+  (
+    SYStem.MemAccess Disable
+    &dialogtype="v2"
+    &has_mmu="NO"
+    &flashdriver="c90fl560x256k.bin"
+    &shadowbase=0x00200000
+    &shadowsize=0x00003FFF
+    &NVPWD_addr=0x00203DD8
+    &NVSCI_addr=0x00203DE0
+    &NVSCI_layout="SCW_CCW"
+    &NVUSR_addr=0x00203E18
+    &NVUSR_default=0xFFFFFFFF
+    &NVUSR_PAD=0x00000004
+    &NVUSR_XMA=0x00000002
+    &NVUSR_SWT=0x00000001    
+  )
+  ELSE IF (CPU()=="MPC5604E")
+  (
+    &dialogtype="v2"
+    &has_mmu="NO"
+    &flashdriver="c90fl560x256k.bin"
+    &shadowbase=0x00200000
+    &shadowsize=0x00003FFF
+    &NVPWD_addr=0x00203DD8
+    &NVSCI_addr=0x00203DE0
+    &NVSCI_layout="SCW_CCW"
+    &NVUSR_addr=0x00203E18
+    &NVUSR_default=0xFFFFFFFF
+    &NVUSR_PAD=0x00000004
+    &NVUSR_XMA=0x00000002
+    &NVUSR_SWT=0x00000001    
+  )
+  ELSE IF (CPU()=="SPC560B40")||(CPU()=="MPC5602B")||(CPU()=="SPC560B44")||(CPU()=="MPC5603B")||(CPU()=="SPC560B50")||(CPU()=="MPC5604B")||(CPU()=="SPC560C40")||(CPU()=="MPC5602C")||(CPU()=="SPC560C44")||(CPU()=="MPC5603C")||(CPU()=="SPC560C50")||(CPU()=="MPC5604C")||(CPU()=="SPC560P40")||(CPU()=="MPC5602P")||(CPU()=="SPC560P44")||(CPU()=="MPC5603P")||(CPU()=="SPC560P50")||(CPU()=="MPC5604P")||(CPU()=="SPC560S")||(CPU()=="MPC5606S")
+  (
+    &dialogtype="v2"
+    &has_mmu="NO"
+    &flashdriver="c90lc560x.bin"
+    &shadowbase=0x00200000
+    &shadowsize=0x00003FFF
+    &NVPWD_addr=0x00203DD8
+    &NVSCI_addr=0x00203DE0
+    &NVSCI_layout="SCW_CCW"
+    &NVUSR_addr=0x00203E18
+    &NVUSR_default=0xFFFFFFFF
+    &NVUSR_PAD=0x00000004
+    &NVUSR_XMA=0x00000002
+    &NVUSR_SWT=0x00000001    
+  )
+  ELSE IF (CPU()=="MPC5674")||(CPU()=="MPC5674F-V2")||(CPU()=="MPC5642A")||(CPU()=="MPC5644A")||(CPU()=="MPC5644A-V2")||(CPU()=="SPC564A70")||(CPU()=="SPC564A80")||(CPU()=="SPC564A80-V2")
+  (
+    &dialogtype="v1"
+    &has_mmu="YES"
+    IF CPU()=="SPC564A70"
+      &flashdriver="c90fl564xl.bin" ;single flash module driver
+    ELSE
+      &flashdriver="c90fl5674.bin"  ;dual flash module driver
+    &shadowbase=0x00FFC000
+    &shadowsize=0x00003FFF
+    &NVPWD_addr=0x00FFFDD8
+    &NVSCI_addr=0x00FFFDE0
+    &NVSCI_layout="CCW_SCW"
+  )
+  ELSE IF (CPU()=="MPC5643L")||(CPU()=="SPC56EL60")
+  (
+    &dialogtype="v4"
+    &has_mmu="YES"
+    &flashdriver="c90fl564xl.bin"
+    &shadowbase=0x00FFC000
+    &shadowsize=0x00003FFF
+    &NVPWD_addr=0x00FFFDD8
+    &NVSCI_addr=0x00FFFDE0
+    &NVSCI_layout="CCW_SCW"
+    &NVUSR_addr=0x00FFFE10
+    &NVUSR_default=0xFFBFFFFF
+    &NVUSR_SWT=0x80000000
+    &NVUSR_XMA=0x40000000
+    &NVUSR_LSM=0x00400000
+  )
+  ELSE IF (CPU()=="MPC5673K")||(CPU()=="SPC56HK60")||(CPU()=="MPC5674K")||(CPU()=="SPC56HK64")||(CPU()=="MPC5675K")||(CPU()=="SPC56HK70")
+  (
+    &dialogtype="v4"
+    &has_mmu="YES"
+    &flashdriver="c90fl567xk.bin"
+    &shadowbase=0x00200000
+    &shadowsize=0x00003FFF
+    &NVPWD_addr=0x00203DD8
+    &NVSCI_addr=0x00203DE0
+    &NVSCI_layout="SCW_CCW"
+    &NVUSR_addr=0x00203E18
+    &NVUSR_default=0xFFBFFFFF
+    &NVUSR_SWT=0x80000000
+    &NVUSR_XMA=0x40000000
+    &NVUSR_LSM=0x00400000
+  )
+  ELSE IF (CPU()=="MPC5645S")
+  (
+    &dialogtype="v2"
+    &has_mmu="YES"
+    &flashdriver="c90fl564xl.bin"
+    &shadowbase=0x00FFC000
+    &shadowsize=0x00003FFF
+    &NVPWD_addr=0x00FFFDD8
+    &NVSCI_addr=0x00FFFDE0
+    &NVSCI_layout="SCW_CCW"
+    &NVUSR_addr=0x00FFFE18
+    &NVUSR_default=0xFFBFFFFF
+    &NVUSR_PAD=0x00000004
+    &NVUSR_XMA=0x00000002
+    &NVUSR_SWT=0x00000001    
+  )
+  ELSE IF (CPU()=="MPC5668")
+  (
+    &dialogtype="v1"
+    &has_mmu="YES"
+    &flashdriver="c90fl5668.bin"
+    &shadowbase=0x00FFC000
+    &shadowsize=0x00003FFF
+    &NVPWD_addr=0x00FFFDD8
+    &NVSCI_addr=0x00FFFDE0
+    &NVSCI_layout="CCW_SCW"
+  )
+  ELSE
+  (
+    DIALOG.OK CPU()+" is currently not supported by this script. Please contact technical support and ask for an update."
+    SYStem.RESet
+    ENDDO
+  )
+
+;check and derive settings
+  IF ("&dialogtype"=="tbd")||("&flashdriver"=="tbd")||("&NVPWD_addr"=="tbd")||("&NVSCI_addr"=="tbd")||("&NVSCI_layout"=="tbd")||("&shadowbase"=="tbd")||("&shadowsize"=="tbd")||("&has_mmu"=="tbd")
+  (
+    DIALOG.OK "Script error. Aborting"
+    GOTO end_script
+  )
+  &NVUSR_available="&NVUSR_addr"!="unavailable"
+
+;open log window
+  AREA.CREATE NV_INFO
+  AREA.SELECT NV_INFO
+  AREA.CLEAR NV_INFO
+  AREA.view NV_INFO
+  PRINT "mpc5xxx_nvconfig PRELIMINARY VERSION"
+  &text_rev="$Rev: 1455 $"
+  &text_date="$Date: 2011-10-20 19:12:00 +0200 (Do, 20 Okt 2011) $"
+  PRINT "  dialog file version: "+STRING.MID("&text_rev",5,STRING.LEN("&text_rev")-6)+" ("+STRING.MID("&text_date",7,STRING.LEN("&text_date")-8)+")"
+  PRINT "  debugger software version: "+software.version()
+;  PRINT STRING.MID("&text",1,STRING.LEN("&text")-2)
+;  PRINT STRING.MID("&text",1,STRING.LEN("&text")-2)
+  PRINT "-----------------------------------------------------------------"
+  PRINT "Detected CPU: "+CPU()
+  PRINT "using flash driver ~~/demo/powerpc/flash/quad/&flashdriver"
+  PRINT "shadow row at &shadowbase size &shadowsize"
+  PRINT "-----------------------------------------------------------------"
+
+;initialize target
+  Register.Set SPE 1
+  Data.Set EA:0x40000000--0x40003FFF %Quad 0
+  IF "&has_mmu"=="YES"
+  (
+    MMU.TLB1.SET 0. 0x00000000 0x00000000 0x00000000
+    MMU.TLB1.SET 1. 0xC0000500 0xFFF0000A 0xFFF0003F
+    MMU.TLB1.SET 3. 0xC0000400 0x40000008 0x4000003F
+    MMU.TLB1.SET 4. 0xC0000500 0xC3F00008 0xC3F0003F
+    MMU.TLB1.SET 5. 0xC0000700 0x00000000 0x0000003F
+  )
+
+;FLASH configuration
+  FLASH.RESet
+  FLASH.Create 1. &shadowbase++&shadowsize TARGET Quad
+  FLASH.TARGET E:0x40000000 E:0x40002000 0x1000 "~~/demo/powerpc/flash/quad/&flashdriver" /STACKSIZE 0x0200
+  
+;open dialog window
+  GOSUB ShowDialog_&dialogtype
+
+;set up dialog window based on current configuration
+reset_dialog:
+  PRINT "reading current configuration from shadow row..."
+
+  ON ERROR GOTO ERROR_MemAccessFail
+
+  &NVSCI=Data.Quad(ANC:&NVSCI_addr)
+  &NVSCI0=&NVSCI>>32.
+  &NVSCI1=&NVSCI&0x00000000FFFFFFFF
+  DIALOG.SET NVSCI0 FORMAT.HEX(8.,&NVSCI0)
+  DIALOG.SET NVSCI1 FORMAT.HEX(8.,&NVSCI1)
+  DIALOG.DISABLE NVSCI0
+  DIALOG.DISABLE NVSCI1
+  PRINT "  NVSCI (0x"+FORMAT.HEX(8.,&NVSCI_addr)+"): &NVSCI"
+  
+  &NVPWD=Data.Quad(ANC:&NVPWD_addr)
+  DIALOG.SET SERIALPWD FORMAT.HEX(16.,&NVPWD)
+  PRINT "  NVPWD (0x"+FORMAT.HEX(8.,&NVPWD_addr)+"): &NVPWD"
+    
+  &NVUSR=0
+  IF &NVUSR_available
+  (
+    &NVUSR=Data.LONG(ANC:&NVUSR_addr)
+    DIALOG.SET NVUSR FORMAT.HEX(8.,&NVUSR)
+    PRINT "  NVUSR (0x"+FORMAT.HEX(8.,&NVUSR_addr)+"): &NVUSR"
+  )
+
+  ON ERROR NOTHING
+
+  GOSUB CensorshipInfoUpdate
+  GOSUB PasswordInfoUpdate
+  IF &NVUSR_available
+    GOSUB UserInfoUpdate
+  SCREEN
+  WAIT 200.ms
+  PRINT "-----------------------------------------------------------------"
+  GOTO waitforok
+   
+;STOP command halts script execution until dialog event occurs
+waitforok:
+  STOP
+;script will continue here when "OK" button is clicked
+  GOTO dialog_ok
+
+;script continues here when Cancel is clicked"
+cancel:
+  DIALOG.END
+  PRINT "Cancelled"
+  GOTO end_script
+
+dialog_ok:
+;get dialog settings
+  &NVPWD_new=DIALOG.STRING(SERIALPWD)
+  GOSUB ValidityCheck "&NVPWD_new" 16. "Serial password" "ShowError" "CensorData"
+  ENTRY &result
+  IF &result!="PASSED"
+    GOTO waitforok
+  &NVPWD_new=0x&NVPWD_new
+
+  &NVSCI0_new=DIALOG.STRING(NVSCI0)
+  GOSUB ValidityCheck "&NVSCI0_new" 8. "NVSCI0" "ShowError" "CensorData"
+  ENTRY &result
+  IF &result!="PASSED"
+    GOTO waitforok
+  &NVSCI0_new=0x&NVSCI0_new
+  &NVSCI_new="0x"+DIALOG.STRING(NVSCI0)+DIALOG.STRING(NVSCI1)
+
+  &NVUSR_new=0
+  IF &NVUSR_available
+  (
+    &NVUSR_new=DIALOG.STRING(NVUSR)
+    GOSUB ValidityCheck "&NVUSR_new" 8. "NVUSR" "ShowError" "NoCensorData"
+    ENTRY &result
+    IF &result!="PASSED"
+      GOTO waitforok
+    &NVUSR_new=0x&NVUSR_new
+  )
+
+  IF (&NVUSR==&NVUSR_new)&&(&NVPWD==&NVPWD_new)&&(&NVSCI0==&NVSCI0_new)
+  (
+    PRINT "No changes performed."
+    DIALOG.END
+    GOTO end_script
+  )
+  
+  DIALOG.YESNO "Ok to program new configuration now?"
+  ENTRY &yes
+  
+  &proceed=(1==1)
+  IF (&yes)
+  (
+    IF (&NVSCI0!=&NVSCI0_new)&&(&NVSCI0_new!=0x55aa55aa)
+    (
+      DIALOG.YESNO "You are about to change the censorship and/or serial boot control to a non-default value. This can disable the JTAG/NEXUS port, on some processors even permanently. Are you sure you want to proceed? This is the last chance to say no. USE AT OWN RISC!"
+      ENTRY &proceed
+    )
+  )
+  DIALOG.END
+  
+  IF &yes&&&proceed
+  (
+;open window to display new configuration:
+    PRINT "programming shadow row with these values:"
+    PRINT "  NVSCI: &NVSCI_new"
+    PRINT "  NVPWD: &NVPWD_new"
+    IF &NVUSR_available
+    (
+      PRINT "  NVUSR: &NVUSR_new"
+    )  
+    PRINT "-----------------------------------------------------------------"
+    PRINT "start programming..."
+    IF (&NVSCI0_new!=0x55AA55AA)
+      FLASH.AUTO ALL /CENSORSHIP ; only enable censorship programming if really necessary (when !=0x55AA55AA).
+    ELSE
+      FLASH.AUTO ALL
+     
+    Data.Set &NVPWD_addr  %Quad &NVPWD_new
+    Data.Set &NVSCI_addr  %Quad &NVSCI_new
+    IF &NVUSR_available
+      Data.Set &NVUSR_addr %Long &NVUSR_new
+    
+    FLASH.AUTO OFF
+    PRINT "shadow row programming finished."
+    PRINT "start verification..."
+    
+    &errorcount=0
+    
+    &NVSCI_actual=Data.Quad(ANC:&NVSCI_addr)
+    PRINT "  NVSCI set: &NVSCI_new actual: &NVSCI_actual --> "
+    IF &NVSCI_actual==&NVSCI_new
+      PRINT %CONT "OK"
+    ELSE
+    (
+      PRINT %CONT "FAILED"
+      &errorcount=&errorcount+1
+    )
+      
+    &NVPWD_actual=Data.Quad(ANC:&NVPWD_addr)
+    PRINT "  NVPWD set: &NVPWD_new actual: &NVPWD_actual --> "
+    IF &NVPWD_actual==&NVPWD_new
+      PRINT %CONT "OK"
+    ELSE
+    (
+      PRINT %CONT "FAILED"
+      &errorcount=&errorcount+1
+    )
+
+    IF &NVUSR_available
+    (
+      &NVUSR_actual=Data.Long(ANC:&NVUSR_addr)
+      PRINT "  NVUSR set: &NVUSR_new         actual: &NVUSR_actual         --> "
+      IF &NVUSR_actual==&NVUSR_new
+        PRINT %CONT "OK"
+      ELSE
+      (
+        PRINT %CONT "FAILED"
+        &errorcount=&errorcount+1
+      )
+    )
+    
+    IF &errorcount==0
+    (
+      PRINT "verification completed."
+      PRINT "-----------------------------------------------------------------"
+      
+      IF (&NVUSR_available)
+        DIALOG.MESSAGE "Shadow row updated sucessfully. Some settings may require a power cycle to come into effect."
+      ELSE
+        DIALOG.MESSAGE "Shadow row updated sucessfully."
+    )
+    ELSE
+    (
+      PRINT "verification failed."
+      PRINT "-----------------------------------------------------------------"
+            
+      IF ((&NVSCI_length==32.)&&((&NVSCI_actual>>32.)==0x55AA55AA))||((&NVSCI_length==64.)&&(&NVSCI_actual==&NVSCI_new))
+        DIALOG.OK "Shadow row updating failed, but the device is not censored."
+      ELSE
+      (
+        DIALOG.OK "Shadow row updating failed, device could be censored."
+        ENDDO
+      )
+    )
+  )
+  ELSE
+  (
+    PRINT "Aborted."
+  )
+
+end_script:
+  AREA.SELECT A000
+  FLASH.RESet
+;  SYStem.DOWN
+ENDDO
+
+NVSCIWarning:
+  DIALOG
+  (
+    HEADER "WARNING"
+    POS 1. 0. 60. 1.
+    TEXT ""
+    
+    POS 1. 1. 58. 10.
+    WARNINGTEXT: MEDIT "..." ""
+
+    POS 1. 12. 28. 1.
+    DEFBUTTON "Accept and continue" "GOTO NVSCIWarning_accept"
+
+    POS 32. 12. 28. 1.
+    BUTTON    "Decline" "CONTinue"
+    CLOSE "CONTinue"
+  )
+  &newline=CONV.CHAR(0x0A)
+  &text="This script allows to program the censorship control (system censoring "+CONV.CHAR(0x0A)
+  &text="&text"+"information) register. Programming this register to a value different"+CONV.CHAR(0x0A)
+  &text="&text"+"than 0x55AA55AA will enable censorship. "+CONV.CHAR(0x0A)
+  &text="&text"+CONV.CHAR(0x0A)
+  &text="&text"+"Censorship means that the processor can restrict access, including"+CONV.CHAR(0x0A)
+  &text="&text"+"disabling access via JTAG/NEXUS. Depending on processor type "+CONV.CHAR(0x0A)
+  &text="&text"+"and register value, the processor can censor (i.e. disable) the"+CONV.CHAR(0x0A)
+  &text="&text"+" JTAG/NEXUS port, which makes further debugging impossible, "+CONV.CHAR(0x0A)
+  &text="&text"+"especially for processors which do not support unlocking via JTAG."+CONV.CHAR(0x0A)
+  &text="&text"+CONV.CHAR(0x0A)
+  &text="&text"+"Therefore you are urged to carefully study the processor's "+CONV.CHAR(0x0A)
+  &text="&text"+"reference manual before using or changing the censorship control"+CONV.CHAR(0x0A)
+  &text="&text"+"register. Use this feature at own risc."
+  DIALOG.SET WARNINGTEXT "&text"
+  STOP
+  DIALOG.END
+  DIALOG.DISABLE NVSCI0
+  GOTO waitforok
+  
+NVSCIWarning_accept:
+  DIALOG.END
+  DIALOG.ENABLE NVSCI0
+  GOTO waitforok
+
+ERROR_SysUpFail:
+  ON ERROR NOTHING
+  DIALOG
+  (
+    HEADER "nv_config system settings"
+    POS 2. 0. 32. 0.
+    TEXT "System.Up failed. Is there anything to do?"
+    POS 0. 1. 34. 0.
+    LINE ""
+    POS 2. 2. 26. 0.
+    CHECK_PWD: CHECKBOX "Connect with serial password" "GOTO ERROR_SysUpFail_PWDCHECKHOOK"
+    POS 4. 3. 7. 1.
+    TEXT "NVPWD:"
+    POS 11. 3. 17. 1.
+    NVPWD: EDIT "" ""
+    POS 2. 4. 26. 0.
+    CHECK_WDT: CHECKBOX "Disable external watchdog" ""
+
+    POS 2. 6. 14. 1.
+    DEFBUTTON "Try again" "CONTinue"
+
+    POS 18. 6. 14. 1.
+    BUTTON    "Cancel" "GOTO cancel"
+    CLOSE "GOTO cancel"
+  )
+  DIALOG.DISABLE NVPWD
+  IF !POWERNEXUS()
+    DIALOG.DISABLE CHECK_WDT
+  
+ERROR_SysUpFail_waitok:
+  STOP
+  IF DIALOG.BOOLEAN(CHECK_PWD)
+  (
+    &password=DIALOG.STRING(NVPWD)
+
+    IF STRING.LENGTH("&password")!=16.
+    (
+      DIALOG.OK "The serial password must have 16 digits."
+      GOTO ERROR_SysUpFail_waitok
+    )
+    
+    &index=0
+    WHILE &index<STRING.LENGTH("&password")
+    (
+      &digit=STRING.MID("&password",&index,1)
+      IF !STRING.FIND("&digit","0123456789ABCDEFabcdef")
+      (
+        DIALOG.OK "Provided password contains illegal characters."
+        GOTO ERROR_SysUpFail_waitok
+      )
+      &index=&index+1
+    )
+    SYStem.Option.KEYCODE 0x&password
+  )
+  IF POWERNEXUS()
+  (
+    &disablewdt=DIALOG.BOOLEAN(CHECK_WDT)
+    IF &disablewdt
+      TrOnchip.TOOLIO2 HIGH
+    ELSE  
+      TrOnchip.TOOLIO2 OFF
+  )
+  DIALOG.END
+  GOTO sysup_tryagain
+
+ERROR_SysUpFail_PWDCHECKHOOK:
+  IF DIALOG.BOOLEAN(CHECK_PWD)
+    DIALOG.ENABLE NVPWD
+  ELSE
+    DIALOG.DISABLE NVPWD
+  GOTO ERROR_SysUpFail_waitok
+
+ERROR_DetectFail:
+  ON ERROR NOTHING
+  DIALOG.OK "The debugger failed to connect to the CPU via JTAG. Aborting."
+  GOTO end_script
+
+ERROR_MemAccessFail:
+  ON ERROR NOTHING
+  DIALOG.OK "The debugger failed to read from the shadow row. Aborting."
+  DIALOG.END
+  GOTO end_script
+
+NVUSR_RadioButtonUpdateHook:
+  &NVUSR_new=DIALOG.STRING(NVUSR)
+  GOSUB ValidityCheck "&NVUSR_new" 8. "NVUSR" "HideError" "NoCensorData"
+  ENTRY &result
+  IF &result!="PASSED"
+    &NVUSR_new=&NVUSR
+  ELSE
+    &NVUSR_new=0x&NVUSR_new
+
+  IF DIALOG.EXIST(PAD.ON)
+  (
+    IF DIALOG.BOOLEAN(PAD.ON)
+      &NVUSR_new=(&NVUSR_new)|(&NVUSR_PAD)
+    IF DIALOG.BOOLEAN(PAD.OFF)
+      &NVUSR_new=(&NVUSR_new)&~(&NVUSR_PAD)
+  )    
+  IF DIALOG.EXIST(XMA.ON)
+  (
+    IF DIALOG.BOOLEAN(XMA.ON)
+      &NVUSR_new=(&NVUSR_new)|(&NVUSR_XMA)
+    IF DIALOG.BOOLEAN(XMA.OFF)
+      &NVUSR_new=(&NVUSR_new)&~(&NVUSR_XMA)
+  )
+  IF DIALOG.EXIST(Mode.LSM)
+  (
+    IF DIALOG.BOOLEAN(Mode.LSM)
+      &NVUSR_new=(&NVUSR_new)|(&NVUSR_LSM)
+    IF DIALOG.BOOLEAN(Mode.DPM)
+      &NVUSR_new=(&NVUSR_new)&~(&NVUSR_LSM)
+  )
+  IF DIALOG.EXIST(SWT.ON)
+  (
+    IF DIALOG.BOOLEAN(SWT.ON)
+      &NVUSR_new=(&NVUSR_new)|(&NVUSR_SWT)
+    IF DIALOG.BOOLEAN(SWT.OFF)
+      &NVUSR_new=(&NVUSR_new)&~(&NVUSR_SWT)
+  )
+  
+  DIALOG.SET NVUSR FORMAT.HEX(8,&NVUSR_new)
+  GOSUB UserInfoUpdate
+  GOTO waitforok
+
+NVUSR_UpdateHook:
+  GOSUB UserInfoUpdate
+  GOTO waitforok
+
+NVUSR_SetDefault:
+  DIALOG.SET NVUSR FORMAT.HEX(8.,&NVUSR_default)
+  GOSUB UserInfoUpdate
+  GOTO waitforok
+
+UserInfoUpdate:
+  &NVUSR_new=DIALOG.STRING(NVUSR)
+  GOSUB ValidityCheck "&NVUSR_new" 8. "NVUSR" "HideError" "NoCensorData"
+  ENTRY &result
+  IF &result!="PASSED"
+  (
+    IF DIALOG.EXIST(PAD.ON)
+    (
+      DIALOG.DISABLE PAD.ON
+      DIALOG.DISABLE PAD.OFF
+    )  
+    IF DIALOG.EXIST(XMA.ON)
+    (
+      DIALOG.DISABLE XMA.ON
+      DIALOG.DISABLE XMA.OFF
+    )
+    IF DIALOG.EXIST(Mode.LSM)
+    (
+      DIALOG.DISABLE Mode.LSM
+      DIALOG.DISABLE Mode.DPM
+    )
+    IF DIALOG.EXIST(SWT.ON)
+    (
+      DIALOG.DISABLE SWT.ON
+      DIALOG.DISABLE SWT.OFF
+    )
+    DIALOG.ENABLE NVUSRDEFAULT
+  )
+  ELSE
+  (
+    &NVUSR_new=0x&NVUSR_new
+    IF DIALOG.EXIST(PAD.ON)
+    (
+      DIALOG.ENABLE PAD.ON
+      DIALOG.ENABLE PAD.OFF
+      
+      IF (&NVUSR_new&&NVUSR_PAD)==&NVUSR_PAD
+        DIALOG.SET PAD.ON
+      ELSE  
+        DIALOG.SET PAD.OFF
+    )
+    IF DIALOG.EXIST(XMA.ON)
+    (
+      DIALOG.ENABLE XMA.ON
+      DIALOG.ENABLE XMA.OFF
+      
+      IF (&NVUSR_new&&NVUSR_XMA)==&NVUSR_XMA
+        DIALOG.SET XMA.ON
+      ELSE  
+        DIALOG.SET XMA.OFF
+    )
+    IF DIALOG.EXIST(Mode.LSM)
+    (
+      DIALOG.ENABLE Mode.LSM
+      DIALOG.ENABLE Mode.DPM
+      
+      IF (&NVUSR_new&&NVUSR_LSM)==&NVUSR_LSM
+        DIALOG.SET Mode.LSM
+      ELSE  
+        DIALOG.SET Mode.DPM
+    )
+    IF DIALOG.EXIST(SWT.ON)
+    (
+      DIALOG.ENABLE SWT.ON
+      DIALOG.ENABLE SWT.OFF
+      
+      IF (&NVUSR_new&&NVUSR_SWT)==&NVUSR_SWT
+        DIALOG.SET SWT.ON
+      ELSE  
+        DIALOG.SET SWT.OFF
+    )
+      
+    IF &NVUSR_new==&NVUSR_default
+      DIALOG.DISABLE NVUSRDEFAULT
+    ELSE
+      DIALOG.ENABLE NVUSRDEFAULT
+  )
+  RETURN
+
+PASSWORD_UpdateHook:
+  GOSUB PasswordInfoUpdate
+  GOTO waitforok
+  
+PASSWORD_SetDefault:
+  DIALOG.SET SERIALPWD "FEEDFACECAFEBEEF"
+  GOSUB PasswordInfoUpdate
+  GOTO waitforok
+
+PasswordInfoUpdate:
+  IF STRING.UPR(DIALOG.STRING(SERIALPWD))!="FEEDFACECAFEBEEF"
+    DIALOG.ENABLE PASSWORDDEFAULT
+  ELSE
+    DIALOG.DISABLE PASSWORDDEFAULT
+  RETURN
+
+NVSCI0_UpdateHook:
+  GOSUB CensorshipInfoUpdate
+  GOTO waitforok
+
+NVSCI0_SetDefault:
+  DIALOG.SET NVSCI0 "55AA55AA"
+  
+  IF &NVSCI_length==32.
+    DIALOG.SET NVSCI1 "FFFFFFFF"
+  ELSE
+    DIALOG.SET NVSCI1 "55AA55AA"
+  
+  GOSUB CensorshipInfoUpdate
+  GOTO waitforok
+
+CensorshipInfoUpdate:
+  &NVSCI0_new=DIALOG.STRING(NVSCI0)
+  GOSUB ValidityCheck "&NVSCI0_new" 8. "NVSCI" "HideError" "CensorData"
+  ENTRY &result
+  IF &result=="PASSED"
+  (
+    IF "&NVSCI_layout"=="CCW_SCW"
+      DIALOG.SET NVSCITEXT "NVSCI0[CCW]="+STRING.UPR(STRING.MID("&NVSCI0_new",0,4))+"  NVSCI0[SCW]="+STRING.UPR(STRING.MID("&NVSCI0_new",4,4)) 
+    ELSE
+      DIALOG.SET NVSCITEXT "NVSCI0[SCW]="+STRING.UPR(STRING.MID("&NVSCI0_new",0,4))+"  NVSCI0[CCW]="+STRING.UPR(STRING.MID("&NVSCI0_new",4,4))
+      
+    IF (&NVSCI0_new!=0x55AA55AA)
+      DIALOG.ENABLE CENSORDEFAULT
+    ELSE
+      DIALOG.DISABLE CENSORDEFAULT
+  )
+  ELSE
+  (
+    DIALOG.SET NVSCITEXT "invalid NVSCI"
+    DIALOG.ENABLE CENSORDEFAULT
+  )
+  RETURN
+
+ValidityCheck:
+  LOCAL &value &length &typestring &errormode &datatype
+  ENTRY &value &length &typestring &errormode &datatype
+  
+  IF STRING.LEN(&value)!=&length
+  (
+    IF &errormode=="ShowError"
+      DIALOG.OK "&typestring must have "+FORMAT.DECIMAL(1,&length)+" digits"
+    RETURN "ERROR"
+  )
+    
+  &index=0
+  WHILE &index<&length
+  (
+    &digit=STRING.MID(&value,&index,1)
+    IF !STRING.FIND("&digit","0123456789ABCDEFabcdef")
+    (
+      IF &errormode=="ShowError"
+        DIALOG.OK "&typestring must be a hexadecimal value"
+      RETURN "ERROR"
+    )
+    &index=&index+1
+  )
+  
+  IF &datatype=="CensorData"
+  (
+    &index=0
+    WHILE &index<&length
+    (
+      &halfword=STRING.MID(&value,&index,4)
+      IF ("&halfword"=="0000")||(STRING.UPR("&halfword")=="FFFF")
+      (
+        IF &errormode=="ShowError"
+          DIALOG.OK "&typestring: Each 16-bit half word must be different from '0000' and 'FFFF'"
+        RETURN "ERROR"
+      )
+      &index=&index+4
+    )
+  )
+  RETURN "PASSED"
+
+ShowDialog_v1:
+DIALOG
+(
+  HEADER "nv_config"
+
+  POS 0. 0. 40. 0.
+  LINE "Censorship/Serial Boot control"
+
+  POS 1. 1. 38. 1.
+  NVSCIWARNINGBUTTON: BUTTON "Please read this before changing NVSCI" "GOTO NVSCIWarning"
+
+  POS 1. 3. 8. 1.
+  TEXT "NVSCI0/1:"
+  POS 9. 3. 9. 1.
+  NVSCI0: HOTEDIT "" "GOTO NVSCI0_UpdateHook"
+  POS 18. 3. 9. 1.
+  NVSCI1: EDIT "" ""
+
+  
+  POS 29. 3. 10. 1.
+  CENSORDEFAULT: BUTTON "Set Default" "GOTO NVSCI0_SetDefault" 
+
+  POS 3. 4. 30. 1.
+  NVSCITEXT: DYNTEXT "CCW:"
+
+  POS 0. 5. 40. 0.
+  LINE "Serial Password"
+  
+  POS 1. 6. 7. 1.
+  TEXT "NVPWD:"
+  POS 8. 6. 17. 1.
+  SERIALPWD: HOTEDIT "" "GOTO PASSWORD_UpdateHook"
+  POS 29. 6. 10. 1.
+  PASSWORDDEFAULT: BUTTON "Set Default" "GOTO PASSWORD_SetDefault"
+
+  POS 0. 8. 40. 0.
+  LINE ""
+
+  POS 1. 9. 10. 1.
+  DEFBUTTON "PROGRAM" "CONTinue"
+  
+  POS 14. 9. 12. 1.
+  BUTTON    "Reset Dialog" "GOTO reset_dialog"
+
+  POS 29. 9. 10. 1.
+  BUTTON    "Cancel" "GOTO cancel"
+  CLOSE "GOTO cancel"
+)
+RETURN
+
+
+ShowDialog_v2:
+DIALOG
+(
+  HEADER "nv_config"
+
+  POS 0. 0. 40. 0.
+  LINE "Censorship/Serial Boot control"
+
+  POS 1. 1. 38. 1.
+  NVSCIWARNINGBUTTON: BUTTON "Please read this before changing NVSCI" "GOTO NVSCIWarning"
+
+  POS 1. 3. 8. 1.
+  TEXT "NVSCI0/1:"
+  POS 8. 3. 10. 1.
+  NVSCI0: HOTEDIT "" "GOTO NVSCI0_UpdateHook"
+  POS 18. 3. 9. 1.
+  NVSCI1: EDIT "" ""
+  POS 29. 3. 10. 1.
+  CENSORDEFAULT: BUTTON "Set Default" "GOTO NVSCI0_SetDefault" 
+
+  POS 8. 4. 25. 1.
+  NVSCITEXT: DYNTEXT "CCW:"
+
+  POS 0. 5. 38. 0.
+  LINE "Serial Password"
+  
+  POS 1. 6. 7. 1.
+  TEXT "NVPWD:"
+  POS 8. 6. 17. 1.
+  SERIALPWD: HOTEDIT "" "GOTO PASSWORD_UpdateHook"
+  POS 29. 6. 10. 1.
+  PASSWORDDEFAULT: BUTTON "Set Default" "GOTO PASSWORD_SetDefault"
+
+  POS 0. 8. 38. 0.
+  LINE "User Settings"
+
+  POS 1. 9. 7. 1.
+  TEXT "NVUSR:"
+  POS 8. 9. 10. 1.
+  NVUSR: HOTEDIT "" "GOTO NVUSR_UpdateHook"
+  POS 29. 9. 10. 1.
+  NVUSRDEFAULT: BUTTON "Set Default" "GOTO NVUSR_SetDefault"
+
+
+  POS 8. 10. 9. 4.
+  BOX "PAD:"
+  POS 9. 11. 7. 1.
+  PAD.OFF: CHOOSEBOX "5V"   "GOTO NVUSR_RadioButtonUpdateHook"
+  PAD.ON: CHOOSEBOX "3.3V" "GOTO NVUSR_RadioButtonUpdateHook"
+
+  POS 18. 10. 9. 4.
+  BOX "XMA:"
+  POS 19. 11. 7. 1.
+  XMA.OFF:  CHOOSEBOX "low" "GOTO NVUSR_RadioButtonUpdateHook"
+  XMA.ON:   CHOOSEBOX "high" "GOTO NVUSR_RadioButtonUpdateHook"
+
+  POS 28. 10. 9. 4.
+  BOX "SWT:"
+  POS 29. 11. 7. 1.
+  SWT.OFF:  CHOOSEBOX "OFF" "GOTO NVUSR_RadioButtonUpdateHook"
+  SWT.ON:   CHOOSEBOX "ON" "GOTO NVUSR_RadioButtonUpdateHook"
+
+  POS 0. 14. 38. 0.
+  LINE ""
+
+  POS 1. 15. 10. 1.
+  DEFBUTTON "PROGRAM" "CONTinue"
+  
+  POS 14. 15. 12. 1.
+  BUTTON    "Reset Dialog" "GOTO reset_dialog"
+
+  POS 29. 15. 10. 1.
+  BUTTON    "Cancel" "GOTO cancel"
+  CLOSE "GOTO cancel"
+)
+RETURN
+
+
+ShowDialog_v3:
+DIALOG
+(
+  HEADER "nv_config"
+
+  POS 0. 0. 40. 0.
+  LINE "Censorship/Serial Boot control"
+
+  POS 1. 1. 38. 1.
+  NVSCIWARNINGBUTTON: BUTTON "Please read this before changing NVSCI" "GOTO NVSCIWarning"
+
+  POS 1. 3. 8. 1.
+  TEXT "NVSCI0/1:"
+  POS 8. 3. 10. 1.
+  NVSCI0: HOTEDIT "" "GOTO NVSCI0_UpdateHook"
+  POS 18. 3. 9. 1.
+  NVSCI1: EDIT "" ""
+  POS 29. 3. 10. 1.
+  CENSORDEFAULT: BUTTON "Set Default" "GOTO NVSCI0_SetDefault" 
+
+  POS 8. 4. 25. 1.
+  NVSCITEXT: DYNTEXT "CCW:"
+
+  POS 0. 5. 38. 0.
+  LINE "Serial Password"
+  
+  POS 1. 6. 7. 1.
+  TEXT "NVPWD:"
+  POS 8. 6. 17. 1.
+  SERIALPWD: HOTEDIT "" "GOTO PASSWORD_UpdateHook"
+  POS 29. 6. 10. 1.
+  PASSWORDDEFAULT: BUTTON "Set Default" "GOTO PASSWORD_SetDefault"
+
+  POS 0. 8. 38. 0.
+  LINE "User Settings"
+
+  POS 1. 9. 7. 1.
+  TEXT "NVUSR:"
+  POS 8. 9. 10. 1.
+  NVUSR: HOTEDIT "" "GOTO NVUSR_UpdateHook"
+  POS 29. 9. 10. 1.
+  NVUSRDEFAULT: BUTTON "Set Default" "GOTO NVUSR_SetDefault"
+
+
+  POS 8. 10. 9. 4.
+  BOX "Mode:"
+  POS 9. 11. 7. 1.
+  Mode.DPM: CHOOSEBOX "DPM" "GOTO NVUSR_RadioButtonUpdateHook"
+  Mode.LSM: CHOOSEBOX "LSM" "GOTO NVUSR_RadioButtonUpdateHook"
+
+  POS 18. 10. 9. 4.
+  BOX "SWT:"
+  POS 19. 11. 7. 1.
+  SWT.OFF:  CHOOSEBOX "OFF" "GOTO NVUSR_RadioButtonUpdateHook"
+  SWT.ON:   CHOOSEBOX "ON" "GOTO NVUSR_RadioButtonUpdateHook"
+
+  POS 0. 14. 38. 0.
+  LINE ""
+
+  POS 1. 15. 10. 1.
+  DEFBUTTON "PROGRAM" "CONTinue"
+  
+  POS 14. 15. 12. 1.
+  BUTTON    "Reset Dialog" "GOTO reset_dialog"
+
+  POS 29. 15. 10. 1.
+  BUTTON    "Cancel" "GOTO cancel"
+  CLOSE "GOTO cancel"
+)
+RETURN
+
+ShowDialog_v4:
+DIALOG
+(
+  HEADER "nv_config"
+
+  POS 0. 0. 40. 0.
+  LINE "Censorship/Serial Boot control"
+
+  POS 1. 1. 38. 1.
+  NVSCIWARNINGBUTTON: BUTTON "Please read this before changing NVSCI" "GOTO NVSCIWarning"
+
+  POS 1. 3. 8. 1.
+  TEXT "NVSCI0/1:"
+  POS 8. 3. 10. 1.
+  NVSCI0: HOTEDIT "" "GOTO NVSCI0_UpdateHook"
+  POS 18. 3. 9. 1.
+  NVSCI1: EDIT "" ""
+  POS 29. 3. 10. 1.
+  CENSORDEFAULT: BUTTON "Set Default" "GOTO NVSCI0_SetDefault" 
+
+  POS 8. 4. 25. 1.
+  NVSCITEXT: DYNTEXT "CCW:"
+
+  POS 0. 5. 40. 0.
+  LINE "Serial Password"
+  
+  POS 1. 6. 7. 1.
+  TEXT "NVPWD:"
+  POS 8. 6. 17. 1.
+  SERIALPWD: HOTEDIT "" "GOTO PASSWORD_UpdateHook"
+  POS 29. 6. 10. 1.
+  PASSWORDDEFAULT: BUTTON "Set Default" "GOTO PASSWORD_SetDefault"
+
+  POS 0. 8. 40. 0.
+  LINE "User Settings"
+
+  POS 1. 9. 7. 1.
+  TEXT "NVUSR:"
+  POS 8. 9. 10. 1.
+  NVUSR: HOTEDIT "" "GOTO NVUSR_UpdateHook"
+  POS 29. 9. 10. 1.
+  NVUSRDEFAULT: BUTTON "Set Default" "GOTO NVUSR_SetDefault"
+
+  POS 8. 10. 9. 4.
+  BOX "SWT:"
+  POS 9. 11. 7. 1.
+  SWT.OFF:  CHOOSEBOX "OFF" "GOTO NVUSR_RadioButtonUpdateHook"
+  SWT.ON:   CHOOSEBOX "ON" "GOTO NVUSR_RadioButtonUpdateHook"
+
+  POS 18. 10. 9. 4.
+  BOX "XMA:"
+  POS 19. 11. 7. 1.
+  XMA.OFF:  CHOOSEBOX "low" "GOTO NVUSR_RadioButtonUpdateHook"
+  XMA.ON:   CHOOSEBOX "high" "GOTO NVUSR_RadioButtonUpdateHook"
+
+  POS 0. 14. 40. 0.
+  LINE ""
+
+  POS 28. 10. 9. 4.
+  BOX "LSM:"
+  POS 29. 11. 7. 1.
+  Mode.DPM: CHOOSEBOX "DPM" "GOTO NVUSR_RadioButtonUpdateHook"
+  Mode.LSM: CHOOSEBOX "LSM" "GOTO NVUSR_RadioButtonUpdateHook"
+
+
+  POS 1. 15. 10. 1.
+  DEFBUTTON "PROGRAM" "CONTinue"
+  
+  POS 14. 15. 12. 1.
+  BUTTON    "Reset Dialog" "GOTO reset_dialog"
+
+  POS 29. 15. 10. 1.
+  BUTTON    "Cancel" "GOTO cancel"
+  CLOSE "GOTO cancel"
+)
+RETURN

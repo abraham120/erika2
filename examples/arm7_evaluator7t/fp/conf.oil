@@ -1,0 +1,83 @@
+CPU mySystem {
+
+OS myOs {
+                
+	EE_OPT = "__LCD_USED__";
+	EE_OPT = "__LEDS_USED__";
+	EE_OPT = "__TIMER_0_USED__";
+	EE_OPT = "__TIMER_1_USED__";
+	EE_OPT = "__BUTTON_USED__";
+	EE_OPT = "DEBUG";
+        STATUS = EXTENDED;
+
+        STARTUPHOOK = TRUE;
+        ERRORHOOK = FALSE;
+        SHUTDOWNHOOK = FALSE;
+        PRETASKHOOK = FALSE;
+        POSTTASKHOOK = FALSE;
+        USEGETSERVICEID = FALSE;
+        USEPARAMETERACCESS = FALSE;
+        USERESSCHEDULER = TRUE;
+        
+	CPU_DATA = ARM7 {
+		APP_SRC = "code.c";
+		THUMB_SRC = "thumb.c";
+		STACK_TOP    = 0x80000;
+		STACK_BOTTOM = 0x20000;
+		SYS_SIZE     = 0x4000;
+		SVC_SIZE     = 0x4000;
+		FIQ_SIZE     = 0x4000;
+		ABT_SIZE     = 0x4000;
+		UND_SIZE     = 0x4000;
+		MULTI_STACK = TRUE {
+			IRQ_STACK = FALSE;
+			DUMMY_STACK = SHARED;
+		};
+
+	};
+
+	MCU_DATA = SAMSUNG_KS32C50100 {
+	  	IRQ_TIMER0 = "timer0_handler";
+	  	IRQ_TIMER1 = "timer1_handler";
+	};
+
+	BOARD_DATA = EVALUATOR7T;
+	
+	KERNEL_TYPE = FP;
+};
+
+    TASK thread0 {
+        PRIORITY = 1;
+        ACTIVATION = 1;
+	STACK = PRIVATE {
+		SYS_SIZE = 512;
+	};
+        SCHEDULE = FULL;
+	RESOURCE = MUTEX_sync;
+    };
+
+    TASK thread1 {
+        PRIORITY = 2;
+        ACTIVATION = 1;
+	STACK = SHARED;
+        SCHEDULE = FULL;
+    };
+
+    TASK thread2 {
+        PRIORITY = 3;
+        ACTIVATION = 4;
+	STACK = SHARED;
+        SCHEDULE = FULL;
+	RESOURCE = MUTEX_sync;
+    };
+
+    TASK thread3 {
+        PRIORITY = 4;
+        ACTIVATION = 4;
+	STACK = SHARED;
+        SCHEDULE = FULL;
+    };
+
+    RESOURCE MUTEX_sync { RESOURCEPROPERTY = STANDARD; };
+};
+

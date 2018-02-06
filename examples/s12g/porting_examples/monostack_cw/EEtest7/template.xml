@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<evidence_example version="1" ID="S12G_CODEWARRIOR_EE_TEST7">
+
+ <category>s12g/codewarrior/porting_examples/monostack</category>
+ <title>test7</title>
+   
+ <small_descr>
+ A minimal EE demo for BCC2 mode testing.
+ </small_descr>
+
+ <long_descr>
+ A minimal EE demo for BCC2 mode testing. Task1 is a non-preemptive task
+ and Task2 can have pending activations.
+ The compilation uses the conf.oil file to create Debug folder. 
+ Debug folder contains:
+ &lt;ul&gt;
+ &lt;li&gt;the makefile; &lt;/li&gt;
+ &lt;li&gt;the obj folder that contains the object files organized in a EE-like tree; &lt;/li&gt;
+ &lt;li&gt;the executable file (.elf); &lt;/li&gt;
+ &lt;li&gt;other files useful for debug; &lt;/li&gt;
+ &lt;/ul&gt;
+ </long_descr>
+
+ <file_section>
+  <file     name="Project.prm"/> 
+  <file     name="conf.oil"/>
+  <file     name="Start12.c"/>
+  <file     name="readme.txt"/>
+  <file     name="main.c"/>
+  <file     name="CPU12ISRs.c"/>
+  <file     name="CPU12ISRs.h"/>
+  <file     name="Vectors.c"/>
+  <file     name="Full_Chip_Simulation.ini"/>
+  <file     name="PE_Multilink_CyclonePro.ini"/>
+  <file     name="C_Layout.hwl"/>
+ </file_section>
+
+</evidence_example>

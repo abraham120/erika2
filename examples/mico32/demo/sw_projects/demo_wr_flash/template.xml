@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<evidence_example version="1" ID="mico32_demo_wr_flash">
+
+ <category>mico32/FPG-EYE/fpg_eye_mico32</category>
+ <title>SPI Flash demo</title>
+
+ <small_descr>
+ This is the demo to test software SPI Flash on FPG-EYE Board devices.
+ </small_descr>
+
+ <long_descr>
+ SPI Flash demo.
+ &lt;br /&gt;
+ &lt;br /&gt;
+ User can use this demo to learn how to write to and read from SST25LF0X0A SPI
+ flash mounted on the XP2 camera board.
+ &lt;br /&gt;
+ &lt;br /&gt;
+ The demo requires a RS232 serial connection with user PC (115200 bps, 8N1
+ configuration).
+ </long_descr>
+
+ <file_section>
+  <file     name="conf.oil"/>
+  <file     name="main.c"/>
+  <file     name="spi_flash_sw.c"/>
+  <file     name="spi_flash_sw.h"/>  
+  <file     name="makefile"/>
+ </file_section>
+
+</evidence_example>

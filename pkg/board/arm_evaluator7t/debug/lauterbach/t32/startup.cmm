@@ -1,0 +1,19 @@
+; ---------------------------------------------------------------------
+; System reset & startup
+
+sys.d
+
+; disable reset break; this enable the BSL code to start up and remap
+; the system RAM
+sys.o resbreak off
+
+; this is the CPU for the Evaluator 7T
+sys.cpu KS32C50100 
+
+; system start
+sys.u
+
+; disable interrupts when doing single step
+setup.imaskasm.on
+setup.imaskhll.on
+

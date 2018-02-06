@@ -1,0 +1,52 @@
+Test da fare sui semafori
+-------------------------
+I numeri indicano il demo di riferimento
+
+ECC1 ed ECC2, Extended status
+1 - WaitSem chiamata a livello IRQ --> E_OS_CALLEVEL
+1 - WaitSem chiamata a livello main --> E_OS_CALLEVEL
+1 - WaitSem chiamata con risorse occupate --> E_OS_RESOURCE
+1 - WaitSem chiamata da un Basic task --> E_OS_ACCESS
+
+ECC1 ed ECC2, standard & extended Status
+2 - WaitSem chiamata con semaforo con contatore > 1 --> decrementa e ritorna
+2 - WaitSem chiamata con contatore a 0 e coda sem vuota --> mi blocco ed il task è accodato come primo
+2 - WaitSem chiamata con contatore a 0 e coda sem non vuota --> mi blocco ed il task è accodato come ultimo
+
+3 WaitSem chiamata con contatore a 0 --> mi blocco ed eseguo un task preemptato
+3 WaitSem chiamata con contatore a 0 --> mi blocco ed eseguo il main
+2 WaitSem chiamata con contatore a 0 --> mi blocco ed eseguo un nuovo task che attendeva di partire
+
+-------
+
+BCC1, BCC2, ECC1, ECC2, standard & extended status
+4 - TryWaitSem chiamata  con contatore a 0 --> ritorna 1
+4 - TryWaitSem chiamata  con contatore !=0 --> contatore decrementato, ritorna 0
+
+-------
+
+BCC1, BCC2, ECC1 ed ECC2, Standard e extended status
+4 - SemPost chiamato in un task con contatore >=0 e nessuno bloccato --> contatore incrementato
+4 - SemPost chiamato in un ISR con contatore >=0 e nessuno bloccato --> contatore incrementato
+4 - SemPost chiamato nel main task con contatore >=0 e nessuno bloccato --> contatore incrementato
+
+4 - SemPost chiamato in un task con contatore =EE_MAX_SEM_COUNTER e nessuno bloccato --> E_OS_VALUE
+4 - SemPost chiamato in un ISR con contatore =EE_MAX_SEM_COUNTER e nessuno bloccato --> E_OS_VALUE
+4 - SemPost chiamato nel main task con contatore =EE_MAX_SEM_COUNTER e nessuno bloccato --> E_OS_VALUE
+
+
+
+ECC1 ed ECC2, standard & extended status
+2 - SemPost chiamato in un task con contatore =0 e qualcuno bloccato --> sblocco un task e parte il task sbloccato
+2 - SemPost chiamato in un task con contatore =0 e qualcuno bloccato --> sblocco un task e il task sbloccato va in coda ready
+
+3 SemPost chiamato in un IRQ con contatore =0 e qualcuno bloccato --> sblocco un task e il task sbloccato va in coda ready, no preemption, preemption alla fine dell'ISR
+3 SemPost chiamato in un IRQ con contatore =0 e qualcuno bloccato --> sblocco un task e il task sbloccato va in coda ready, no preemption, no preemption alla fine dell'ISR
+
+3 SemPost chiamato nel main con contatore =0 e qualcuno bloccato --> sblocco un task e parte il task sbloccato
+
+
+BCC1, BCC2, ECC1 ed ECC2, Standard e extended status
+3 EE_oo_InitSem per inizializzare un semaforo ad un valore 
+1,2 - STATICSEM per inizializzare un semaforo ad un valore staticamente
+3,4 - EE_oo_GetValueSem per prendere il valore di un contatore di semaforo

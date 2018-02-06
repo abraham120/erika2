@@ -1,0 +1,100 @@
+; ###*B*###
+; ERIKA Enterprise - a tiny RTOS for small microcontrollers
+;
+; Copyright (C) 2002-2012  Evidence Srl
+;
+; This file is part of ERIKA Enterprise.
+;
+; ERIKA Enterprise is free software; you can redistribute it
+; and/or modify it under the terms of the GNU General Public License
+; version 2 as published by the Free Software Foundation, 
+; (with a special exception described below).
+;
+; Linking this code statically or dynamically with other modules is
+; making a combined work based on this code.  Thus, the terms and
+; conditions of the GNU General Public License cover the whole
+; combination.
+;
+; As a special exception, the copyright holders of this library give you
+; permission to link this code with independent modules to produce an
+; executable, regardless of the license terms of these independent
+; modules, and to copy and distribute the resulting executable under
+; terms of your choice, provided that you also meet, for each linked
+; independent module, the terms and conditions of the license of that
+; module.  An independent module is a module which is not derived from
+; or based on this library.  If you modify this code, you may extend
+; this exception to your version of the code, but you are not
+; obligated to do so.  If you do not wish to do so, delete this
+; exception statement from your version.
+;
+; ERIKA Enterprise is distributed in the hope that it will be
+; useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+; of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+; GNU General Public License version 2 for more details.
+;
+; You should have received a copy of the GNU General Public License
+; version 2 along with ERIKA Enterprise; if not, write to the
+; Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+; Boston, MA 02110-1301 USA. 
+; ###*E*### 
+
+;/** 
+;	@file ee_ccrx_oo.src
+; 	@brief Functions to save and restore registers for Osek TerminateTask() on RX200
+;	@author Gianluca Franchino
+;	@date 2012
+;*/
+
+;*******************************************************************************
+;                         PUBLIC FUNCTIONS
+;*******************************************************************************
+	; Functions declared in this file 
+	.GLB	_EE_hal_terminate_savestk	; void EE_hal_terminate_savestk(EE_TID tid)
+	.GLB	_EE_hal_terminate_task		; NORETURN void EE_hal_terminate_task(EE_TID tid);
+
+	.GLB	_EE_terminate_real_th_body
+	.GLB	_EE_terminate_data
+
+	.SECTION   P,CODE
+
+	;void EE_hal_terminate_savestk(EE_TID tid);
+_EE_hal_terminate_savestk:
+	;R1 == tid
+	SHLL	#2, R1		; R1 = tid << 2	
+	MOV.L	#_EE_terminate_real_th_body, R2	;R2 = &EE_terminate_real_th_body[0]
+	ADD	R1, R2; R2 = &EE_terminate_real_th_body[tid]
+	MOV.L [R2], R2 ; R2 = EE_terminate_real_th_body[tid]
+	; Save the stack pointer (including space for registers)
+	MOV.L #_EE_terminate_data, R3 ; R3 = &EE_terminate_data[0]
+	ADD R1, R3 ; R3 == &EE_terminate_data[tid]
+	MOV.L SP, R4 ; Get the stack pointer
+	ADD #-32, R4 ; R4 = Stack pointer after context saving
+	MOV.L R4, [R3] ; Save stack pointer
+	; Save all callee-saved registers
+	; R1-R5 and R14-R15 are scratch registers, R0 ->(SP).
+	PUSHM R6-R13 ;Store registers from R6 to R13 into stack
+	
+	;Start the thread body
+	JSR	R2
+	
+	; The task terminated with a return: do the usual cleanup
+	POPM R6-R13 ;Restore registers R6 to R13 from stack
+	
+	RTS ; Return
+
+	;void EE_hal_terminate_task(EE_TID tid) NORETURN; */
+_EE_hal_terminate_task:	
+	; R1 == tid
+	; Restore the stack pointer
+	; R1 == & EE_terminate_data[tid]
+	SHLL	#2, R1		; R1 = tid << 2	
+	MOV.L	#_EE_terminate_data, R2	;R2 = &EE_terminate_data[0]
+	ADD	R1, R2 ; R2 = &EE_terminate_data[tid]
+	MOV.L [R2], R2 ; R2 = EE_terminate_data[tid]
+	MOV.L R2, SP
+	; The task terminated with a return: do the usual cleanup
+	POPM R6-R13 ;Restore registers R6 to R13 from stack
+	
+	RTS ; Return
+	
+	.END

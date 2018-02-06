@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<evidence_example version="1">
+
+ <category>pic30/FLEX</category>
+ <title>ZigBee, Ultrasound Sensor, Compass</title>
+   
+ <small_descr>
+ This is the example presented in Embedded World 2007.
+ </small_descr>
+
+ <long_descr>
+ This is the example presented in Embedded World 2007.
+ &lt;br&gt;
+ A demo including:
+ &lt;ul&gt;
+ &lt;li&gt;One task; &lt;/li&gt;
+ &lt;li&gt;One periodic alarm controlled by timer T1 &lt;/li&gt;
+ &lt;li&gt;Support for Evidence Flex &lt;/li&gt;
+ &lt;li&gt;Support for ZigBee &lt;/li&gt;
+ &lt;li&gt;Support for Compass &lt;/li&gt;
+ &lt;li&gt;Support for Ultrasound Sensor &lt;/li&gt;
+ &lt;li&gt;Eagle Schematics to build a Flex daughter board &lt;/li&gt;
+ &lt;/ul&gt;
+ </long_descr>
+
+ <file_section>
+  <file     name="code.c"/> 
+  <file     name="sensors.c"/> 
+  <file     name="sensors.h"/> 
+  <file     name="conf.oil"/>
+  <file     name="readme.txt"/>
+  <file     name="EW07.sch"/>
+  <file     name="EW07.brd"/>
+  <file     name="photo.jpg"/>
+ </file_section>
+
+</evidence_example>

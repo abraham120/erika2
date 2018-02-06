@@ -1,0 +1,54 @@
+LOG CMDLINE = ON, CMDFILE = OFF, RESPONSES = ON, ERRORS = ON, NOTICES = ON
+
+WAIT 1
+
+lf logfile.txt
+printf("MODISTARC regression tests in progress...")
+
+//------------------------------------------
+//cf script\modistarc_task_1_script.txt
+//cf script\modistarc_task_2_script.txt
+//cf script\modistarc_task_3_script.txt
+//cf script\modistarc_task_4_script.txt
+//cf script\modistarc_task_5_script.txt
+//cf script\modistarc_task_6_script.txt
+//cf script\modistarc_task_7_script.txt
+//cf script\modistarc_task_8_script.txt
+//cf script\modistarc_task_9_script.txt
+//cf script\modistarc_task_9a_script.txt
+//cf script\modistarc_task_10_script.txt
+//cf script\modistarc_task_11_script.txt
+//cf script\modistarc_task_12_script.txt
+//cf script\modistarc_task_13_script.txt
+//cf script\modistarc_task_14_script.txt
+//cf script\modistarc_task_15_script.txt
+
+//------------------------------------------
+cf script\modistarc_alarm_1_script.txt
+//cf script\modistarc_alarm_2_script.txt
+//cf script\modistarc_alarm_3_script.txt
+//cf script\modistarc_alarm_4_script.txt
+//cf script\modistarc_alarm_5_script.txt
+//cf script\modistarc_alarm_6_script.txt
+//cf script\modistarc_alarm_7_script.txt
+
+//------------------------------------------
+//cf script\modistarc_resource_1_script.txt
+//cf script\modistarc_resource_2_script.txt
+//cf script\modistarc_resource_3_script.txt
+//cf script\modistarc_resource_4_script.txt
+
+//------------------------------------------
+//cf script\modistarc_event_1_script.txt
+//cf script\modistarc_event_2_script.txt
+//cf script\modistarc_event_3_script.txt
+//cf script\modistarc_event_4_script.txt
+
+//------------------------------------------
+//cf script\modistarc_error_1_script.txt
+//cf script\modistarc_error_2_script.txt
+
+nolf
+exit_status:
+	printf("...Done!!!")
+

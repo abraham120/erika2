@@ -1,0 +1,66 @@
+// *** modistarc_resource_4 ***
+//modistarc_resource_4/ out_s12xs_CONF_B1
+//modistarc_resource_4/ out_s12xs_CONF_B2
+//modistarc_resource_4/ out_s12xs_CONF_E1
+//modistarc_resource_4/ out_s12xs_CONF_E2
+
+
+
+// B1
+cd ..\..\modistarc_resource_4\out_s12xs_CONF_B1
+load "Debug\hs12xs.elf" NOPRELOADCMD NOPOSTLOADCMD NORUNAFTERLOAD
+BS 0xC779 P E
+GO
+// Wait the breakpoint or a similar pause
+WAIT 10 ;s
+STOP
+IF EE_assertions[0]==1
+printf("OK!!!")
+ELSE
+printf("FAILURE!!!")
+ENDIF
+
+// B2
+cd ..\out_s12xs_CONF_B2
+load "Debug\hs12xs.elf" NOPRELOADCMD NOPOSTLOADCMD NORUNAFTERLOAD
+BS 0xC779 P E
+GO
+// Wait the breakpoint or a similar pause
+WAIT 10 ;s
+STOP
+IF EE_assertions[0]==1
+printf("OK!!!")
+ELSE
+printf("FAILURE!!!")
+ENDIF
+
+// E1
+cd ..\out_s12xs_CONF_E1
+load "Debug\hs12xs.elf" NOPRELOADCMD NOPOSTLOADCMD NORUNAFTERLOAD
+BS 0xC779 P E
+GO
+// Wait the breakpoint or a similar pause
+WAIT 10 ;s
+STOP
+IF EE_assertions[0]==1
+printf("OK!!!")
+ELSE
+printf("FAILURE!!!")
+ENDIF
+
+// E2
+cd ..\out_s12xs_CONF_E2
+load "Debug\hs12xs.elf" NOPRELOADCMD NOPOSTLOADCMD NORUNAFTERLOAD
+BS 0xC779 P E
+GO
+// Wait the breakpoint or a similar pause
+WAIT 10 ;s
+STOP
+IF EE_assertions[0]==1
+printf("OK!!!")
+ELSE
+printf("FAILURE!!!")
+ENDIF
+
+// end
+cd ..\..\common\s12xs

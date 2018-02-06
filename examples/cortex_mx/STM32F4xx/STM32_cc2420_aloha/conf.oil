@@ -1,0 +1,157 @@
+/* ###*B*###
+ * ERIKA Enterprise - a tiny RTOS for small microcontrollers
+ *
+ * Copyright (C) 2002-2013  Evidence Srl
+ *
+ * This file is part of ERIKA Enterprise.
+ *
+ * ERIKA Enterprise is free software; you can redistribute it
+ * and/or modify it under the terms of the GNU General Public License
+ * version 2 as published by the Free Software Foundation, 
+ * (with a special exception described below).
+ *
+ * Linking this code statically or dynamically with other modules is
+ * making a combined work based on this code.  Thus, the terms and
+ * conditions of the GNU General Public License cover the whole
+ * combination.
+ *
+ * As a special exception, the copyright holders of this library give you
+ * permission to link this code with independent modules to produce an
+ * executable, regardless of the license terms of these independent
+ * modules, and to copy and distribute the resulting executable under
+ * terms of your choice, provided that you also meet, for each linked
+ * independent module, the terms and conditions of the license of that
+ * module.  An independent module is a module which is not derived from
+ * or based on this library.  If you modify this code, you may extend
+ * this exception to your version of the code, but you are not
+ * obligated to do so.  If you do not wish to do so, delete this
+ * exception statement from your version.
+ *
+ * ERIKA Enterprise is distributed in the hope that it will be
+ * useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License version 2 for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * version 2 along with ERIKA Enterprise; if not, write to the
+ * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ * Boston, MA 02110-1301 USA.
+ * ###*E*### */
+
+/*
+ * Author: Gianluca Franchino. 2013
+ * Affiliation: Retis Lab. Scuola Superiore Sant'Anna. Pisa (Italy).
+ * Contacts: g.franchino@sssup.it; gianluca@evidence.eu.com
+ *
+ */
+
+CPU mySystem {
+
+	OS myOs {
+		EE_OPT = "DEBUG";
+		//EE_OPT = "__KEIL_4_54_OLDER__";
+		//EE_OPT = "__KEIL_USE_AXF_EXT__";
+		
+		CPU_DATA = CORTEX_MX {
+			MODEL = M4;
+			APP_SRC = "code.c";
+			//COMPILER_TYPE = KEIL; 
+			COMPILER_TYPE = GNU;
+			MULTI_STACK = FALSE;
+		};
+
+
+		MCU_DATA = STM32 {
+			MODEL = STM32F4xx;
+		};
+
+		EE_OPT = "__USE_SYSTICK__";
+		
+		EE_OPT = "__ADD_LIBS__";
+		
+				
+/* NOTE: with the current radio adapter board, the CCA pin of the 
+ * CC2420 transceiver is connected to a MCU pin also used to control
+ * the LCD, hence, we must disable the CCA pin, otherwise
+ * the LCD does not work. 
+ */
+		EE_OPT = "__NOT_USE_CC2420_CCA_PIN__";
+		EE_OPT = "USE_LCD_LOG";
+		
+		LIB = ENABLE { NAME = "ST_CMSIS"; };
+		
+		LIB = ENABLE { NAME = "STM32F4XX_SPD"; 
+			STM32F4XX_SPD = ENABLE {
+				USEGPIO = TRUE;
+                		USESPI = TRUE;
+                		USEEXTI = TRUE;
+                		USESYSCFG = TRUE; 
+                		USEMISC = TRUE;
+                		USEUSART = TRUE;            		  
+            		};
+		};
+		
+		LIB = ENABLE {
+			NAME = "STM32F4_DISCOVERY";
+			STM32F4_DISCOVERY = ENABLE {
+                USELEDS = TRUE;
+                USECOM = TRUE;
+				USELCDLOG = TRUE;
+			};			
+		};
+		
+		LIB = ENABLE { NAME = "CC2420";};
+				
+		STATUS = EXTENDED;
+		STARTUPHOOK = FALSE;
+		ERRORHOOK = FALSE;
+		SHUTDOWNHOOK = FALSE;
+		PRETASKHOOK = FALSE;
+		POSTTASKHOOK = FALSE;
+		USEGETSERVICEID = FALSE;
+		USEPARAMETERACCESS = FALSE;
+		USERESSCHEDULER = FALSE;
+
+		KERNEL_TYPE = FP;
+	};
+	
+	COUNTER myCounter;
+	
+	TASK TaskSender {
+		PRIORITY = 1;
+		STACK = SHARED;
+		SCHEDULE = FULL;
+		RESOURCE = "CONSOLE_MUTEX";
+		RESOURCE = "RADIO_MUTEX";
+	};
+	
+	TASK TaskReceiver {
+		PRIORITY = 2;
+		STACK = SHARED;
+		SCHEDULE = FULL;
+		RESOURCE = "CONSOLE_MUTEX";
+		RESOURCE = "RADIO_MUTEX";
+	};
+	
+	ALARM AlarmSender {
+		COUNTER = "myCounter";
+		ACTION = ACTIVATETASK { TASK =  "TaskSender"; };
+	};
+	
+	RESOURCE CONSOLE_MUTEX { RESOURCEPROPERTY = STANDARD; };
+	RESOURCE RADIO_MUTEX { RESOURCEPROPERTY = STANDARD; };
+	
+	
+	ISR systick_handler {
+		CATEGORY = 2;
+		ENTRY = "SYSTICK";
+		PRIORITY = 1;
+	};
+	
+	ISR CC2420_INTERRUPT_NAME {
+		CATEGORY = 2;
+		ENTRY = "EXTI4";
+		PRIORITY = 2;
+	};
+
+};

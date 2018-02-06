@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<project>
+  <fileVersion>2</fileVersion>
+  <fileChecksum>2314905318</fileChecksum>
+  <configuration>
+    <name>Debug</name>
+    <outputs>
+      <file>$PROJ_DIR$\c_m0.out</file>
+      <file>$PROJ_DIR$\..\..\..\..\..\pkg\mcu\nxp_lpcxpresso_lpc12xx\src\iar\startup_LPC12xx.s</file>
+      <file>$PROJ_DIR$\..\multistack\EEtest3\code.c</file>
+      <file>$PROJ_DIR$\..\multistack\EEtest2\code.c</file>
+      <file>$PROJ_DIR$\..\multistack\EEtest4\code.c</file>
+      <file>$PROJ_DIR$\..\..\..\..\..\contrib\nxp\lpc12xx_cmsis_v2_0\libsrc\Drivers\source\lpc12xx_gpio.c</file>
+      <file>$PROJ_DIR$\..\multistack\EEtest5\code.c</file>
+      <file>$PROJ_DIR$\..\multistack\EEtest6\code.c</file>
+    </outputs>
+    <forcedrebuild>
+      <name>[MULTI_TOOL]</name>
+      <tool>ILINK</tool>
+    </forcedrebuild>
+  </configuration>
+  <configuration>
+    <name>Release</name>
+    <outputs/>
+    <forcedrebuild>
+      <name>[MULTI_TOOL]</name>
+      <tool>ILINK</tool>
+    </forcedrebuild>
+  </configuration>
+</project>
+
+

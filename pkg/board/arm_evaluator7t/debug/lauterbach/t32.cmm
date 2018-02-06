@@ -1,0 +1,28 @@
+global &ADS
+global &ORTI
+
+winclear
+
+do t32_settings.cmm
+do t32/startup
+do t32/windows
+
+symbol.spath.set "c:\"
+symbol.spath.set ..
+
+if (&ADS==1)
+(
+	data.load evaluator7t.axf
+)
+else
+(
+	data.load evaluator7t.elf /spart 3
+)
+
+if (&ORTI==1)
+(
+	menu.reprogram orti
+	menu.reprogram ortiperf
+	task.orti system.orti
+)
+

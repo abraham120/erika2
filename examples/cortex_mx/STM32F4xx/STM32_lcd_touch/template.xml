@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<evidence_example version="1" ID="STM32_lcd_touch">
+
+ <category>Cortex-MX/STM32F4 Discovery Board</category>
+ <title>LCD with Touchscreen Demo</title>
+   
+ <small_descr>
+ This demo shows how to calibrate the touchscreen and perform some basic graphics primitives on the LCD.
+ </small_descr>
+
+ <long_descr>
+This example describes how to proceed LCD touch srceen calibration.&lt;br&gt;
+&lt;br&gt;
+In this example, four points on the corner of touch screen need to be touch to complete calibration. 
+&lt;br&gt;
+&lt;ul&gt;
+The program behaves as follows:
+&lt;li&gt;Click on calibration points accurately using a touch pen.&lt;/li&gt;
+&lt;li&gt;LCD will give massage whether calibration is OK. If calibration is OK, then MCU will enter Calibration_Test_Dispose function.&lt;/li&gt;
+&lt;li&gt;In this function LCD will display the value of point that touch pen point at. Both ADC values and coordinate values are displayed.&lt;/li&gt; 
+&lt;/ul&gt;
+
+Note: User should click on calibration points in order.
+ </long_descr>
+
+ <file_section>
+  <file     name="code.c"/> 
+  <file     name="conf.oil"/>
+  <file     name="fonts.c"/>
+  <file     name="fonts.h"/>
+  <file     name="glue.h"/>
+  <file     name="LCD_Touch_Calibration.c"/>
+  <file     name="LCD_Touch_Calibration.h"/>
+  <file     name="stm32f4_discovery_lcd.c"/>
+  <file     name="stm32f4_discovery_lcd.h"/>
+  <file     name="STMPE811QTR.c"/>
+  <file     name="STMPE811QTR.h"/>
+  
+  
+ </file_section>
+
+</evidence_example>

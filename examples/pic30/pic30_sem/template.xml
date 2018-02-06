@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<evidence_example version="1.1" ID="pic30_semaphore">
+
+ <category>pic30/FLEX</category>
+ <title>Multistack and semaphore demo</title>
+   
+ <small_descr>
+ This small demo shows the usage of counting semaphores in a
+ multistack environment. The demo implements a simple
+ producer/consumer example.
+ </small_descr>
+
+ <long_descr>
+ This small demo shows the usage of counting semaphores in a
+ multistack environment. The demo implements a simple
+ producer/consumer example.
+ &lt;br&gt;
+
+ The demo uses the led of the Flex Board. The led is on when there is
+ an item available to be consumed.
+ &lt;br&gt;
+
+ The demo also works for the Microchip Explorer16 development board
+
+ The demo also has an EDf template
+ </long_descr>
+
+ <file_section>
+  <file     name="code.c"/> 
+  <file     name="conf.oil"/>
+  <file     name="conf_EDF.oil"/>
+  <file     name="readme.txt"/>
+ </file_section>
+
+</evidence_example>

@@ -1,0 +1,54 @@
+/*	LWIP OIL  */
+
+	OS EE {
+		EE_OPT = "__ADD_LIBS__";
+		EE_OPT = "USE_LWIP";
+		EE_OPT = "__LWIP_DEBUG__";	
+		EE_OPT = "__LWIP_DEBUG_SERIAL__";
+		EE_OPT = "__LWIP_TIME_DEBUG__";	
+		EE_OPT = "__LWIP_IPV4__";
+
+		EE_OPT = "LWIP_UDP=1";
+		EE_OPT = "ETHARP_DEBUG=LWIP_DBG_ON";
+		EE_OPT = "NETIF_DEBUG=LWIP_DBG_ON";
+		EE_OPT = "PBUF_DEBUG=LWIP_DBG_ON";
+		EE_OPT = "IP_DEBUG=LWIP_DBG_ON";
+		EE_OPT = "TCP_DEBUG=LWIP_DBG_ON";
+		EE_OPT = "TCP_INPUT_DEBUG=LWIP_DBG_ON";
+		EE_OPT = "TCP_OUTPUT_DEBUG=LWIP_DBG_ON";
+		EE_OPT = "UDP_DEBUG=LWIP_DBG_ON";
+		EE_OPT = "EE_LWIP_DEBUG=LWIP_DBG_ON";
+		
+		LIB = ENABLE { NAME = "LWIP"; };	
+	};
+
+	ISR Timer_Uwl {
+		CATEGORY = 2;
+		LEVEL = "TIMER_UWL_IRQ";
+		HANDLER = "EE_timer_common_handler";
+	};
+	
+	RESOURCE LwipMutex { RESOURCEPROPERTY = STANDARD; };
+	
+	TASK LwipReceive {
+		PRIORITY = 30;
+		STACK = SHARED;
+		SCHEDULE = FULL;
+		RESOURCE = "LwipMutex";
+	};
+
+	TASK LwipPeriodic {
+		PRIORITY = 35;
+		STACK = SHARED;
+		SCHEDULE = FULL;
+		RESOURCE = "LwipMutex";
+	};
+
+
+
+    
+    
+    
+    
+    
+   

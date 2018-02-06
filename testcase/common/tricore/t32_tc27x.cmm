@@ -1,0 +1,71 @@
+; Script file for TC275TE on TRIBOARD-TC2X5
+;
+; Initializes the TriCore and loads ELF into memory.
+;
+;
+;
+
+;========================================================================
+; initialize and start the debugger
+
+  RESet
+  SYStem.CPU TC275TE-ASTEP
+
+  SYStem.Up
+
+;========================================================================
+; load demo program
+  Data.LOAD.auto   Debug/tc27x.elf
+
+  IF Analyzer()
+  (
+    ; Workaround for AGBT "RLINE repetition" issue:
+    ; - AURIX A-STEP devices only (will be fixed with B-Step)
+    ; - only required when PLL is not configured
+    ; - when configuring PLL make sure that this workaround is included
+    ; Desription: issue will cause corrupted trace data
+    ; Workaround: f(MAX) = f(MCDS) = f(BBB)
+    ; For 100MHz: MAXDIV = 0x2, BBBDIV = 0x1, MCDSDIV = 0x1
+    ; For 50MHz:  MAXDIV = 0x4, BBBDIV = 0x1, MCDSDIV = 0x1
+    PER.Set D:0xF0036034 %Long (Data.Long(D:0xF0036034)&~0x00F)|0x002   ; MAXDIV = 0x2, for 100 MHz
+    ;PER.Set D:0xF0036034 %Long (Data.Long(D:0xF0036034)&~0x00F)|0x004  ; MAXDIV = 0x4, for 50 MHz
+    PER.Set D:0xF0036040 %Long (Data.Long(D:0xF0036040)&~0xF0F)|0x101   ; BBBDIV = 0x1, MCDSDIV = 0x1
+  )
+
+  Go _START
+
+  wait !run() 5.s
+  if run()
+  (
+    break
+  )
+
+  B.delete
+
+  if (data.byte(EE_assertions)==0x1)
+  (
+    ;test successful
+    AREA.select Messages
+    print "OK!!!"
+    print
+    AREA.Select A000
+    write #1 "Test OK"
+    ENDDO
+  )
+  else
+  (
+    AREA.view
+    AREA.select Messages
+    print
+    print "----------------------------------------"
+    print " TEST FAILED !!!!!!!"
+    print "----------------------------------------"
+    print
+    AREA.Select A000
+    write #1 "Test Failed"
+    &failed=&failed+1
+  )
+
+  ENDDO
+
+  

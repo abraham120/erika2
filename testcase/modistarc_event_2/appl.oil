@@ -1,0 +1,224 @@
+/* ###*B*###
+ * ERIKA Enterprise - a tiny RTOS for small microcontrollers
+ *
+ * Copyright (C) 2002-2008  Evidence Srl
+ *
+ * This file is part of ERIKA Enterprise.
+ *
+ * ERIKA Enterprise is free software; you can redistribute it
+ * and/or modify it under the terms of the GNU General Public License
+ * version 2 as published by the Free Software Foundation, 
+ * (with a special exception described below).
+ *
+ * Linking this code statically or dynamically with other modules is
+ * making a combined work based on this code.  Thus, the terms and
+ * conditions of the GNU General Public License cover the whole
+ * combination.
+ *
+ * As a special exception, the copyright holders of this library give you
+ * permission to link this code with independent modules to produce an
+ * executable, regardless of the license terms of these independent
+ * modules, and to copy and distribute the resulting executable under
+ * terms of your choice, provided that you also meet, for each linked
+ * independent module, the terms and conditions of the license of that
+ * module.  An independent module is a module which is not derived from
+ * or based on this library.  If you modify this code, you may extend
+ * this exception to your version of the code, but you are not
+ * obligated to do so.  If you do not wish to do so, delete this
+ * exception statement from your version.
+ *
+ * ERIKA Enterprise is distributed in the hope that it will be
+ * useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License version 2 for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * version 2 along with ERIKA Enterprise; if not, write to the
+ * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ * Boston, MA 02110-1301 USA.
+ * ###*E*### */
+
+#include "../common/rtdruid_common/ee_oil_defs.h"
+
+CPU test_application {
+
+    OS EE {
+        EE_OPT = "__ASSERT__";
+#ifndef	tricore
+        EE_OPT = "DEBUG";
+#endif
+        EE_OPT = "EE_DEBUG";
+
+#ifdef STD
+		STATUS = STANDARD;
+#endif
+#ifdef EXT
+		STATUS = EXTENDED;
+#endif
+
+		STARTUPHOOK = FALSE;
+		ERRORHOOK = FALSE;
+		SHUTDOWNHOOK = FALSE;
+		PRETASKHOOK = FALSE;
+		POSTTASKHOOK = FALSE;
+		USEGETSERVICEID = FALSE;
+		USEPARAMETERACCESS = FALSE;
+		USERESSCHEDULER = FALSE;
+
+#ifdef evaluator7t
+	MCU_DATA = SAMSUNG_KS32C50100;
+#endif
+#include "../common/rtdruid_common/ee_oil_e7t_os.h"
+#include "../common/rtdruid_common/ee_oil_janus_os.h"
+#include "../common/rtdruid_common/ee_oil_nios2_os.h"
+#include "../common/rtdruid_common/ee_oil_pic30_os.h"
+#include "../common/rtdruid_common/ee_oil_s12_os.h"
+#include "../common/rtdruid_common/ee_oil_e200zx_os.h"
+#include "../common/rtdruid_common/ee_oil_cortex_mx_os.h"
+#include "../common/rtdruid_common/ee_oil_rx200_os.h"
+#include "../common/rtdruid_common/ee_oil_tricore_os.h"
+
+/* Multi Stack */
+			MULTI_STACK = TRUE {
+				IRQ_STACK = FALSE;
+// Default behaviour: not needed.
+// #if !defined(pic30) && !defined(s12) && !defined(e200zx) && !defined(cortex_mx)\
+ // && !defined(rx200)
+				// DUMMY_STACK = SHARED;
+// #endif
+			};
+
+		};
+
+
+        EE_OPT = "__OO_STARTOS_OLD__";
+#ifdef E1
+        KERNEL_TYPE = ECC1;
+#endif
+#ifdef E2
+        KERNEL_TYPE = ECC2;
+#endif
+
+    };
+
+    TASK Task1 {
+		PRIORITY = 1;
+		ACTIVATION = 1;
+		SCHEDULE = FULL;
+		AUTOSTART = FALSE;
+		EVENT = Event1;
+#ifdef evaluator7t
+		STACK = PRIVATE_ARM7 {
+			SYS_SIZE = 0x200;
+			IRQ_SIZE = 0x200;
+		};
+#endif
+#ifdef janusg_rtdruid
+		STACK = PRIVATE_JANUS {
+			SYS_SIZE = 0x200;
+			IRQ_SIZE = 0x200;
+		};
+#endif
+#ifdef nios2
+		STACK = PRIVATE_NIOSII {
+			SYS_SIZE = 0x200;
+		};
+#endif
+#ifdef pic30
+		STACK = PRIVATE {
+			SYS_SIZE = 0x100;
+		};
+#endif
+#ifdef s12
+		STACK = PRIVATE {
+			SYS_SIZE = 0x100;
+		};
+#endif
+#ifdef e200zx
+		STACK = PRIVATE {
+			SYS_SIZE = 0x200;
+		};
+#endif
+#ifdef cortex_mx
+		STACK = PRIVATE {
+			SYS_SIZE = 0x200;
+		};
+#endif
+#ifdef rx200
+		STACK = PRIVATE {
+			SYS_SIZE = 0x200;
+		};
+#endif
+#ifdef tricore
+		STACK = PRIVATE {
+			SYS_SIZE = 0x100;
+		};
+#endif
+    };
+
+    TASK Task2 {
+		PRIORITY = 2;
+		ACTIVATION = 1;
+		SCHEDULE = NON;
+		AUTOSTART = TRUE;
+		EVENT = Event2;
+#ifdef evaluator7t
+		STACK = PRIVATE_ARM7 {
+			SYS_SIZE = 0x200;
+			IRQ_SIZE = 0x200;
+		};
+#endif
+#ifdef janusg_rtdruid
+		STACK = PRIVATE_JANUS {
+			SYS_SIZE = 0x200;
+			IRQ_SIZE = 0x200;
+		};
+#endif
+#ifdef nios2
+		STACK = PRIVATE_NIOSII {
+			SYS_SIZE = 0x200;
+		};
+#endif
+#ifdef pic30
+		STACK = PRIVATE {
+			SYS_SIZE = 0x100;
+		};
+#endif
+#ifdef s12
+		STACK = PRIVATE {
+			SYS_SIZE = 0x100;
+		};
+#endif
+#ifdef e200zx
+		STACK = PRIVATE {
+			SYS_SIZE = 0x200;
+		};
+#endif
+#ifdef cortex_mx
+		STACK = PRIVATE {
+			SYS_SIZE = 0x200;
+		};
+#endif
+
+#ifdef rx200
+		STACK = PRIVATE {
+			SYS_SIZE = 0x200;
+		};
+#endif
+#ifdef tricore
+		STACK = PRIVATE {
+			SYS_SIZE = 0x200;
+		};
+#endif
+    };
+
+    EVENT Event1 {
+		MASK = AUTO;
+    };
+
+    EVENT Event2 {
+		MASK = AUTO;
+    };
+
+};
+

@@ -1,0 +1,4 @@
+# these are the configurations that have to be considered
+conf = IRQSTACK=YES,NO ISRTABLE=STATIC,DYNAMIC IRQ=USEIRQ
+worksfor = e200zx_diab_5_5_1_fle e200zx_diab_5_5_1_vle e200zx_diab_5_8_vle e200zx_diab_5_8_fle e200zx_codewarrior_10_0_2_vle e200zx_codewarrior_10_0_2_fle e200zx_hightec_4_6_4_0_vle e200zx_gnu_fle
+

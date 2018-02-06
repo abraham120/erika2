@@ -1,0 +1,269 @@
+CPU test_application {
+
+	OS EE {
+	
+		CFLAGS = "-DALT_DEBUG -O0 -g";
+		CFLAGS = "-Wall";
+		LDFLAGS = "-Wl,-Map -Wl,project.map";
+		ASFLAGS = "-g";
+		LDDEPS = "\\";
+		LIBS = "-lm";
+		NIOS2_SYS_CONFIG = "Debug";
+		NIOS2_APP_CONFIG = "Debug";
+		NIOS2_DO_MAKE_OBJDUMP = TRUE;
+		MASTER_CPU = "cpu0";			
+		IPIC_GLOBAL_NAME = "IPIC_OUTPUT";
+		NIOS2_JAM_FILE = "C:/altera/81/nios2eds/examples/verilog/niosII_stratixII_2s60_RoHS/frsh_multi4/fpga.jam";
+		NIOS2_PTF_FILE = "C:/altera/81/nios2eds/examples/verilog/niosII_stratixII_2s60_RoHS/frsh_multi4/NiosII_stratixII_2s60_RoHS_small_sopc.ptf";
+
+		CPU_DATA = NIOSII {
+			ID = "cpu0";
+			APP_SRC = "cpu0_main.c";
+			STACK_TOP = "__alt_stack_pointer";
+			SYSTEM_LIBRARY_NAME = "frsh_multi4_syslib_0";
+			SYSTEM_LIBRARY_PATH = "/cygdrive/c/Users/pj/workspaceFRSH81/frsh_multi4_syslib_0";
+			IPIC_LOCAL_NAME = "IPIC_INPUT_0";
+			
+			SYS_SIZE = 100000;			
+			MULTI_STACK = TRUE {
+				IRQ_STACK = TRUE {
+					SYS_SIZE=512;
+				};
+				DUMMY_STACK = SHARED;
+			};
+			TIMER_FREERUNNING = "HIGH_RES_TIMER_0";
+			FRSH_TIMERS = MULTIPLE {
+				TIMER_IRQ_BUDGET = "TIMER_CAPACITY_0";
+				TIMER_IRQ_RECHARGE = "TIMER_RECHARGING_0";
+				TIMER_IRQ_DLCHECK = "TIMER_DLCHECK_0";
+				TIMER_IRQ_SEM = "TIMER_SEM_0";
+		     };
+
+		};
+	
+		CPU_DATA = NIOSII {
+			ID = "cpu1";
+			APP_SRC = "cpu1_main.c";
+			STACK_TOP = "__alt_stack_pointer";
+			SYSTEM_LIBRARY_NAME = "frsh_multi4_syslib_1";
+			SYSTEM_LIBRARY_PATH = "/cygdrive/c/Users/pj/workspaceFRSH81/frsh_multi4_syslib_1";
+			IPIC_LOCAL_NAME = "IPIC_INPUT_1";
+			
+			SYS_SIZE = 100000;			
+			MULTI_STACK = TRUE {
+				IRQ_STACK = TRUE {
+					SYS_SIZE=512;
+				};
+				DUMMY_STACK = SHARED;
+			};
+			TIMER_FREERUNNING = "HIGH_RES_TIMER_1";
+			FRSH_TIMERS = MULTIPLE {
+				TIMER_IRQ_BUDGET = "TIMER_CAPACITY_1";
+				TIMER_IRQ_RECHARGE = "TIMER_RECHARGING_1";
+				TIMER_IRQ_DLCHECK = "TIMER_DLCHECK_1";
+				TIMER_IRQ_SEM = "TIMER_SEM_1";
+		     };
+			
+		};
+
+		CPU_DATA = NIOSII {
+			ID = "cpu2";
+			APP_SRC = "cpu2_main.c";
+			STACK_TOP = "__alt_stack_pointer";
+			SYSTEM_LIBRARY_NAME = "frsh_multi4_syslib_2";
+			SYSTEM_LIBRARY_PATH = "/cygdrive/c/Users/pj/workspaceFRSH81/frsh_multi4_syslib_2";
+			IPIC_LOCAL_NAME = "IPIC_INPUT_2";
+			
+			SYS_SIZE = 100000;			
+			MULTI_STACK = TRUE {
+				IRQ_STACK = TRUE {
+					SYS_SIZE=512;
+				};
+				DUMMY_STACK = SHARED;
+			};
+			TIMER_FREERUNNING = "HIGH_RES_TIMER_2";
+			FRSH_TIMERS = MULTIPLE {
+				TIMER_IRQ_BUDGET = "TIMER_CAPACITY_2";
+				TIMER_IRQ_RECHARGE = "TIMER_RECHARGING_2";
+				TIMER_IRQ_DLCHECK = "TIMER_DLCHECK_2";
+				TIMER_IRQ_SEM = "TIMER_SEM_2";
+		     };
+			
+		};
+
+		CPU_DATA = NIOSII {
+			ID = "cpu3";
+			APP_SRC = "cpu3_main.c";
+			STACK_TOP = "__alt_stack_pointer";
+			SYSTEM_LIBRARY_NAME = "frsh_multi4_syslib_3";
+			SYSTEM_LIBRARY_PATH = "/cygdrive/c/Users/pj/workspaceFRSH81/frsh_multi4_syslib_3";
+			IPIC_LOCAL_NAME = "IPIC_INPUT_3";
+			
+			SYS_SIZE = 100000;			
+			MULTI_STACK = TRUE {
+				IRQ_STACK = TRUE {
+					SYS_SIZE=512;
+				};
+				DUMMY_STACK = SHARED;
+			};
+			TIMER_FREERUNNING = "HIGH_RES_TIMER_3";
+			FRSH_TIMERS = MULTIPLE {
+				TIMER_IRQ_BUDGET = "TIMER_CAPACITY_3";
+				TIMER_IRQ_RECHARGE = "TIMER_RECHARGING_3";
+				TIMER_IRQ_DLCHECK = "TIMER_DLCHECK_3";
+				TIMER_IRQ_SEM = "TIMER_SEM_3";
+		     };
+
+		};
+
+		STARTUPSYNC = TRUE;
+        	
+		USEREMOTETASK = ALWAYS;
+		NIOS2_MUTEX_BASE = "MUTEX_BASE";
+
+		ORTI_SECTIONS = ALL;
+		
+        KERNEL_TYPE = FRSH {
+        		TICK_TIME = "20ns";
+        		USE_SYNC_OBJ = TRUE;
+        		CONTRACTS = CONTRACT {
+        				CPU_ID = "cpu0";	NAME = "c1_0";
+        				BUDGET = 20000;		PERIOD = 100000;        			};
+        		CONTRACTS = CONTRACT {
+        				CPU_ID = "cpu0";	NAME = "c2_0";
+        				BUDGET = 20000;		PERIOD = 100000;        			};
+        		CONTRACTS = CONTRACT {
+        				CPU_ID = "cpu0";	NAME = "c3_0";
+        				BUDGET = 20000;		PERIOD = 100000;        			};
+        		CONTRACTS = CONTRACT {
+        				CPU_ID = "cpu0";	NAME = "c4_0";
+        				BUDGET = 20000;		PERIOD = 100000;        			};
+        		CONTRACTS = CONTRACT {
+        				CPU_ID = "cpu0";	NAME = "c5_0";
+        				BUDGET = 40000;		PERIOD = 800000;        			};
+        		CONTRACTS = CONTRACT {
+        				CPU_ID = "cpu0";	NAME = "c6_0";
+        				BUDGET = 40000;		PERIOD = 800000;        			};
+        		CONTRACTS = CONTRACT {
+        				CPU_ID = "cpu0";	NAME = "c7_0";
+        				BUDGET = 40000;		PERIOD = 800000;        			};
+
+
+        		CONTRACTS = CONTRACT {
+        				CPU_ID = "cpu1";	NAME = "c1_1";
+        				BUDGET = 20000;		PERIOD = 100000;        			};
+        		CONTRACTS = CONTRACT {
+        				CPU_ID = "cpu1";	NAME = "c2_1";
+        				BUDGET = 20000;		PERIOD = 100000;        			};
+        		CONTRACTS = CONTRACT {
+        				CPU_ID = "cpu1";	NAME = "c3_1";
+        				BUDGET = 20000;		PERIOD = 100000;        			};
+        		CONTRACTS = CONTRACT {
+        				CPU_ID = "cpu1";	NAME = "c4_1";
+        				BUDGET = 20000;		PERIOD = 100000;        			};
+        		CONTRACTS = CONTRACT {
+        				CPU_ID = "cpu1";	NAME = "c5_1";
+        				BUDGET = 40000;		PERIOD = 800000;        			};
+        		CONTRACTS = CONTRACT {
+        				CPU_ID = "cpu1";	NAME = "c6_1";
+        				BUDGET = 40000;		PERIOD = 800000;        			};
+        		CONTRACTS = CONTRACT {
+        				CPU_ID = "cpu1";	NAME = "c7_1";
+        				BUDGET = 40000;		PERIOD = 800000;        			};
+
+
+
+        		CONTRACTS = CONTRACT {
+        				CPU_ID = "cpu2";	NAME = "c1_2";
+        				BUDGET = 20000;		PERIOD = 100000;        			};
+        		CONTRACTS = CONTRACT {
+        				CPU_ID = "cpu2";	NAME = "c2_2";
+        				BUDGET = 20000;		PERIOD = 100000;        			};
+        		CONTRACTS = CONTRACT {
+        				CPU_ID = "cpu2";	NAME = "c3_2";
+        				BUDGET = 20000;		PERIOD = 100000;        			};
+        		CONTRACTS = CONTRACT {
+        				CPU_ID = "cpu2";	NAME = "c4_2";
+        				BUDGET = 20000;		PERIOD = 100000;        			};
+        		CONTRACTS = CONTRACT {
+        				CPU_ID = "cpu2";	NAME = "c5_2";
+        				BUDGET = 40000;		PERIOD = 800000;        			};
+        		CONTRACTS = CONTRACT {
+        				CPU_ID = "cpu2";	NAME = "c6_2";
+        				BUDGET = 40000;		PERIOD = 800000;        			};
+        		CONTRACTS = CONTRACT {
+        				CPU_ID = "cpu2";	NAME = "c7_2";
+        				BUDGET = 40000;		PERIOD = 800000;        			};
+
+
+
+        		CONTRACTS = CONTRACT {
+        				CPU_ID = "cpu3";	NAME = "c1_3";
+        				BUDGET = 20000;		PERIOD = 100000;        			};
+        		CONTRACTS = CONTRACT {
+        				CPU_ID = "cpu3";	NAME = "c2_3";
+        				BUDGET = 20000;		PERIOD = 100000;        			};
+        		CONTRACTS = CONTRACT {
+        				CPU_ID = "cpu3";	NAME = "c3_3";
+        				BUDGET = 20000;		PERIOD = 100000;        			};
+        		CONTRACTS = CONTRACT {
+        				CPU_ID = "cpu3";	NAME = "c4_3";
+        				BUDGET = 20000;		PERIOD = 100000;        			};
+        		CONTRACTS = CONTRACT {
+        				CPU_ID = "cpu3";	NAME = "c5_3";
+        				BUDGET = 40000;		PERIOD = 800000;        			};
+        		CONTRACTS = CONTRACT {
+        				CPU_ID = "cpu3";	NAME = "c6_3";
+        				BUDGET = 40000;		PERIOD = 800000;        			};
+        		CONTRACTS = CONTRACT {
+        				CPU_ID = "cpu3";	NAME = "c7_3";
+        				BUDGET = 40000;		PERIOD = 800000;        			};
+
+
+        	};
+	};
+
+    TASK mytask0 {
+		CPU_ID = "cpu0";
+    	CONTRACT = "c5_0";
+		APP_SRC = "task0.c";
+		PRIORITY = 0x01;
+		STACK = PRIVATE {
+			SYS_SIZE = 10000;
+		};
+		RESOURCE = myRes;
+    };
+
+    TASK mytask1 {
+		CPU_ID = "cpu1";
+    	CONTRACT = "c5_1";
+		APP_SRC = "task1.c";
+		PRIORITY = 0x01;
+		STACK = PRIVATE {
+			SYS_SIZE = 10000;
+		};
+    };
+
+    TASK mytask2 {
+		CPU_ID = "cpu2";
+    	CONTRACT = "c2_2";
+		APP_SRC = "task2.c";
+		PRIORITY = 0x01;
+		STACK = PRIVATE {
+			SYS_SIZE = 10000;
+		};
+    };
+
+    TASK mytask3 {
+		CPU_ID = "cpu3";
+    	CONTRACT = "c1_3";
+		APP_SRC = "task3.c";
+		PRIORITY = 0x01;
+		STACK = PRIVATE {
+			SYS_SIZE = 10000;
+		};
+    };
+
+    RESOURCE myRes { RESOURCEPROPERTY = STANDARD; };
+    RESOURCE myRes2 { RESOURCEPROPERTY = STANDARD; };
+};

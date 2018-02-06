@@ -1,0 +1,25 @@
+/*	ENC28J60 OIL  */
+
+	OS EE {
+		EE_OPT = "__ADD_LIBS__";
+		//EE_OPT = "__ENC28J60_DEBUG__";	
+		//EE_OPT = "__ENC28J60_DEBUG_SERIAL__";
+		//EE_OPT = "__ENC28J60_TIME_DEBUG__";	
+		LIB = ENABLE { NAME = "ENC28J60"; };	
+	};
+
+	ISR Gpio {
+		CATEGORY = 2;
+		LEVEL = "EE_ENC28J60_IRQ";
+		HANDLER = "EE_enc28j60_handler";
+	};
+
+
+
+
+    
+    
+    
+    
+    
+   

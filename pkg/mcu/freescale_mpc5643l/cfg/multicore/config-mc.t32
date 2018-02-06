@@ -1,0 +1,20 @@
+
+IC=NETASSIST
+PORT=${1}
+
+; Environment variables
+OS=
+ID=T32${1}
+TMP=/tmp/
+SYS=#T32SYS#
+
+PBI=
+${3}
+${4}
+${5}
+${6}
+
+; Screen fonts
+SCREEN=
+FONT=SMALL
+HEADER=Trace32 ${2}

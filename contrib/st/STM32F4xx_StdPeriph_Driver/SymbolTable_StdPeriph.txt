@@ -1,0 +1,27 @@
+USEALL		__USE_STM32F4XX_SPD_ALL__	All features
+USEADC		__USE_STM32F4XX_SPD_ADC__	Analog-to-Digital Converter (ADC)
+USECAN		__USE_STM32F4XX_SPD_CAN__	Controller Area Network (CAN)
+USECRC		__USE_STM32F4XX_SPD_CRC__	CRC functions
+USECRYP		__USE_STM32F4XX_SPD_CRYP__	Cryptographic processor
+USEDAC		__USE_STM32F4XX_SPD_DAC__	Digital-to-Analog Converter (DAC)
+USEDBGMCU	__USE_STM32F4XX_SPD_DBGMCU__	Configure HW for Debug Mode	
+USEDCMI		__USE_STM32F4XX_SPD_DCMI__	Digital Camera Interface (DCMI)
+USEDMA		__USE_STM32F4XX_SPD_DMA__ 	Direct Memory Access (DMA) controller 
+USEEXTI		__USE_STM32F4XX_SPD_EXTI__	External Interrupt Controller (EXTI)
+USEFLASH	__USE_STM32F4XX_SPD_FLASH__	Internal Flash Memory support
+USEFSMC		__USE_STM32F4XX_SPD_FSMC__	Flexible Static Memory Controller (FSMC)
+USEGPIO		__USE_STM32F4XX_SPD_GPIO__	General Purpose IO support
+USEHASH		__USE_STM32F4XX_SPD_HASH__	HASH functions
+USEI2C		__USE_STM32F4XX_SPD_I2C__	Inter-integrated circuit (I2C)
+USEIWDG		__USE_STM32F4XX_SPD_IWDG__	Independent watchdog (IWDG)
+USEPWR		__USE_STM32F4XX_SPD_PWR__	Power Controller (PWR)
+USERCC		__USE_STM32F4XX_SPD_RCC__	Reset and clock control (RCC)
+USERNG		__USE_STM32F4XX_SPD_RNG__	Random Number Generator (RNG)
+USERTC		__USE_STM32F4XX_SPD_RTC__	Real-Time Clock (RTC)
+USESDIO		__USE_STM32F4XX_SPD_SDIO__	Secure digital input/output interface (SDIO)
+USESPI		__USE_STM32F4XX_SPD_SPI__	Serial peripheral interface (SPI)
+USESYSCFG	__USE_STM32F4XX_SPD_SYSCFG__	SYSCFG module
+USETIM		__USE_STM32F4XX_SPD_TIM__	Timers peripheral
+USEUSART	__USE_STM32F4XX_SPD_USART__	Universal synchronous asynchronous receiver transmitter (USART)
+USEWWDG		__USE_STM32F4XX_SPD_WWDG__	Window watchdog (WWDG) peripheral
+USEMISC		__USE_STM32F4XX_SPD_MISC__	Miscellaneous firmware functions (add-on to CMSIS)

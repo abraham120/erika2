@@ -1,0 +1,11 @@
+; reset windows and display area
+winclear
+area.res
+screen.always
+term.mode string
+term.size 80 10000
+term.scroll on
+WINPOS 0.0 26.5 80. 6. 0. 0. W001
+area
+
+enddo

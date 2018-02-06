@@ -1,0 +1,59 @@
+/* This ORTI File contains only the things that are needed to support
+   OSEK Alarms inside ORTI. for the other options, please take a look
+   at the ostest1 example. PJ
+*/
+
+/***********************/
+/* Declaration Section */
+/***********************/
+
+VERSION {
+    KOIL = "2.1";
+    OSSEMANTICS = "ORTI", "2.1";
+};
+
+IMPLEMENTATION OSTEST1_ORTI {
+    ALARM {
+        CTYPE "unsigned int" ALARMTIME, "Alarm Time"; /* EE_TYPETICK */
+        CTYPE "unsigned int" CYCLETIME, "Cycle Time"; /* EE_TYPETICK */
+        ENUM [
+            "STOPPED" = 0,
+            "RUNNING" = 1
+        ] STATE, "Alarm state";
+        STRING ACTION, "Action";
+        STRING COUNTER, "Counter";
+	CTYPE "unsigned int" COUNTERVALUE, "Counter Value";
+    }, "Alarms";
+}; /* END OF IMPLEMENTATION */
+
+/***********************/
+/* Information Section */
+/***********************/
+
+
+ALARM Alarm0 {
+    ALARMTIME = "EE_ORTI_alarmtime[0]";
+    CYCLETIME = "EE_alarm_RAM[0].cycle";
+    STATE = "(EE_alarm_RAM[0].used == 0) ? 0 : 1";
+    ACTION = "ActivateTask thread1";
+    COUNTER = "Counter0";
+    COUNTERVALUE = "EE_counter_RAM[EE_alarm_ROM[0].c].value";
+};
+
+ALARM Alarm1 {
+    ALARMTIME = "EE_ORTI_alarmtime[1]";
+    CYCLETIME = "EE_alarm_RAM[1].cycle";
+    STATE = "(EE_alarm_RAM[1].used == 0) ? 0 : 1";
+    ACTION = "Callback mycallback";
+    COUNTER = "Counter0";
+    COUNTERVALUE = "EE_counter_RAM[EE_alarm_ROM[1].c].value";
+};
+
+ALARM Alarm2 {
+    ALARMTIME = "EE_ORTI_alarmtime[2]";
+    CYCLETIME = "EE_alarm_RAM[2].cycle";
+    STATE = "(EE_alarm_RAM[2].used == 0) ? 0 : 1";
+    ACTION = "Event myevent on thread2";
+    COUNTER = "Counter0";
+    COUNTERVALUE = "EE_counter_RAM[EE_alarm_ROM[2].c].value";
+};

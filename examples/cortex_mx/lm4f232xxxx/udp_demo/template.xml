@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<evidence_example version="1" ID="stellaris_udp_demo">
+
+ <category>Cortex-MX/TI Stellaris LM4F232xxxx Board/LwIP examples</category>
+ <title>LWIP UDP</title>
+
+ <small_descr>
+ This is the demo to test LWIP UDP on TI Stellaris LM4F232xxxx Board devices.
+ </small_descr>
+
+ <long_descr>
+ LWIP UDP test (with ENC28J60, see oil files).
+ &lt;br /&gt;
+ &lt;br /&gt;
+ User can use this demo to learn how to write LWIP UDP based applications.
+ &lt;br /&gt;
+ &lt;br /&gt;
+ The demo requires a RS232 serial connection with user PC.
+ &lt;br /&gt;
+ &lt;br /&gt;
+ The demo requires a SPI bus to communicate with ENC28J60.
+ &lt;br /&gt;
+ &lt;br /&gt;
+ The demo requires a Ethernet connection with user PC.
+ </long_descr>
+
+ <file_section>
+  <file name="conf.oil"/>
+  <file name="conf_console.oil"/>
+  <file name="conf_enc28j60.oil"/>
+  <file name="conf_lwip.oil"/>
+  <file name="lwip.h"/>
+  <file name="main.c"/>
+  <file name="makefile"/>
+  <file name="udp_send.c"/>
+  <file name="udp_recv.c"/>
+  <file name="ping_send.sh"/>
+ </file_section>
+
+</evidence_example>

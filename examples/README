@@ -1,0 +1,6 @@
+This directory contains the list of working examples with RT-Druid.
+All the examples in this directory have a proper template.xml file.
+
+As an addition, the makefile present in this directory can be used to compile all them in batch, to verify that they do work fine in an installed system.
+
+PJ

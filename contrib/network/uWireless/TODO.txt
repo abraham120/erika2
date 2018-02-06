@@ -1,0 +1,42 @@
+********************************************************************************
+                       *_____   uWireless TODOs   _____*              
+********************************************************************************
+
+GENERAL:
+	- *5* Protect the access to the mac, from the upper layer, with a
+	  mutext that MUST be included in the application tasks definition.
+	- *3* Check the endianess, add macros for eandianess management when
+	  reading/writing the stack frame!
+	- *2* think some handle (function pointers?) to provide an easy way to 
+	  change the protocol behaviours (i.e. for baccarat, etc.)
+
+uwl_mac.c (Mac Core):
+	- *3* implement the cmd and ack frame building functions 
+	- *1* manage the possibility to have auto ack?
+
+uwl_mac_mcps.c (MCPS):
+
+uwl_mac_mlme.c (MLME):
+	- *1* Implement the association mechanism 
+
+uwl_mac_superframe.c (Beacon Enabled mode specific):
+	- *2* how to fully use the design with the uwl_radio for mac? 
+	  (backoff period task for slotted csma, etc.)
+
+uwl_mac_gts.c (GTS machine):
+	- *2* implement a gts_remove_entry functionality
+	- *1* refine the gts_add_entry function to be compliant to the std 
+	  (check the min cap size to be there!) 
+	- *1* perform std gts maintenance: allocations, deallocations 
+
+driver/radio/cc2420/inc/cc2420_hal_ee.h: 
+	- *1* I suggest to remove any reference to MOTIONBOARD, shall we?
+
+TEST: 
+	- *2* Check the include file dependencies and relationship to see if
+	  only the "public" file are included.
+	- *1* need to test all the mechanisms
+
+LOG: 
+	- *1* need to log some information for debugging but also for 
+	  collecting experimental results (uwl logs).

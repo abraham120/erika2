@@ -1,0 +1,176 @@
+/* ###*B*###
+ * ERIKA Enterprise - a tiny RTOS for small microcontrollers
+ *
+ * Copyright (C) 2002-2008  Evidence Srl
+ *
+ * This file is part of ERIKA Enterprise.
+ *
+ * ERIKA Enterprise is free software; you can redistribute it
+ * and/or modify it under the terms of the GNU General Public License
+ * version 2 as published by the Free Software Foundation, 
+ * (with a special exception described below).
+ *
+ * Linking this code statically or dynamically with other modules is
+ * making a combined work based on this code.  Thus, the terms and
+ * conditions of the GNU General Public License cover the whole
+ * combination.
+ *
+ * As a special exception, the copyright holders of this library give you
+ * permission to link this code with independent modules to produce an
+ * executable, regardless of the license terms of these independent
+ * modules, and to copy and distribute the resulting executable under
+ * terms of your choice, provided that you also meet, for each linked
+ * independent module, the terms and conditions of the license of that
+ * module.  An independent module is a module which is not derived from
+ * or based on this library.  If you modify this code, you may extend
+ * this exception to your version of the code, but you are not
+ * obligated to do so.  If you do not wish to do so, delete this
+ * exception statement from your version.
+ *
+ * ERIKA Enterprise is distributed in the hope that it will be
+ * useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License version 2 for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * version 2 along with ERIKA Enterprise; if not, write to the
+ * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ * Boston, MA 02110-1301 USA.
+ * ###*E*### */
+
+/*
+ * OIL Configuration file
+ *
+ * This OIL configuration file contains the specification of the tasks 
+ * used to run the LWIP web server demo.
+ *
+ * The OIL File contains the informations about which RTOS objects exist inside 
+ * an application, and what is the partitioning of these objects inside the CPUs 
+ * available in the system.
+ *
+ * In this case, the application includes two tasks that are used to execute the 
+ * LWIP timers and callbacks.
+ *
+ * The commented lines contain a set of attributes useful if you need to port 
+ * this example to a multiprocessor configuration.
+ *
+ * To compile and run this demo, please read the tutorial that was distributed 
+ * in pdf form with this file.
+ */
+
+
+CPU test_application {
+
+	OS EE {
+
+		CFLAGS = "-I../..";
+		CFLAGS = "-I../../lwip-0.7.1/src/include";
+		CFLAGS = "-I../../lwip-0.7.1/src/include/ipv4";
+		CFLAGS = "-I../../lwip4hal/include";
+		CFLAGS = "-I../../apps";
+		
+		CFLAGS = "-DALT_DEBUG -O0 -g";
+		CFLAGS = "-Wall";
+		ASFLAGS = "-g";
+		LDFLAGS = "-Wl,-Map -Wl,project.map";
+		LDDEPS = "\\";
+		LIBS = "-lm";
+		NIOS2_SYS_CONFIG = "Debug";
+		NIOS2_APP_CONFIG = "Debug";
+		NIOS2_DO_MAKE_OBJDUMP = TRUE;
+		MASTER_CPU = "cpu0";			
+//		IPIC_GLOBAL_NAME = "IPIC_OUTPUT";
+
+		CPU_DATA = NIOSII {
+			ID = "cpu0";
+			MULTI_STACK = FALSE;
+			STACK_TOP = "__alt_stack_pointer";
+			SYS_SIZE = 0x1000; 
+			SYSTEM_LIBRARY_NAME = "standard_syslib";
+			SYSTEM_LIBRARY_PATH = "C:/altera/80/nios2eds/examples/verilog/niosII_stratix_2s60/standard/software/standard_syslib";
+			IPIC_LOCAL_NAME = "IPIC_INPUT_0";
+
+			APP_SRC = "apps/echo.c";
+			APP_SRC = "apps/fs.c";
+			APP_SRC = "apps/fsdata.c";
+			APP_SRC = "apps/httpd.c";
+			APP_SRC = "lwip-0.7.1/src/core/dhcp.c";
+			APP_SRC = "lwip-0.7.1/src/core/inet.c";
+			APP_SRC = "lwip-0.7.1/src/core/ipv4/icmp.c";
+			APP_SRC = "lwip-0.7.1/src/core/ipv4/ip.c";
+			APP_SRC = "lwip-0.7.1/src/core/ipv4/ip_addr.c";
+			APP_SRC = "lwip-0.7.1/src/core/ipv4/ip_frag.c";
+			APP_SRC = "lwip-0.7.1/src/core/mem.c";
+			APP_SRC = "lwip-0.7.1/src/core/memp.c";
+			APP_SRC = "lwip-0.7.1/src/core/netif.c";
+			APP_SRC = "lwip-0.7.1/src/core/pbuf.c";
+			APP_SRC = "lwip-0.7.1/src/core/raw.c";
+			APP_SRC = "lwip-0.7.1/src/core/stats.c";
+			APP_SRC = "lwip-0.7.1/src/core/sys.c";
+			APP_SRC = "lwip-0.7.1/src/core/tcp.c";
+			APP_SRC = "lwip-0.7.1/src/core/tcp_in.c";
+			APP_SRC = "lwip-0.7.1/src/core/tcp_out.c";
+			APP_SRC = "lwip-0.7.1/src/core/udp.c";
+			APP_SRC = "lwip-0.7.1/src/netif/etharp.c";
+			APP_SRC = "lwip-0.7.1/src/netif/loopif.c";
+			APP_SRC = "lwip4hal/lib.c";
+			APP_SRC = "lwip4hal/lwip_init.c";
+			APP_SRC = "lwip4hal/netif/lan91c111if.c";
+			APP_SRC = "lwip4hal/perf.c";
+			APP_SRC = "lwip_web_server.c";
+			APP_SRC = "mac_addr.c";
+		};
+	  
+//		STARTUPSYNC = TRUE;
+		STARTUPSYNC = FALSE;
+		
+		STATUS = EXTENDED;
+		STARTUPHOOK = FALSE;
+		ERRORHOOK = FALSE;
+		SHUTDOWNHOOK = FALSE;
+		PRETASKHOOK = FALSE;
+		POSTTASKHOOK = FALSE;
+		USEGETSERVICEID = FALSE;
+		USEPARAMETERACCESS = FALSE;
+		USERESSCHEDULER = FALSE;
+        	
+//		USEREMOTETASK = ALWAYS;
+//		MUTEX_DEVICE_NAME = "/dev/mutex";
+
+		KERNEL_TYPE = BCC1;
+	};
+
+	TASK LWIP_startup_task {
+		CPU_ID = "cpu0";
+		PRIORITY = 1;
+		ACTIVATION = 1;
+		SCHEDULE = FULL;
+		AUTOSTART = TRUE;
+		STACK = SHARED;
+		RESOURCE = LWIP_mutex;
+	};
+
+	TASK LWIP_timer_task {
+		CPU_ID = "cpu0";
+		PRIORITY = 2;
+		ACTIVATION = 1;
+		SCHEDULE = FULL;
+		AUTOSTART = FALSE;
+		STACK = SHARED;
+		RESOURCE = LWIP_mutex;
+	};
+
+	TASK LWIP_service_task {
+		CPU_ID = "cpu0";
+		PRIORITY = 2;
+		ACTIVATION = 1;
+		SCHEDULE = FULL;
+		AUTOSTART = FALSE;
+		STACK = SHARED;
+		RESOURCE = LWIP_mutex;
+	};
+   
+	RESOURCE LWIP_mutex {
+		RESOURCEPROPERTY = STANDARD;
+	};
+};

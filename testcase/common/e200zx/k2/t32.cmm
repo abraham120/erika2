@@ -1,0 +1,76 @@
+; script used to load modistarc tests
+
+&sim=SIMULATOR()
+  
+;settings for JTAG debugger / simulator
+  if SIMULATOR()
+  (
+    SYStem.CPU SPC574K74
+  )
+  else
+  (
+    SYStem.DETECT.CPU
+    SYStem.CONFIG.CORE 3. 1.
+  )
+
+  SYStem.Option.WATCHDOG OFF
+  SYStem.BdmClock 4.MHz
+
+  if SIMULATOR()
+  (
+    SYStem.Option.DisMode VLE ;here: configure instruction set simulator for VLE
+    Trace.Method Analyzer
+    Trace.Init
+  )
+
+;reset processor and connect
+SYStem.UP
+
+;initialize internal SRAM
+DATA.SET EA:0x40000000--0x4000FFFF %quad 0x55AA55AA55AA55AA
+
+;load demo application
+DATA.LOAD.ELF Debug/ppc.elf
+
+;execute until function main
+;  GO main
+;  WAIT !RUN()
+
+;set debug mode to HLL debugging
+  MODE.HLL
+
+B.Set EE_assert_last
+
+Go __start
+
+wait !run() 5.s
+if run()
+(
+  break
+)
+
+b.delete
+
+if (data.byte(EE_assertions)==0x1)
+(
+  ;test successful
+  AREA.select Messages
+  print "OK!!!"
+  print
+  AREA.Select A000
+  write #1 "Test OK"
+  enddo
+)
+else
+(
+  area.view
+  AREA.select Messages
+  print
+  print "----------------------------------------"
+  print " TEST FAILED !!!!!!!"
+  print "----------------------------------------"
+  print
+  AREA.Select A000
+  write #1 "Test Failed"
+  &failed=&failed+1
+)

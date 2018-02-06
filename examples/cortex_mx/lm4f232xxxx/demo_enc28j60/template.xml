@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<evidence_example version="1" ID="stellaris_demo_enc28j60">
+
+ <category>Cortex-MX/TI Stellaris LM4F232xxxx Board/LwIP examples</category>
+ <title>ENC28J60 driver test</title>
+
+ <small_descr>
+ ENC28J60 driver function test (eth mac mii read and write, bank selection).
+ </small_descr>
+
+ <long_descr>
+ ENC28J60 driver function test (see oil files).
+ &lt;br /&gt;
+ &lt;br /&gt;
+ User can use this demo to test if SPI communication works fine.
+ &lt;br /&gt;
+ &lt;br /&gt;
+ The demo uses eth, mac, mii read/write and bank selection functions of the
+ ENC28J60 library.
+ &lt;br /&gt;
+ &lt;br /&gt;
+ The demo requires a RS232 serial connection.
+ &lt;br /&gt;
+ &lt;br /&gt;
+ The demo requires a SPI bus to communicate with the device.
+ </long_descr>
+
+ <file_section>
+  <file name="conf.oil"/>
+  <file name="conf_console.oil"/>
+  <file name="conf_enc28j60.oil"/>
+  <file name="test1_main.c"/>
+  <file name="makefile"/>
+ </file_section>
+
+</evidence_example>

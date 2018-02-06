@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<evidence_example version="1" ID="avr5_blink">
+
+ <category>avr5/XBOW MIB5X0</category>
+ <title>Blink Demo</title>
+   
+ <small_descr>
+ Task0 and Task1 are actived by alarms. Every tasks swith on a led. 
+ </small_descr>
+
+ <long_descr>
+ In this demo 2 tasks are actived by alarms controlled by timer1. Task 0 put on the green led and Task 1 put on the 
+ red led of the board, while the timer1 ISR put on the orange led.
+ </long_descr>
+
+ <file_section>
+  <file     name="code.c"/> 
+  <file     name="conf.oil"/>
+ </file_section>
+
+</evidence_example>

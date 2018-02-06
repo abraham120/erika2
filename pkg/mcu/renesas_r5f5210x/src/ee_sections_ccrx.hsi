@@ -1,0 +1,12 @@
+[Hew Section Information]
+Version=2.0
+Section overlay=No
+Entry=4
+Address1=0x00001000
+Section1=B_1,R_1,B_2,R_2,B,R,SU,SI
+Address2=0xFFFF0000
+Section2=PEE_RX200_RES_REG
+Address3=0xFFFF1000
+Section3=C$VECT,C,C_1,C_2,D*,P,W*,C$DSEC,C$BSEC
+Address4=0xFFFFFFD0
+Section4=FIXEDVECT

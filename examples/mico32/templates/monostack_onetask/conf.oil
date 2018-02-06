@@ -1,0 +1,53 @@
+CPU test_application {
+
+	OS EE {
+		CFLAGS = "-g2";
+		ASFLAGS = "";
+		LDFLAGS = "";
+
+		CPU_DATA = LM32 {
+			APP_SRC = "main.c";
+			MULTI_STACK = FALSE;
+			// Use standolone version of printf; default is FALSE
+			USESTANDALONEPRINTF = TRUE;
+			// Use the smallc library; default is FALSE
+			USESMALLC = FALSE;
+		};
+		
+
+		MCU_DATA = LATTICE_PLATFORM {
+   			MODEL = LIBRARY {
+				// Path of the library project for the platform
+				PLATFORM_LIB_PATH = "";
+				// Name of the platform
+				PLATFORM_NAME = ""; 
+				// Build configuration of the library project
+				// (normally either "Release" or "Debug");
+				// default is "", i.e., use "Debug" if the
+				// option "DEBUG" is set, otherwise use "Release"
+				PLATFORM_BLD_CFG = "Release";
+   			};
+  		};
+
+		STATUS = EXTENDED;
+		STARTUPHOOK = FALSE;
+		ERRORHOOK = FALSE;
+		SHUTDOWNHOOK = FALSE;
+		PRETASKHOOK = FALSE;
+		POSTTASKHOOK = FALSE;
+		USEGETSERVICEID = FALSE;
+		USEPARAMETERACCESS = FALSE;
+		USERESSCHEDULER = FALSE;
+	};
+
+	/* this is the OIL part for the first task */
+	TASK Task1 {
+		PRIORITY = 0x01;   /* Low priority */
+		AUTOSTART = FALSE;
+		STACK = SHARED;
+		ACTIVATION = 1;    /* Only one pending activation */
+		SCHEDULE = FULL;   /* Fully preemptable */
+	};
+
+	OS EE { KERNEL_TYPE = FP; };
+};

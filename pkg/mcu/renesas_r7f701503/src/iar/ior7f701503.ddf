@@ -1,0 +1,495 @@
+;;-------------------------------------------------------------------------
+;;      Declarations of SFR registers and bits, Interrupt/Exception vectors,
+;;      Interrupt control registers, Memory map information
+;;      and Device file name for RH850 microcontroller R7F701503.
+;;
+;;      This declaration file can be used by the RH850 C-SPY debugger,
+;;      all flavours (simulator and emulators).
+;;
+;;      This file is generated from the device file:
+;;          DR7F701503.DVF
+;;          Copyright(C) 2014 Renesas
+;;          Format version 1.20, File version 1.10 
+;;
+;;-------------------------------------------------------------------------
+
+
+;;-------------------------------------------------------------------------
+;; SFR declaration file
+;;
+;; Syntax: File = Filename
+;;
+;;   Filename   Name of SFR desclaration file
+;;-------------------------------------------------------------------------
+[SfrInclude]
+File = ior7f701503.sfr
+
+
+;;-------------------------------------------------------------------------
+;; Memory information
+;;
+;; Syntax: MemoryNN = Name AdrSpace StartAdr EndAdr AccType 
+;;
+;;   NN         Counter
+;;   Name       Name of zone (legal characters: A-Z, a-z, 0-9, _)
+;;   AdrSpace   Must be Memory
+;;   StartAdr   Start adress of memory block
+;;   EndAdr     End adress of memory block
+;;   AccType    Type of access, read-only (R) or read-write (RW)
+;; 
+;; Used to define address zones within the address space 'Memory'. 
+;;-------------------------------------------------------------------------
+[Memory]
+Memory0  = DATA_FLASH         Memory    0xFF200000      0xFF20FFFF     R
+Memory1  = SFR                Memory    0xFFA00000      0xFFFDFFFF     RW
+Memory2  = SFR                Memory    0xFFFF5000      0xFFFFFFFF     RW
+Memory3  = LOCAL_RAM_SELF     Memory    0xFEDD0000      0xFEDFFFFF     RW
+Memory4  = LOCAL_RAM_PE1      Memory    0xFEBD0000      0xFEBFFFFF     RW
+Memory5  = LOCAL_RAM_PE2      Memory    0xFE9D0000      0xFE9FFFFF     RW
+Memory6  = GLOBAL_RAM         Memory    0xFEEF8000      0xFEEFFFFF     RW
+Memory7  = GLOBAL_RAM         Memory    0xFEFF8000      0xFEFFFFFF     RW
+Memory8  = RETENTION_RAM      Memory    0xFEF00000      0xFEF1FFFF     RW
+Memory9  = LOCAL_APB_SELF     Memory    0xFFFEE000      0xFFFEFFFF     RW
+Memory10 = LOCAL_APB_PE1      Memory    0xFFFEC000      0xFFFEDFFF     RW
+Memory11 = LOCAL_APB_PE2      Memory    0xFFFEA000      0xFFFEBFFF     RW
+Memory12 = CODE_FLASH         Memory    0x00000000      0x003FFFFF     R
+Memory13 = CODE_FLASH         Memory    0x00800000      0x009FFFFF     R
+Memory14 = CODE_FLASH         Memory    0x01000000      0x01007FFF     R
+TrustedRanges = true
+
+;;-------------------------------------------------------------------------
+;; Interrupt declarations
+;; 
+;; Syntax: InterruptNN = Id Vector Type ControlReg
+;;
+;;   NN          Counter
+;;   Id          Interupt 'name'
+;;   Vector      Interrupt vector number (hex)
+;;   Type        '0' indicates non maskable interrupt (NMI),
+;;               '1' indicates maskable interrupt
+;;   ControlReg  Maskable interrupt control register
+;;-------------------------------------------------------------------------
+[InterruptList]
+Interrupt0 = HVCALL                          0x0000  0
+Interrupt1 = RESET                           0x0000  0
+Interrupt2 = SYSCALLEX                       0x0000  0
+Interrupt3 = SYSERR                          0x000A  0
+Interrupt4 = HVTRAP                          0x0014  0
+Interrupt5 = FETRAPEX                        0x001E  0
+Interrupt6 = EITRAP0                         0x0028  0
+Interrupt7 = EITRAP1                         0x0032  0
+Interrupt8 = RIEX                            0x003C  0
+Interrupt9 = FPI                             0x0046  0
+Interrupt10 = FPP                             0x0046  0
+Interrupt11 = UCPOP                           0x0050  0
+Interrupt12 = MDP                             0x005A  0
+Interrupt13 = MIP                             0x005A  0
+Interrupt14 = PIEX                            0x0000  0
+Interrupt15 = ASYNCDB                         0x0000  0
+Interrupt16 = DBTRAPEX                        0x0000  0
+Interrupt17 = SYNCDB                          0x0000  0
+Interrupt18 = MAEX                            0x0000  0
+Interrupt19 = TNMI                            0x0000  0
+Interrupt20 = WDTA0NMI                        0x0000  0
+Interrupt21 = WDTA1NMI                        0x0000  0
+Interrupt22 = WDTA2NMI                        0x0000  0
+Interrupt23 = INTECCDCNRAM0                   0x0000  1  FIC
+Interrupt24 = INTECCDCNRAM1                   0x0000  1  FIC
+Interrupt25 = INTECCDCSIH0                    0x0000  1  FIC
+Interrupt26 = INTECCDCSIH1                    0x0000  1  FIC
+Interrupt27 = INTECCDCSIH2                    0x0000  1  FIC
+Interrupt28 = INTECCDCSIH3                    0x0000  1  FIC
+Interrupt29 = INTECCDEEP0                     0x0000  1  FIC
+Interrupt30 = INTECCDETH                      0x0000  1  FIC
+Interrupt31 = INTECCDFLRAM                    0x0000  1  FIC
+Interrupt32 = INTECCRAM                       0x0000  1  FIC
+Interrupt33 = INTECCSCFLI0                    0x0000  1  FIC
+Interrupt34 = INTGUARD                        0x0000  1  FIC
+Interrupt35 = INTLVIH                         0x0000  1  FIC
+Interrupt36 = INTLVIL                         0x0000  1  FIC
+Interrupt37 = INTOSTM0_FE                     0x0000  1  FIC
+Interrupt38 = INTOSTM1_FE                     0x0000  1  FIC
+Interrupt39 = INTOSTM2_FE                     0x0000  1  FIC
+Interrupt40 = INTOSTM3_FE                     0x0000  1  FIC
+Interrupt41 = INTOSTM4_FE                     0x0000  1  FIC
+Interrupt42 = INTOSTM5_FE                     0x0000  1  FIC
+Interrupt43 = INTOSTM6_FE                     0x0000  1  FIC
+Interrupt44 = INTOSTM7_FE                     0x0000  1  FIC
+Interrupt45 = INTOSTM8_FE                     0x0000  1  FIC
+Interrupt46 = INTOSTM9_FE                     0x0000  1  FIC
+Interrupt47 = INTIPIR0                        0x0000  1  ICIPIR0
+Interrupt48 = INTPWGA12                       0x0064  1  ICPWGA12
+Interrupt49 = INTPWGA13                       0x0065  1  ICPWGA13
+Interrupt50 = INTPWGA14                       0x0066  1  ICPWGA14
+Interrupt51 = INTPWGA15                       0x0067  1  ICPWGA15
+Interrupt52 = INTCSIH2IR_1                    0x000A  1  ICCSIH2IR_1
+Interrupt53 = INTTAUD0I4                      0x000A  1  ICCSIH2IR_1
+Interrupt54 = INTFLERR                        0x006E  1  ICFLERR
+Interrupt55 = INTFLENDNM                      0x006F  1  ICFLENDNM
+Interrupt56 = INTCWEND                        0x0070  1  ICCWEND
+Interrupt57 = INTRCAN1ERR                     0x0071  1  ICRCAN1ERR
+Interrupt58 = INTRCAN1REC                     0x0072  1  ICRCAN1REC
+Interrupt59 = INTRCAN1TRX                     0x0073  1  ICRCAN1TRX
+Interrupt60 = INTCSIH1IC                      0x0074  1  ICCSIH1IC
+Interrupt61 = INTTAPA0IPEK0_2                 0x0074  1  ICCSIH1IC
+Interrupt62 = INTCSIH1IR                      0x0075  1  ICCSIH1IR
+Interrupt63 = INTTAPA0IVLY0_2                 0x0075  1  ICCSIH1IR
+Interrupt64 = INTCSIG0IC_2                    0x0076  1  ICCSIG0IC_2
+Interrupt65 = INTCSIH1IRE                     0x0076  1  ICCSIG0IC_2
+Interrupt66 = INTCSIG0IR_2                    0x0077  1  ICCSIG0IR_2
+Interrupt67 = INTCSIH1IJC                     0x0077  1  ICCSIG0IR_2
+Interrupt68 = INTCSIH2IRE_1                   0x000B  1  ICCSIH2IRE_1
+Interrupt69 = INTTAUD0I6                      0x000B  1  ICCSIH2IRE_1
+Interrupt70 = INTRLIN31                       0x0078  1  ICRLIN31
+Interrupt71 = INTRLIN31UR0                    0x0079  1  ICRLIN31UR0
+Interrupt72 = INTRLIN31UR1                    0x007A  1  ICRLIN31UR1
+Interrupt73 = INTRLIN31UR2                    0x007B  1  ICRLIN31UR2
+Interrupt74 = INTPWGA20                       0x007C  1  ICPWGA20
+Interrupt75 = INTPWGA21                       0x007D  1  ICPWGA21
+Interrupt76 = INTPWGA22                       0x007E  1  ICPWGA22
+Interrupt77 = INTPWGA23                       0x007F  1  ICPWGA23
+Interrupt78 = INTP6                           0x0080  1  ICP6
+Interrupt79 = INTP7                           0x0081  1  ICP7
+Interrupt80 = INTCSIH2IJC_1                   0x000C  1  ICCSIH2IJC_1
+Interrupt81 = INTTAUD0I8                      0x000C  1  ICCSIH2IJC_1
+Interrupt82 = INTP8                           0x0082  1  ICP8
+Interrupt83 = INTP12                          0x0083  1  ICP12
+Interrupt84 = INTCSIH2IC                      0x0084  1  ICCSIH2IC
+Interrupt85 = INTTAUD0I0_2                    0x0084  1  ICCSIH2IC
+Interrupt86 = INTCSIH2IR                      0x0085  1  ICCSIH2IR
+Interrupt87 = INTTAUD0I4_2                    0x0085  1  ICCSIH2IR
+Interrupt88 = INTCSIH2IRE                     0x0086  1  ICCSIH2IRE
+Interrupt89 = INTTAUD0I6_2                    0x0086  1  ICCSIH2IRE
+Interrupt90 = INTCSIH2IJC                     0x0087  1  ICCSIH2IJC
+Interrupt91 = INTTAUD0I8_2                    0x0087  1  ICCSIH2IJC
+Interrupt92 = INTCSIH3IR_1                    0x000D  1  ICCSIH3IR_1
+Interrupt93 = INTTAUD0I10                     0x000D  1  ICCSIH3IR_1
+Interrupt94 = INTTAUB0I0                      0x008E  1  ICTAUB0I0
+Interrupt95 = INTTAUB0I1                      0x008F  1  ICTAUB0I1
+Interrupt96 = INTTAUB0I2                      0x0090  1  ICTAUB0I2
+Interrupt97 = INTPWGA16                       0x0091  1  ICPWGA16
+Interrupt98 = INTTAUB0I3                      0x0091  1  ICPWGA16
+Interrupt99 = INTTAUB0I4                      0x0092  1  ICTAUB0I4
+Interrupt100 = INTPWGA17                       0x0093  1  ICPWGA17
+Interrupt101 = INTTAUB0I5                      0x0093  1  ICPWGA17
+Interrupt102 = INTTAUB0I6                      0x0094  1  ICTAUB0I6
+Interrupt103 = INTPWGA18                       0x0095  1  ICPWGA18
+Interrupt104 = INTTAUB0I7                      0x0095  1  ICPWGA18
+Interrupt105 = INTCSIH3IRE_1                   0x000E  1  ICCSIH3IRE_1
+Interrupt106 = INTTAUD0I12                     0x000E  1  ICCSIH3IRE_1
+Interrupt107 = INTTAUB0I8                      0x0096  1  ICTAUB0I8
+Interrupt108 = INTPWGA19                       0x0097  1  ICPWGA19
+Interrupt109 = INTTAUB0I9                      0x0097  1  ICPWGA19
+Interrupt110 = INTTAUB0I10                     0x0098  1  ICTAUB0I10
+Interrupt111 = INTPWGA26                       0x0099  1  ICPWGA26
+Interrupt112 = INTTAUB0I11                     0x0099  1  ICPWGA26
+Interrupt113 = INTTAUB0I12                     0x009A  1  ICTAUB0I12
+Interrupt114 = INTPWGA30                       0x009B  1  ICPWGA30
+Interrupt115 = INTTAUB0I13                     0x009B  1  ICPWGA30
+Interrupt116 = INTTAUB0I14                     0x009C  1  ICTAUB0I14
+Interrupt117 = INTPWGA31                       0x009D  1  ICPWGA31
+Interrupt118 = INTTAUB0I15                     0x009D  1  ICPWGA31
+Interrupt119 = INTCSIH3IC                      0x009E  1  ICCSIH3IC
+Interrupt120 = INTTAUD0I2_2                    0x009E  1  ICCSIH3IC
+Interrupt121 = INTCSIH3IR                      0x009F  1  ICCSIH3IR
+Interrupt122 = INTTAUD0I10_2                   0x009F  1  ICCSIH3IR
+Interrupt123 = INTCSIH3IJC_1                   0x000F  1  ICCSIH3IJC_1
+Interrupt124 = INTTAUD0I14                     0x000F  1  ICCSIH3IJC_1
+Interrupt125 = INTCSIH3IRE                     0x00A0  1  ICCSIH3IRE
+Interrupt126 = INTTAUD0I12_2                   0x00A0  1  ICCSIH3IRE
+Interrupt127 = INTCSIH3IJC                     0x00A1  1  ICCSIH3IJC
+Interrupt128 = INTTAUD0I14_2                   0x00A1  1  ICCSIH3IJC
+Interrupt129 = INTRLIN22                       0x00A2  1  ICRLIN22
+Interrupt130 = INTRLIN23                       0x00A3  1  ICRLIN23
+Interrupt131 = INTRLIN32                       0x00A4  1  ICRLIN32
+Interrupt132 = INTRLIN32UR0                    0x00A5  1  ICRLIN32UR0
+Interrupt133 = INTRLIN32UR1                    0x00A6  1  ICRLIN32UR1
+Interrupt134 = INTRLIN32UR2                    0x00A7  1  ICRLIN32UR2
+Interrupt135 = INTTAUJ1I0                      0x00A8  1  ICTAUJ1I0
+Interrupt136 = INTTAUJ1I1                      0x00A9  1  ICTAUJ1I1
+Interrupt137 = INTCSIH1IC_1                    0x0010  1  ICCSIH1IC_1
+Interrupt138 = INTTAPA0IPEK0                   0x0010  1  ICCSIH1IC_1
+Interrupt139 = INTTAUJ1I2                      0x00AA  1  ICTAUJ1I2
+Interrupt140 = INTTAUJ1I3                      0x00AB  1  ICTAUJ1I3
+Interrupt141 = INTFLXA0FDA                     0x00AD  1  ICFLXA0FDA
+Interrupt142 = INTFLXA0FW                      0x00AE  1  ICFLXA0FW
+Interrupt143 = INTFLXA0IQE                     0x00AF  1  ICFLXA0IQE
+Interrupt144 = INTFLXA0IQF                     0x00B0  1  ICFLXA0IQF
+Interrupt145 = INTFLXA0OT                      0x00B1  1  ICFLXA0OT
+Interrupt146 = INTFLXA0OW                      0x00B2  1  ICFLXA0OW
+Interrupt147 = INTFLXA0LINE0                   0x00B3  1  ICFLXA0LINE0
+Interrupt148 = INTCSIH1IR_1                    0x0011  1  ICCSIH1IR_1
+Interrupt149 = INTTAPA0IVLY0                   0x0011  1  ICCSIH1IR_1
+Interrupt150 = INTFLXA0LINE1                   0x00B4  1  ICFLXA0LINE1
+Interrupt151 = INTFLXA0TIM0                    0x00B5  1  ICFLXA0TIM0
+Interrupt152 = INTFLXA0TIM1                    0x00B6  1  ICFLXA0TIM1
+Interrupt153 = INTFLXA0TIM2                    0x00B7  1  ICFLXA0TIM2
+Interrupt154 = INTPWGA24                       0x00B8  1  ICPWGA24
+Interrupt155 = INTPWGA25                       0x00B9  1  ICPWGA25
+Interrupt156 = INTPWGA27                       0x00BA  1  ICPWGA27
+Interrupt157 = INTPWGA28                       0x00BB  1  ICPWGA28
+Interrupt158 = INTPWGA29                       0x00BC  1  ICPWGA29
+Interrupt159 = INTPWGA32                       0x00BD  1  ICPWGA32
+Interrupt160 = INTADCA0I0                      0x0012  1  ICADCA0I0
+Interrupt161 = INTPWGA33                       0x00BE  1  ICPWGA33
+Interrupt162 = INTPWGA34                       0x00BF  1  ICPWGA34
+Interrupt163 = INTPWGA35                       0x00C0  1  ICPWGA35
+Interrupt164 = INTPWGA36                       0x00C1  1  ICPWGA36
+Interrupt165 = INTPWGA37                       0x00C2  1  ICPWGA37
+Interrupt166 = INTPWGA38                       0x00C3  1  ICPWGA38
+Interrupt167 = INTPWGA39                       0x00C4  1  ICPWGA39
+Interrupt168 = INTPWGA40                       0x00C5  1  ICPWGA40
+Interrupt169 = INTPWGA41                       0x00C6  1  ICPWGA41
+Interrupt170 = INTPWGA42                       0x00C7  1  ICPWGA42
+Interrupt171 = INTADCA0I1                      0x0013  1  ICADCA0I1
+Interrupt172 = INTIPIR1                        0x0001  1  ICIPIR1
+Interrupt173 = INTPWGA43                       0x00C8  1  ICPWGA43
+Interrupt174 = INTPWGA44                       0x00C9  1  ICPWGA44
+Interrupt175 = INTPWGA45                       0x00CA  1  ICPWGA45
+Interrupt176 = INTPWGA46                       0x00CB  1  ICPWGA46
+Interrupt177 = INTPWGA47                       0x00CC  1  ICPWGA47
+Interrupt178 = INTP9                           0x00CD  1  ICP9
+Interrupt179 = INTP13                          0x00CE  1  ICP13
+Interrupt180 = INTP14                          0x00CF  1  ICP14
+Interrupt181 = INTP15                          0x00D0  1  ICP15
+Interrupt182 = INTRTCA01S                      0x00D1  1  ICRTCA01S
+Interrupt183 = INTADCA0I2                      0x0014  1  ICADCA0I2
+Interrupt184 = INTCSIH0IJC_1                   0x0014  1  ICADCA0I2
+Interrupt185 = INTRTCA0AL                      0x00D2  1  ICRTCA0AL
+Interrupt186 = INTRTCA0R                       0x00D3  1  ICRTCA0R
+Interrupt187 = INTADCA1ERR                     0x00D4  1  ICADCA1ERR
+Interrupt188 = INTADCA1I0                      0x00D5  1  ICADCA1I0
+Interrupt189 = INTADCA1I1                      0x00D6  1  ICADCA1I1
+Interrupt190 = INTADCA1I2                      0x00D7  1  ICADCA1I2
+Interrupt191 = INTRCAN2ERR                     0x00D9  1  ICRCAN2ERR
+Interrupt192 = INTRCAN2REC                     0x00DA  1  ICRCAN2REC
+Interrupt193 = INTRCAN2TRX                     0x00DB  1  ICRCAN2TRX
+Interrupt194 = INTDCUTDI                       0x0015  1  ICDCUTDI
+Interrupt195 = INTRCAN3ERR                     0x00DC  1  ICRCAN3ERR
+Interrupt196 = INTRCAN3REC                     0x00DD  1  ICRCAN3REC
+Interrupt197 = INTRCAN3TRX                     0x00DE  1  ICRCAN3TRX
+Interrupt198 = INTCSIG1IC                      0x00DF  1  ICCSIG1IC
+Interrupt199 = INTCSIG1IR                      0x00E0  1  ICCSIG1IR
+Interrupt200 = INTCSIG1IRE                     0x00E1  1  ICCSIG1IRE
+Interrupt201 = INTRLIN24                       0x00E2  1  ICRLIN24
+Interrupt202 = INTRLIN25                       0x00E3  1  ICRLIN25
+Interrupt203 = INTRLIN33                       0x00E4  1  ICRLIN33
+Interrupt204 = INTRLIN33UR0                    0x00E5  1  ICRLIN33UR0
+Interrupt205 = INTRCANGERR0                    0x0016  1  ICRCANGERR0
+Interrupt206 = INTRLIN33UR1                    0x00E6  1  ICRLIN33UR1
+Interrupt207 = INTRLIN33UR2                    0x00E7  1  ICRLIN33UR2
+Interrupt208 = INTRLIN34                       0x00E8  1  ICRLIN34
+Interrupt209 = INTRLIN34UR0                    0x00E9  1  ICRLIN34UR0
+Interrupt210 = INTRLIN34UR1                    0x00EA  1  ICRLIN34UR1
+Interrupt211 = INTRLIN34UR2                    0x00EB  1  ICRLIN34UR2
+Interrupt212 = INTRLIN35                       0x00EC  1  ICRLIN35
+Interrupt213 = INTRLIN35UR0                    0x00ED  1  ICRLIN35UR0
+Interrupt214 = INTRLIN35UR1                    0x00EE  1  ICRLIN35UR1
+Interrupt215 = INTRLIN35UR2                    0x00EF  1  ICRLIN35UR2
+Interrupt216 = INTRCANGRECC0                   0x0017  1  ICRCANGRECC0
+Interrupt217 = INTPWGA48                       0x00F0  1  ICPWGA48
+Interrupt218 = INTPWGA49                       0x00F1  1  ICPWGA49
+Interrupt219 = INTPWGA50                       0x00F2  1  ICPWGA50
+Interrupt220 = INTPWGA51                       0x00F3  1  ICPWGA51
+Interrupt221 = INTPWGA52                       0x00F4  1  ICPWGA52
+Interrupt222 = INTPWGA53                       0x00F5  1  ICPWGA53
+Interrupt223 = INTPWGA54                       0x00F6  1  ICPWGA54
+Interrupt224 = INTPWGA55                       0x00F7  1  ICPWGA55
+Interrupt225 = INTPWGA56                       0x00F8  1  ICPWGA56
+Interrupt226 = INTPWGA57                       0x00F9  1  ICPWGA57
+Interrupt227 = INTRCAN0ERR                     0x0018  1  ICRCAN0ERR
+Interrupt228 = INTPWGA58                       0x00FA  1  ICPWGA58
+Interrupt229 = INTPWGA59                       0x00FB  1  ICPWGA59
+Interrupt230 = INTPWGA60                       0x00FC  1  ICPWGA60
+Interrupt231 = INTPWGA61                       0x00FD  1  ICPWGA61
+Interrupt232 = INTPWGA62                       0x00FE  1  ICPWGA62
+Interrupt233 = INTPWGA63                       0x00FF  1  ICPWGA63
+Interrupt234 = INTTAUB1I0                      0x0100  1  ICTAUB1I0
+Interrupt235 = INTTAUB1I1                      0x0101  1  ICTAUB1I1
+Interrupt236 = INTTAUB1I2                      0x0102  1  ICTAUB1I2
+Interrupt237 = INTTAUB1I3                      0x0103  1  ICTAUB1I3
+Interrupt238 = INTRCAN0REC                     0x0019  1  ICRCAN0REC
+Interrupt239 = INTTAUB1I4                      0x0104  1  ICTAUB1I4
+Interrupt240 = INTTAUB1I5                      0x0105  1  ICTAUB1I5
+Interrupt241 = INTTAUB1I6                      0x0106  1  ICTAUB1I6
+Interrupt242 = INTTAUB1I7                      0x0107  1  ICTAUB1I7
+Interrupt243 = INTTAUB1I8                      0x0108  1  ICTAUB1I8
+Interrupt244 = INTTAUB1I9                      0x0109  1  ICTAUB1I9
+Interrupt245 = INTTAUB1I10                     0x010A  1  ICTAUB1I10
+Interrupt246 = INTTAUB1I11                     0x010B  1  ICTAUB1I11
+Interrupt247 = INTTAUB1I12                     0x010C  1  ICTAUB1I12
+Interrupt248 = INTTAUB1I13                     0x010D  1  ICTAUB1I13
+Interrupt249 = INTRCAN0TRX                     0x001A  1  ICRCAN0TRX
+Interrupt250 = INTTAUB1I14                     0x010E  1  ICTAUB1I14
+Interrupt251 = INTTAUB1I15                     0x010F  1  ICTAUB1I15
+Interrupt252 = INTRCAN4ERR                     0x0110  1  ICRCAN4ERR
+Interrupt253 = INTRCAN4REC                     0x0111  1  ICRCAN4REC
+Interrupt254 = INTRCAN4TRX                     0x0112  1  ICRCAN4TRX
+Interrupt255 = INTRLIN26                       0x0113  1  ICRLIN26
+Interrupt256 = INTRLIN27                       0x0114  1  ICRLIN27
+Interrupt257 = INTPWGA64                       0x0115  1  ICPWGA64
+Interrupt258 = INTPWGA65                       0x0116  1  ICPWGA65
+Interrupt259 = INTPWGA66                       0x0117  1  ICPWGA66
+Interrupt260 = INTCSIG0IC                      0x001B  1  ICCSIG0IC
+Interrupt261 = INTCSIH1IRE_1                   0x001B  1  ICCSIG0IC
+Interrupt262 = INTPWGA67                       0x0118  1  ICPWGA67
+Interrupt263 = INTPWGA68                       0x0119  1  ICPWGA68
+Interrupt264 = INTPWGA69                       0x011A  1  ICPWGA69
+Interrupt265 = INTPWGA70                       0x011B  1  ICPWGA70
+Interrupt266 = INTPWGA71                       0x011C  1  ICPWGA71
+Interrupt267 = INTRLIN28                       0x011D  1  ICRLIN28
+Interrupt268 = INTRLIN29                       0x011E  1  ICRLIN29
+Interrupt269 = INTRCAN5ERR                     0x011F  1  ICRCAN5ERR
+Interrupt270 = INTRCAN5REC                     0x0120  1  ICRCAN5REC
+Interrupt271 = INTRCAN5TRX                     0x0121  1  ICRCAN5TRX
+Interrupt272 = INTCSIG0IR                      0x001C  1  ICCSIG0IR
+Interrupt273 = INTCSIH1IJC_1                   0x001C  1  ICCSIG0IR
+Interrupt274 = INTDMA16                        0x012A  1  ICDMA16
+Interrupt275 = INTDMA17                        0x012B  1  ICDMA17
+Interrupt276 = INTCSIH0IC                      0x001D  1  ICCSIH0IC
+Interrupt277 = INTIPIR2                        0x0002  1  ICIPIR2
+Interrupt278 = INTDMA18                        0x012C  1  ICDMA18
+Interrupt279 = INTDMA19                        0x012D  1  ICDMA19
+Interrupt280 = INTDMA20                        0x012E  1  ICDMA20
+Interrupt281 = INTDMA21                        0x012F  1  ICDMA21
+Interrupt282 = INTDMA22                        0x0130  1  ICDMA22
+Interrupt283 = INTDMA23                        0x0131  1  ICDMA23
+Interrupt284 = INTDMA24                        0x0132  1  ICDMA24
+Interrupt285 = INTDMA25                        0x0133  1  ICDMA25
+Interrupt286 = INTDMA26                        0x0134  1  ICDMA26
+Interrupt287 = INTDMA27                        0x0135  1  ICDMA27
+Interrupt288 = INTCSIH0IR                      0x001E  1  ICCSIH0IR
+Interrupt289 = INTDMA28                        0x0136  1  ICDMA28
+Interrupt290 = INTDMA29                        0x0137  1  ICDMA29
+Interrupt291 = INTDMA30                        0x0138  1  ICDMA30
+Interrupt292 = INTDMA31                        0x0139  1  ICDMA31
+Interrupt293 = INTOSTM5                        0x013A  1  ICOSTM5
+Interrupt294 = INTETNB0DATA                    0x013B  1  ICETNB0DATA
+Interrupt295 = INTETNB0ERR                     0x013C  1  ICETNB0ERR
+Interrupt296 = INTETNB0MNG                     0x013D  1  ICETNB0MNG
+Interrupt297 = INTETNB0MAC                     0x013E  1  ICETNB0MAC
+Interrupt298 = INTRCANGERR1                    0x013F  1  ICRCANGERR1
+Interrupt299 = INTCSIH0IRE                     0x001F  1  ICCSIH0IRE
+Interrupt300 = INTRCANGRECC1                   0x0140  1  ICRCANGRECC1
+Interrupt301 = INTRCAN6ERR                     0x0141  1  ICRCAN6ERR
+Interrupt302 = INTRCAN6REC                     0x0142  1  ICRCAN6REC
+Interrupt303 = INTRCAN6TRX                     0x0143  1  ICRCAN6TRX
+Interrupt304 = INTCSIG2IC                      0x0146  1  ICCSIG2IC
+Interrupt305 = INTCSIG2IR                      0x0147  1  ICCSIG2IR
+Interrupt306 = INTCSIG2IRE                     0x0148  1  ICCSIG2IRE
+Interrupt307 = INTCSIG3IC                      0x0149  1  ICCSIG3IC
+Interrupt308 = INTADCA0I2_2                    0x0020  1  ICADCA0I2_2
+Interrupt309 = INTCSIH0IJC                     0x0020  1  ICADCA0I2_2
+Interrupt310 = INTCSIG3IR                      0x014A  1  ICCSIG3IR
+Interrupt311 = INTCSIG3IRE                     0x014B  1  ICCSIG3IRE
+Interrupt312 = INTRLIN30                       0x0021  1  ICRLIN30
+Interrupt313 = INTRLIN30UR0                    0x0022  1  ICRLIN30UR0
+Interrupt314 = INTRLIN30UR1                    0x0023  1  ICRLIN30UR1
+Interrupt315 = INTRLIN30UR2                    0x0024  1  ICRLIN30UR2
+Interrupt316 = INTP0                           0x0025  1  ICP0
+Interrupt317 = INTP1                           0x0026  1  ICP1
+Interrupt318 = INTP2                           0x0027  1  ICP2
+Interrupt319 = INTIPIR3                        0x0003  1  ICIPIR3
+Interrupt320 = INTWDTA0                        0x0028  1  ICWDTA0
+Interrupt321 = INTWDTA1                        0x0029  1  ICWDTA1
+Interrupt322 = INTWDTA2                        0x002A  1  ICWDTA2
+Interrupt323 = INTP3                           0x002B  1  ICP3
+Interrupt324 = INTP4                           0x002C  1  ICP4
+Interrupt325 = INTP5                           0x002D  1  ICP5
+Interrupt326 = INTP10                          0x002E  1  ICP10
+Interrupt327 = INTP11                          0x002F  1  ICP11
+Interrupt328 = INTTAUD0I1                      0x0030  1  ICTAUD0I1
+Interrupt329 = INTTAUD0I3                      0x0031  1  ICTAUD0I3
+Interrupt330 = INTBN0                          0x0004  1  ICBN0
+Interrupt331 = INTTAUD0I5                      0x0032  1  ICTAUD0I5
+Interrupt332 = INTTAUD0I7                      0x0033  1  ICTAUD0I7
+Interrupt333 = INTTAUD0I9                      0x0034  1  ICTAUD0I9
+Interrupt334 = INTTAUD0I11                     0x0035  1  ICTAUD0I11
+Interrupt335 = INTTAUD0I13                     0x0036  1  ICTAUD0I13
+Interrupt336 = INTTAUD0I15                     0x0037  1  ICTAUD0I15
+Interrupt337 = INTADCA0ERR                     0x0038  1  ICADCA0ERR
+Interrupt338 = INTCSIG0IRE                     0x0039  1  ICCSIG0IRE
+Interrupt339 = INTRLIN20                       0x003A  1  ICRLIN20
+Interrupt340 = INTRLIN21                       0x003B  1  ICRLIN21
+Interrupt341 = INTDMA0                         0x003C  1  ICDMA0
+Interrupt342 = INTDMA1                         0x003D  1  ICDMA1
+Interrupt343 = INTDMA2                         0x003E  1  ICDMA2
+Interrupt344 = INTDMA3                         0x003F  1  ICDMA3
+Interrupt345 = INTDMA4                         0x0040  1  ICDMA4
+Interrupt346 = INTDMA5                         0x0041  1  ICDMA5
+Interrupt347 = INTDMA6                         0x0042  1  ICDMA6
+Interrupt348 = INTDMA7                         0x0043  1  ICDMA7
+Interrupt349 = INTDMA8                         0x0044  1  ICDMA8
+Interrupt350 = INTDMA9                         0x0045  1  ICDMA9
+Interrupt351 = INTDMA10                        0x0046  1  ICDMA10
+Interrupt352 = INTDMA11                        0x0047  1  ICDMA11
+Interrupt353 = INTDMA12                        0x0048  1  ICDMA12
+Interrupt354 = INTDMA13                        0x0049  1  ICDMA13
+Interrupt355 = INTDMA14                        0x004A  1  ICDMA14
+Interrupt356 = INTDMA15                        0x004B  1  ICDMA15
+Interrupt357 = INTRIIC0TI                      0x004C  1  ICRIIC0TI
+Interrupt358 = INTRIIC0TEI                     0x004D  1  ICRIIC0TEI
+Interrupt359 = INTRIIC0RI                      0x004E  1  ICRIIC0RI
+Interrupt360 = INTRIIC0EE                      0x004F  1  ICRIIC0EE
+Interrupt361 = INTTAUJ0I0                      0x0050  1  ICTAUJ0I0
+Interrupt362 = INTTAUJ0I1                      0x0051  1  ICTAUJ0I1
+Interrupt363 = INTTAUJ0I2                      0x0052  1  ICTAUJ0I2
+Interrupt364 = INTTAUJ0I3                      0x0053  1  ICTAUJ0I3
+Interrupt365 = INTOSTM0_1                      0x0054  1  ICOSTM0
+Interrupt366 = INTENCA0IOV                     0x0055  1  ICENCA0IOV
+Interrupt367 = INTPWGA4                        0x0055  1  ICENCA0IOV
+Interrupt368 = INTENCA0IUD                     0x0056  1  ICENCA0IUD
+Interrupt369 = INTPWGA5                        0x0056  1  ICENCA0IUD
+Interrupt370 = INTENCA0I0                      0x0057  1  ICENCA0I0
+Interrupt371 = INTPWGA6                        0x0057  1  ICENCA0I0
+Interrupt372 = INTENCA0I1                      0x0058  1  ICENCA0I1
+Interrupt373 = INTPWGA7                        0x0058  1  ICENCA0I1
+Interrupt374 = INTENCA0IEC                     0x0059  1  ICENCA0IEC
+Interrupt375 = INTCSIH2IC_1                    0x0008  1  ICCSIH2IC_1
+Interrupt376 = INTTAUD0I0                      0x0008  1  ICCSIH2IC_1
+Interrupt377 = INTKR0                          0x005A  1  ICKR0
+Interrupt378 = INTQFULL                        0x005B  1  ICQFULL
+Interrupt379 = INTPWGA0                        0x005C  1  ICPWGA0
+Interrupt380 = INTPWGA1                        0x005D  1  ICPWGA1
+Interrupt381 = INTPWGA2                        0x005E  1  ICPWGA2
+Interrupt382 = INTPWGA3                        0x005F  1  ICPWGA3
+Interrupt383 = INTPWGA8                        0x0060  1  ICPWGA8
+Interrupt384 = INTPWGA9                        0x0061  1  ICPWGA9
+Interrupt385 = INTPWGA10                       0x0062  1  ICPWGA10
+Interrupt386 = INTPWGA11                       0x0063  1  ICPWGA11
+Interrupt387 = INTCSIH3IC_1                    0x0009  1  ICCSIH3IC_1
+Interrupt388 = INTTAUD0I2                      0x0009  1  ICCSIH3IC_1
+
+
+;;-------------------------------------------------------------------------
+;; Device file
+;;
+;; Syntax: File = Filename
+;;
+;;   Filename   Name of device file
+;;-------------------------------------------------------------------------
+[DeviceFile]
+File = DR7F701503.DVF
+
+
+;;-------------------------------------------------------------------------
+;; Device information
+;;
+;; Syntax: Item = Value
+;;
+;;   Item    Name of item
+;;   Value   Value of item
+;;-------------------------------------------------------------------------
+[DeviceInfo]
+Variant = RH850
+DataFlash = YES
+FlashSize = 0064
+FlashType = CS Fixed2
+StartAddress = 0xFF200000
+EndAddress = 0xFF20FFFF
+BusSize = 00
+
+
+;;-------------------------------------------------------------------------
+;; End of file
+;;-------------------------------------------------------------------------

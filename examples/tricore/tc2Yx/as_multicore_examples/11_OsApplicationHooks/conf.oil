@@ -1,0 +1,135 @@
+/* In this example I will provide custom startup code and scripts to execute
+   from RAM */
+
+CPU test_application {
+
+  OS EE {
+    EE_OPT = "EE_DEBUG";
+    EE_OPT = "__ASSERT__";
+    EE_OPT = "EE_EXECUTE_FROM_RAM";
+    //EE_OPT = "EE_SAVE_TEMP_FILES";
+    //EE_OPT = "EE_MM_OPT";
+
+    REMOTENOTIFICATION = USE_RPC;
+
+    //SPINLOCKS = QUEUED;
+
+    MASTER_CPU = "master";
+
+    CPU_DATA = TRICORE {
+      ID = "master";
+      CPU_CLOCK = 200.0;
+      APP_SRC = "master.c";
+      MULTI_STACK = TRUE;
+      SYS_STACK_SIZE = 128;
+      COMPILER_TYPE = GNU;
+    };
+
+    CPU_DATA = TRICORE {
+      ID = "slave1";
+      APP_SRC = "slave1.c";
+      MULTI_STACK = TRUE;
+      SYS_STACK_SIZE = 128;
+      COMPILER_TYPE = GNU;
+    };
+
+    CPU_DATA = TRICORE {
+      ID = "slave2";
+      APP_SRC = "slave2.c";
+      MULTI_STACK = TRUE;
+      SYS_STACK_SIZE = 128;
+      COMPILER_TYPE = GNU;
+    };
+
+    MCU_DATA = TRICORE {
+      MODEL = TC27x;
+    };
+
+    STARTUPHOOK   = TRUE;
+    SHUTDOWNHOOK  = TRUE;
+
+    STATUS = STANDARD;
+    KERNEL_TYPE = BCC1;
+    ORTI_SECTIONS = ALL;
+  };
+
+  TASK TaskMaster {
+    CPU_ID = "master";
+    PRIORITY = 1;
+    AUTOSTART = TRUE;
+    STACK = SHARED;
+    ACTIVATION = 1;
+    SCHEDULE = FULL;
+  };
+
+  TASK TaskSlave1 {
+    CPU_ID = "slave1";
+    PRIORITY = 1;
+    AUTOSTART = FALSE;
+    STACK = SHARED;
+    ACTIVATION = 1;
+    SCHEDULE = FULL;
+  };
+
+  TASK TaskSlave2 {
+    CPU_ID = "slave2";
+    PRIORITY = 1;
+    AUTOSTART = FALSE;
+    STACK = SHARED;
+    ACTIVATION = 1;
+    SCHEDULE = FULL;
+  };
+
+  ISR STM0_isr2_core0 {
+    CPU_ID = "master";
+    CATEGORY = 2;
+    PRIORITY = 2;
+    HANDLER = "STM0_isr2"; // IRQ handler 
+  };
+
+  ISR STM0_isr2_core1 {
+    CPU_ID = "slave1";
+    CATEGORY = 2;
+    PRIORITY = 2;
+    HANDLER = "STM0_isr2"; // IRQ handler 
+  };
+
+  ISR STM0_isr2_core2 {
+    CPU_ID = "slave2";
+    CATEGORY = 2;
+    PRIORITY = 2;
+    HANDLER = "STM0_isr2"; // IRQ handler 
+  };
+
+  APPLICATION MasterApplication {
+    CPU_ID = "master";
+    TRUSTED = TRUE;
+    ISR = STM0_isr2_core0;
+    TASK = TaskMaster;
+    SHARED_STACK_SIZE = 512;
+    IRQ_STACK_SIZE = 512;
+    STARTUPHOOK = TRUE;
+    SHUTDOWNHOOK = TRUE;
+  };
+
+  APPLICATION Slave1Application {
+    CPU_ID = "slave1";
+    TRUSTED = TRUE;
+    ISR = STM0_isr2_core1;
+    TASK = TaskSlave1;
+    SHARED_STACK_SIZE = 512;
+    IRQ_STACK_SIZE = 512;
+  };
+
+  APPLICATION Slave2Application {
+    CPU_ID = "slave2";
+    TRUSTED = TRUE;
+    ISR = STM0_isr2_core2;
+    TASK = TaskSlave2;
+    SHARED_STACK_SIZE = 512;
+    IRQ_STACK_SIZE = 512;
+    STARTUPHOOK = TRUE;
+    SHUTDOWNHOOK = TRUE;
+  };
+
+};

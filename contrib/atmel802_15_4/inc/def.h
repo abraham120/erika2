@@ -1,0 +1,12 @@
+
+#define RADIO_TYPE AT86RF230
+#define BOARD_TYPE RDK230
+#define APP_TYPE APP_L2 
+#define DEBUG 0
+#define SPECIAL_PEER 0
+#define DEVICE_TYPE FD1_NOGTS
+#define CTRL_IF UART1
+#define RF_BAND BAND_2400
+
+
+

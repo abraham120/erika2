@@ -1,0 +1,10 @@
+ B::
+ WINPOS 92.571 45.615 80. 5. 0. 0. W001
+ Var.Watch
+ 
+ VAR.ADDWATCH task2_fired
+ VAR.ADDWATCH task1_fired
+ VAR.ADDWATCH button_fired
+ VAR.ADDWATCH timer_fired
+  
+ ENDDO

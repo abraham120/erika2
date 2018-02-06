@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<evidence_example version="1" ID="S12G_CODEWARRIOR_EE_MONOSTACK_RESOURCE_DEMO">
+
+ <category>s12g/codewarrior</category>
+ <title>monostack_resource_demo</title>
+   
+ <small_descr>
+ A minimal EE demo for the MONOSTACK case with the Axiom TWRS12G128 demo board.
+ </small_descr>
+
+ <long_descr>
+ Resource demo: A minimal EE demo for the MONOSTACK case with the Axiom TWRS12G128 demo board.
+ The demo uses the following peripherals:
+ &lt;ul&gt;
+ &lt;li&gt;LEDs; &lt;/li&gt;
+ &lt;li&gt;Buttons; &lt;/li&gt;
+ &lt;li&gt;ADC module; &lt;/li&gt;
+ &lt;li&gt;PIT timer; &lt;/li&gt;
+ &lt;li&gt;SCI module; &lt;/li&gt;
+ &lt;/ul&gt;
+ </long_descr>
+
+ <file_section>
+  <file     name="Project.prm"/> 
+  <file     name="conf.oil"/>
+  <file     name="Start12.c"/>
+  <file     name="readme.txt"/>
+  <file     name="main.c"/>
+  <file     name="CPU12ISRs.c"/>
+  <file     name="CPU12ISRs.h"/>
+  <file     name="Vectors.c"/>
+  <file     name="Full_Chip_Simulation.ini"/>
+  <file     name="PE_Multilink_CyclonePro.ini"/>
+  <file     name="C_Layout.hwl"/>
+ </file_section>
+
+</evidence_example>

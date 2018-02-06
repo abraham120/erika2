@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<evidence_example version="1" ID="tricore_tc27x_oo_event">
+  <category>tricore/infineon_TriBoard-TC2X5_V2.0/Stack Monitoring, Service Protection and Memory Protection automatic tests</category>
+  <title>Multicore Shutdown all cores with memory protection test </title>
+
+  <small_descr>
+  </small_descr>
+
+  <long_descr>
+    This code test the distributed and synchronized Shutdown of all the cores with memory protection enabled.
+    The procedure is started through a TRUSTED Function.
+  </long_descr>
+
+  <file_section>
+    <file     name="conf.oil"/>
+    <file     name="core0.c"/>
+    <file     name="core1.c"/>
+    <file     name="test.h"/>
+    <file     name="trusted.h"/>
+  </file_section>
+
+</evidence_example>

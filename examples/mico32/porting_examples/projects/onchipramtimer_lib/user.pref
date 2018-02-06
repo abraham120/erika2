@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SYSLIB>
+<MSB_FILE name="onchipramtimer.msb" path="../../platforms/onchipramtimer/soc"/>
+<MemorySections UCflag="false">
+<Section DEPLOY="yes" Name=".text" Value="Instruction_IM"/>
+<Section Name=".rodata" Value="Data_IM"/>
+<Section Name=".data" Value="Data_IM"/>
+</MemorySections>
+<LinkerSettings>
+<Param Name="UserDefinedLinkerFile" Value=""/>
+</LinkerSettings>
+<STDIO_Redirection>
+<Param InstanceName="" Name="stdin" Text=""/>
+<Param InstanceName="" Name="stdout" Text=""/>
+<Param InstanceName="" Name="stderr" Text=""/>
+</STDIO_Redirection>
+<LibSettings>
+<Param Name="SyslibOption" Value="on"/>
+<Param Name="USE_SMALL_LIBC" Value="FALSE"/>
+<Param Name="USE_STANDALONE_SMALL_PRINTF" Value="TRUE"/>
+</LibSettings>
+</SYSLIB>

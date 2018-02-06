@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<evidence_example version="1" ID="pic30_Firmware_February">
+
+ <category>pic30/FLEX</category>
+ <title>Simple periodic task</title>
+   
+ <small_descr>
+ This is the example published in the Firmware Magazine in
+ February 2007.
+ </small_descr>
+
+ <long_descr>
+ This is the example published in the Firmware Magazine in
+ February 2007.
+ &lt;br&gt;
+ It is a minimal EEB demo including:
+ &lt;ul&gt;
+ &lt;li&gt;One task; &lt;/li&gt;
+ &lt;li&gt;One periodic alarm controlled by timer T1 &lt;/li&gt;
+ &lt;li&gt;Support for FLEX &lt;/li&gt;
+ &lt;/ul&gt;
+ </long_descr>
+
+ <file_section>
+  <file     name="code.c"/> 
+  <file     name="conf.oil"/>
+  <file     name="readme.txt"/>
+ </file_section>
+
+</evidence_example>

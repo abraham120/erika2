@@ -1,0 +1,79 @@
+// t32 Tue May  6 10:12:29 2014
+
+ B::
+ 
+ TOOLBAR ON
+ STATUSBAR ON
+ FramePOS 35.0 2.1429 154. 61.
+ WinPAGE.RESet
+ 
+ WinPAGE.Create Debug
+ 
+ WinCLEAR
+ WinPOS 0.42857 38.714 80. 7. 0. 0. W002
+ AREA
+ 
+ WinPOS 44.286 27.643 36. 5. 0. 0. W004
+ Var.view %e tunable_delay
+ 
+ WinPOS 0.71429 0.071429 80. 22. 14. 1. W003
+ WinTABS 10. 10. 25. 62.
+ List
+ 
+ WinPOS 86.571 0.35714 62. 18. 16. 2. W000
+ Data.PROfile e:LED3
+ 
+ WinPOS 86.429 24.286 62. 18. 16. 2. W001
+ Data.PROfile e:LED7
+ 
+ WinPOS 0.14286 27.5 40. 7. 0. 0. W016
+ PER button_led.per /SpotLight
+ 
+ WinPAGE.Create ORTI
+ 
+ WinPOS 0.14286 9.6429 65. 10. 0. 1. W006
+ WinTABS 11. 12. 11. 11. 20.
+ TASK.DTASK
+ 
+ WinPOS 69.429 9.7143 77. 11. 0. 1. W007
+ WinTABS 11. 18. 13. 16. 19.
+ TASK.DSTACK
+ 
+ WinPOS 0.42857 23.571 92. 6. 0. 1. W008
+ WinTABS 11. 11. 11. 12. 24. 9. 14.
+ TASK.DALARM
+ 
+ WinPOS 0.42857 33.286 59. 6. 0. 1. W009
+ WinTABS 11. 15. 16. 17.
+ TASK.DRESOURCE
+ 
+ WinPOS 0.28571 0.21429 148. 6. 0. 1. W005
+ WinTABS 11. 16. 25. 29. 11. 25. 13. 18.
+ TASK.DOS
+ 
+ WinPOS 64.286 33.286 80. 11. 11. 1. W010
+ TASK.STacK.view
+ 
+ WinPAGE.Create Trace
+ 
+ WinPOS 85.143 17.571 66. 9. 12. 2. W011
+ Trace.Chart.TASK
+ 
+ WinPOS 85.286 0.42857 80. 11. 11. 3. W012
+ WinTABS 9. 52.
+ Trace.STATistic.TASK
+ 
+ WinPOS 85.286 32.357 80. 25. 25. 3. W014
+ WinTABS 9. 52.
+ Trace.STATistic.sYmbol
+ 
+ WinPOS 0.28571 26.429 81. 18. 10. 1. W013
+ WinTABS 32.
+ Trace.List /Track
+ 
+ WinPOS 0.0 0.21429 80. 21. 25. 2. W015
+ Trace.Chart.sYmbol /Track
+ 
+ WinPAGE.select Debug
+ 
+ ENDDO

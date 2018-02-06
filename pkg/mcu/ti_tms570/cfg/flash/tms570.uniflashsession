@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><PartNumber id=""><Core name="CortexR4"><DebugProperties>&lt;?xml version="1.0" encoding="UTF-8" standalone="no" ?&gt;
+&lt;PropertyValues&gt;
+
+  &lt;property id="VerifyAfterProgramLoad"&gt;
+    &lt;curValue&gt;Fast verification&lt;/curValue&gt;
+  &lt;/property&gt;
+
+  &lt;property id="AutoRunToLabelOnRestart"&gt;
+    &lt;curValue&gt;0&lt;/curValue&gt;
+  &lt;/property&gt;
+
+  &lt;property id="FlashEraseSelection"&gt;
+    &lt;curValue&gt;Necessary Sectors Only (for Program Load)&lt;/curValue&gt;
+  &lt;/property&gt;
+
+  &lt;property id="FlashVerifySetting"&gt;
+    &lt;curValue&gt;Fast Verify&lt;/curValue&gt;
+  &lt;/property&gt;
+
+  &lt;property id="FlashVerboseMode"&gt;
+    &lt;curValue&gt;1&lt;/curValue&gt;
+  &lt;/property&gt;
+
+&lt;/PropertyValues&gt;
+</DebugProperties><FilePaths><File Check="Checked">D:\Dropbox\Eureka\eclipse\workspace\tms570_egas\Debug\_mcbtms570.out</File></FilePaths></Core></PartNumber>

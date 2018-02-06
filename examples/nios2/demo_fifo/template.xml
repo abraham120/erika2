@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<evidence_example version="1" ID="nios2_2cpu_fifo">
+
+ <category>nios2/Multicore examples</category>
+ <title>FIFO Message passing demo</title>
+   
+ <small_descr>
+ This is a simple demo that shows how to implement a set of FIFO Message passing primitives. Please refer to the FIFO Message Passing tutorial on the Evidence web site.
+ </small_descr>
+
+ <long_descr>
+ This is a simple demo that shows how to implement a set of FIFO Message passing primitives. Please refer to the FIFO Message Passing tutorial on the Evidence web site.
+ </long_descr>
+
+ <file_section>
+  <file     name="conf.oil"/>
+  <file     name="cpu0_main.c"/>
+  <file     name="cpu1_main.c"/>
+  <file     name="fifo.c"/>
+  <file     name="myfifo.h"/>
+  <file     name="writetask.c"/>
+  <file     name="buttonreadtask.c"/>
+  <file     name="fifo.h"/>
+  <file     name="readtask.c"/>
+ </file_section>
+
+</evidence_example>

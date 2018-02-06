@@ -1,0 +1,89 @@
+; ###*B*###
+; ERIKA Enterprise - a tiny RTOS for small microcontrollers
+;
+; Copyright (C) 2002-2012  Evidence Srl
+;
+; This file is part of ERIKA Enterprise.
+;
+; ERIKA Enterprise is free software; you can redistribute it
+; and/or modify it under the terms of the GNU General Public License
+; version 2 as published by the Free Software Foundation, 
+; (with a special exception described below).
+;
+; Linking this code statically or dynamically with other modules is
+; making a combined work based on this code.  Thus, the terms and
+; conditions of the GNU General Public License cover the whole
+; combination.
+;
+; As a special exception, the copyright holders of this library give you
+; permission to link this code with independent modules to produce an
+; executable, regardless of the license terms of these independent
+; modules, and to copy and distribute the resulting executable under
+; terms of your choice, provided that you also meet, for each linked
+; independent module, the terms and conditions of the license of that
+; module.  An independent module is a module which is not derived from
+; or based on this library.  If you modify this code, you may extend
+; this exception to your version of the code, but you are not
+; obligated to do so.  If you do not wish to do so, delete this
+; exception statement from your version.
+;
+; ERIKA Enterprise is distributed in the hope that it will be
+; useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+; of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+; GNU General Public License version 2 for more details.
+;
+; You should have received a copy of the GNU General Public License
+; version 2 along with ERIKA Enterprise; if not, write to the
+; Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+; Boston, MA 02110-1301 USA. 
+; ###*E*###
+
+;/** 
+;	@file ee_ccrx_irq_stack.s
+;	@brief Context switch function for multistack on Renesas RX210 
+;	@brief Stack switch for ISRs on RX210. 
+;	Implementation of EE_rx210_call_ISR_new_stack() as described in
+;	pkg/cpu/rx200/inc/ee_irq.h
+;	@author Gianluca Franchino
+;	@date 2012
+;*/ 
+
+
+	.GLB	_EE_rx200_change_IRQ_stack
+	.GLB	_EE_rx200_change_IRQ_stack_back
+	.GLB	_EE_rx200_IRQ_tos
+		
+	.SECTION	B, DATA, ALIGN=4
+	
+_EE_rx200_tmp_tos:	.BLKL	1	
+
+	.SECTION   	P,CODE
+
+
+;void EE_rx200_change_IRQ_stack(void);
+
+_EE_rx200_change_IRQ_stack:
+	MOV.L SP, R1 					; R1 = SP (User Stack Pointer).
+									; Note, we do not use the Interrupt SP
+	MOV.L #_EE_rx200_tmp_tos, R2	; R2 = address of EE_rx200_tmp_tos
+	MOV.L R1, [R2] 					; Save SP in EE_rx200_tmp_tos
+	MOV.L #_EE_rx200_IRQ_tos, R1 	; R1 = address of EE_rx200_IRQ_tos
+	MOV.L [R1], R1 					; R1 = IRQ new stack pointer
+	MOV.L R1, SP 					; change IRQ stack
+	;Return procedure
+	MOV.L [R2], R1					; R1 = SP just saved
+	MOV.L [R1], R2					; R2 = *(R1)
+                                    ; *(R1) is the return addres of the caller
+	JMP	R2							; Return
+	
+;void EE_rx200_change_IRQ_stack_back(void);
+_EE_rx200_change_IRQ_stack_back:
+	MOV.L [SP], R2					; Move in R2 the return address
+	MOV.L #_EE_rx200_tmp_tos, R1	; R1 = address of EE_rx200_tmp_tos
+	MOV.L [R1], R1 					; R1 = old SP
+	MOV.L R1, SP					; Restore the stack pointer
+	ADD #4, SP, SP					; This does the same as RTS: PC = *(SP), SP+4;
+	
+	JMP	R2							; Return
+	
+	.END

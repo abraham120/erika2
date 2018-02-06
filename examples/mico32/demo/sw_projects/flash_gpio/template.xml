@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<evidence_example version="1" ID="fpg_eye_mico32_flash_gpio">
+
+ <category>mico32/FPG-EYE/fpg_eye_mico32</category>
+ <title>Test flash driver with gpio</title>
+
+ <small_descr>
+ This is the demo to test the flash component with bit banging technique.
+ </small_descr>
+
+ <long_descr>
+ The demo requires a RS232 serial connection with a 115200 bps, 8N1
+ configuration.
+ </long_descr>
+
+ <file_section>
+  <file     name="conf.oil"/>
+  <file     name="main.c"/>
+  <file     name="spi_flash_sw.c"/>
+  <file     name="spi_flash_sw.h"/>
+  <file     name="makefile"/>
+ </file_section>
+
+</evidence_example>

@@ -1,0 +1,216 @@
+/* ###*B*###
+ * ERIKA Enterprise - a tiny RTOS for small microcontrollers
+ *
+ * Copyright (C) 2002-2008  Evidence Srl
+ *
+ * This file is part of ERIKA Enterprise.
+ *
+ * ERIKA Enterprise is free software; you can redistribute it
+ * and/or modify it under the terms of the GNU General Public License
+ * version 2 as published by the Free Software Foundation, 
+ * (with a special exception described below).
+ *
+ * Linking this code statically or dynamically with other modules is
+ * making a combined work based on this code.  Thus, the terms and
+ * conditions of the GNU General Public License cover the whole
+ * combination.
+ *
+ * As a special exception, the copyright holders of this library give you
+ * permission to link this code with independent modules to produce an
+ * executable, regardless of the license terms of these independent
+ * modules, and to copy and distribute the resulting executable under
+ * terms of your choice, provided that you also meet, for each linked
+ * independent module, the terms and conditions of the license of that
+ * module.  An independent module is a module which is not derived from
+ * or based on this library.  If you modify this code, you may extend
+ * this exception to your version of the code, but you are not
+ * obligated to do so.  If you do not wish to do so, delete this
+ * exception statement from your version.
+ *
+ * ERIKA Enterprise is distributed in the hope that it will be
+ * useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License version 2 for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * version 2 along with ERIKA Enterprise; if not, write to the
+ * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ * Boston, MA 02110-1301 USA.
+ * ###*E*### */
+
+
+CPU mySystem {
+
+	OS myOs {
+		EE_OPT = "DEBUG";
+		EE_OPT = "__HAS_TYPES_H__";
+		EE_OPT = "__ADD_LIBS__";
+		LIB = ENABLE { NAME = "ieee802154"; };
+
+		//----- SELECT THE DEVICE TYPE ----//
+
+		CFLAGS = "-DDEVICE_TYPE_COORDINATOR";  // DEVICE TYPE IS COORDIANTOR
+		//CFLAGS = "-DDEVICE_TYPE_END_DEVICE";   // DEVICE TYPE IS END-DEVICE
+		
+		//---------------------------------//
+			
+		CPU_DATA = PIC30 {
+			APP_SRC = "code.c";			
+			MULTI_STACK = FALSE;
+			ICD2 = TRUE;
+		};
+
+		MCU_DATA = PIC30 {
+			MODEL = PIC33FJ256MC710;
+		};
+		
+		BOARD_DATA = EE_FLEX {
+			TYPE = DEMO {
+				OPTIONS = LCD;
+				OPTIONS = LEDS;
+				OPTIONS = BUTTONS;
+			};
+		};
+		
+		KERNEL_TYPE = FP;
+		
+	};
+	
+	COUNTER task_counter;
+
+	COUNTER myCounter;
+
+	TASK send_packet {
+		PRIORITY = 2;
+		STACK = SHARED;
+		SCHEDULE = FULL;
+		RESOURCE = lcd_mutex;
+	};
+	ALARM send_packet_alarm {
+		COUNTER = task_counter;
+		ACTION = ACTIVATETASK { TASK =  send_packet; };
+	};
+
+	TASK receive_packet {
+		PRIORITY = 2;
+		STACK = SHARED;
+		SCHEDULE = FULL;
+		RESOURCE = lcd_mutex;
+		RESOURCE = read_buffer_mutex;
+	};
+
+	TASK lcd_write {
+		PRIORITY = 1;
+		STACK = SHARED;
+		SCHEDULE = FULL;
+		RESOURCE = lcd_mutex;
+	};
+	ALARM lcd_write_alarm {
+		COUNTER = task_counter;
+		ACTION = ACTIVATETASK { TASK =  lcd_write; };
+	};
+
+
+	//CC2420 reception tasks
+	TASK ReadDispatcher {
+		PRIORITY = 15;
+		STACK = SHARED;
+		SCHEDULE = FULL;
+	};
+	TASK DataFrameDispatcher {
+		PRIORITY = 10;
+		STACK = SHARED;
+		SCHEDULE = FULL;
+		RESOURCE = read_buffer_mutex;
+	};
+	TASK AckFrameDispatcher {
+		PRIORITY = 10;
+		STACK = SHARED;
+		SCHEDULE = FULL;
+	};
+	TASK CmdFrameDispatcher {
+		PRIORITY = 10;
+		STACK = SHARED;
+		SCHEDULE = FULL;
+	};
+
+	//IEEE802.15.4 Superframe timer TASKS
+	TASK bi_firedTask {
+		PRIORITY = 20;
+		STACK = SHARED;
+		SCHEDULE = FULL;
+	};
+	TASK before_bi_firedTask {
+		PRIORITY = 20;
+		STACK = SHARED;
+		SCHEDULE = FULL;
+	};
+	TASK sd_firedTask {
+		PRIORITY = 20;
+		STACK = SHARED;
+		SCHEDULE = FULL;
+	};
+	TASK time_slot_firedTask {
+		PRIORITY = 20;
+		STACK = SHARED;
+		SCHEDULE = FULL;
+	};
+	TASK before_time_slot_firedTask {
+		PRIORITY = 20;
+		STACK = SHARED;
+		SCHEDULE = FULL;
+	};
+	TASK backoff_firedTask {
+		PRIORITY = 20;
+		STACK = SHARED;
+		SCHEDULE = FULL;
+	};
+	TASK send_gts_after_interframearrivalTask {
+		PRIORITY = 20;
+		STACK = SHARED;
+		SCHEDULE = FULL;
+	};
+	
+	//IEEE802.15.4 Superframe timer ALARMS
+	ALARM bi_firedAlarm {
+		COUNTER = myCounter;
+		ACTION = ACTIVATETASK { TASK =  bi_firedTask; };
+	};
+	ALARM before_bi_firedAlarm {
+		COUNTER = myCounter;
+		ACTION = ACTIVATETASK { TASK = before_bi_firedTask; };
+	};
+	ALARM sd_firedAlarm {
+		COUNTER = myCounter;
+		ACTION = ACTIVATETASK { TASK = sd_firedTask; };
+	};
+	ALARM time_slot_firedAlarm {
+		COUNTER = myCounter;
+		ACTION = ACTIVATETASK { TASK = time_slot_firedTask; };
+	};
+	ALARM before_time_slot_firedAlarm {
+		COUNTER = myCounter;
+		ACTION = ACTIVATETASK { TASK = time_slot_firedTask; };
+	};
+	ALARM backoff_firedAlarm {
+		COUNTER = myCounter;
+		ACTION = ACTIVATETASK { TASK = backoff_firedTask; };
+	};
+	
+	/*ALARM interframespace_firedAlarm {
+		COUNTER = myCounter;
+		ACTION = ALARMCALLBACK { ALARMCALLBACKNAME = "send_gts_after_interframearrival"; };
+	};*/
+	
+	ALARM interframespace_firedAlarm {
+		COUNTER = myCounter;
+		ACTION = ACTIVATETASK { TASK = send_gts_after_interframearrivalTask; };
+	};
+	
+	RESOURCE S0 { RESOURCEPROPERTY = STANDARD; };
+	RESOURCE S1 { RESOURCEPROPERTY = STANDARD; };
+	RESOURCE S2 { RESOURCEPROPERTY = STANDARD; };
+	RESOURCE lcd_mutex { RESOURCEPROPERTY = STANDARD; };
+	RESOURCE read_buffer_mutex { RESOURCEPROPERTY = STANDARD; };
+};
+

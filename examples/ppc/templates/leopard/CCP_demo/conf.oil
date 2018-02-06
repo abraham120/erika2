@@ -1,0 +1,245 @@
+/* ###*B*###
+ * ERIKA Enterprise - a tiny RTOS for small microcontrollers
+ *
+ * Copyright (C) 2002-2011  Evidence Srl
+ *
+ * This file is part of ERIKA Enterprise.  ERIKA Enterprise is free software;
+ * you can redistribute it and/or modify it under the terms of the
+ * GPLv2 + Linking Exception license (contained in the file `ee/LICENSE').
+ *
+ * ERIKA Enterprise is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE.  See the license for more details.
+ *
+ * ###*E*### */
+
+CPU example {
+	OS EE {
+
+		//EE_OPT = "EE_SYSTEM_TIMER_DEVICE_STM";
+		EE_OPT="EE_SYSTEM_TIMER_DEVICE_DECREMENTER";
+		EE_OPT = "DEBUG";
+
+        /* Compiler specific inclusion paths */
+        CFLAGS = "-I/opt/case/Freescale/CodeWarrior_MCU_10.2/MCU/PA_Support/ewl/EWL_C/include";
+        CFLAGS = "-I/opt/case/Freescale/CodeWarrior_MCU_10.2/MCU/PA_Support/ewl/EWL_Runtime/Runtime_PA/Include";
+
+        /* Application inclusion paths */
+        CFLAGS = "-I../sources/Appl";
+
+        /* Erika Autosar inclusion paths */
+        CFLAGS = "-I../../../../../../../erika/contrib/as/include";
+        CFLAGS = "-I../../../../../../../erika/contrib/as/arch/mpc56xx/codewarrior/include";
+
+		/* Appl Inclusions */
+        CFLAGS = "-I../../../../../../../erika/contrib/drivers/leopard";
+        CFLAGS = "-I../../../../../../../erika/contrib/drivers/leopard/ApplCfg";
+        CFLAGS = "-I../../../../../../../erika/contrib/drivers/leopard/ApplCfg/AdcCfg";
+        CFLAGS = "-I../../../../../../../erika/contrib/drivers/leopard/ApplCfg/CanCfg";
+        CFLAGS = "-I../../../../../../../erika/contrib/drivers/leopard/ApplCfg/ErrorCfg";
+        CFLAGS = "-I../../../../../../../erika/contrib/drivers/leopard/ApplCfg/SpiCfg";
+
+		/* Bsw inclusions */
+		CFLAGS = "-I../../../../../../../erika/contrib/drivers/leopard/Bsw/CanCom";
+		CFLAGS = "-I../../../../../../../erika/contrib/drivers/leopard/Bsw/Error";
+		CFLAGS = "-I../../../../../../../erika/contrib/drivers/leopard/Bsw/include";
+		CFLAGS = "-I../../../../../../../erika/contrib/drivers/leopard/Bsw/Kwp";
+		CFLAGS = "-I../../../../../../../erika/contrib/drivers/leopard/Bsw/Os";
+		CFLAGS = "-I../../../../../../../erika/contrib/drivers/leopard/Bsw/State";
+
+		/* Drivers inclusions */
+		CFLAGS = "-I../../../../../../../erika/contrib/drivers/leopard/Drivers/AdcDrv";
+		CFLAGS = "-I../../../../../../../erika/contrib/drivers/leopard/Drivers/CanDrv";
+		CFLAGS = "-I../../../../../../../erika/contrib/drivers/leopard/Drivers/FasterLoop";
+		CFLAGS = "-I../../../../../../../erika/contrib/drivers/leopard/Drivers/FlashDrv";
+		CFLAGS = "-I../../../../../../../erika/contrib/drivers/leopard/Drivers/PwmDrv";
+		CFLAGS = "-I../../../../../../../erika/contrib/drivers/leopard/Drivers/SpiDrv";
+		CFLAGS = "-I../../../../../../../erika/contrib/drivers/leopard/Drivers/WdDrv";
+
+		/* CCP inclusion */
+		CFLAGS = "-I../../../../../../../erika/contrib/Ccp";
+
+        /* Linker options used to execute from SRAM/FLASH */
+        EE_OPT = "__USE_CUSTOM_LINKER_SCRIPT__";
+        LDFLAGS = "-lcf ../mpc5643l_custom_flash.lcf";
+
+		/* Uncomment to use custom boot code */
+		EE_OPT = "__USE_CUSTOM_CRT0__";
+        EE_OPT = "MPC5643L_STD_SW_MMU_CONFIG";
+
+		CPU_DATA = PPCE200ZX {
+            /* Needed by system timer */
+            CPU_CLOCK = 120.0;
+			MODEL = E200Z4;
+
+			/* Custom Boot code & main module */
+			APP_SRC = "ee_boot.c";
+			APP_SRC = "Main.c";
+
+            /* Bsw modules */
+            APP_SRC = "contrib/drivers/leopard/Bsw/State/State.c";
+            APP_SRC = "contrib/drivers/leopard/Bsw/Os/ctu.c";
+            APP_SRC = "contrib/drivers/leopard/Bsw/Os/initHW.c";
+            APP_SRC = "contrib/drivers/leopard/Bsw/Error/Error.c";
+            APP_SRC = "contrib/drivers/leopard/Bsw/CanCom/CanCom.c";
+
+            /* Bsw modules (coming from Piaggio branch */
+            APP_SRC = "contrib/Ccp/Ccp.c";
+
+            /* Driver modules */
+            APP_SRC = "contrib/drivers/leopard/Drivers/AdcDrv/adc.c";
+            APP_SRC = "contrib/drivers/leopard/Drivers/CanDrv/CanDrv.c";
+            APP_SRC = "contrib/drivers/leopard/Drivers/FasterLoop/FasterLoop.c";
+            APP_SRC = "contrib/drivers/leopard/Drivers/PwmDrv/pwm.c";
+            APP_SRC = "contrib/drivers/leopard/Drivers/WdDrv/WdDrv.c";
+
+            /* Configuration modules */
+            APP_SRC = "contrib/drivers/leopard/ApplCfg/CanCfg/CanHandlers.c";
+            APP_SRC = "contrib/drivers/leopard/ApplCfg/CanCfg/CanCfg.c";
+            APP_SRC = "contrib/drivers/leopard/ApplCfg/AdcCfg/AdcCfg.c";
+
+            /* ISR handlers */
+            APP_SRC = "contrib/drivers/leopard/Drivers/CanDrv/CanIsr.c";
+            APP_SRC = "contrib/drivers/leopard/Drivers/AdcDrv/AdcIsr.c";
+            APP_SRC = "contrib/drivers/leopard/Drivers/WdDrv/WdIsr.c";
+
+			VLE = TRUE;
+			COMPILER_TYPE = CODEWARRIOR;
+		};
+
+		MCU_DATA = PPCE200ZX {
+			MODEL = MPC5643L;
+		};
+
+		STATUS = EXTENDED;
+		STARTUPHOOK = FALSE;
+		ERRORHOOK = FALSE;
+		SHUTDOWNHOOK = TRUE;    /* Due to OS Shutdown management */
+		PRETASKHOOK = FALSE;
+		POSTTASKHOOK = FALSE;
+		USEGETSERVICEID = FALSE;
+		USEPARAMETERACCESS = FALSE;
+		USERESSCHEDULER = FALSE;
+
+		KERNEL_TYPE = BCC1;
+
+		ORTI_SECTIONS = ALL;
+	};
+
+	COUNTER system_timer {
+	    MINCYCLE = 1;
+	    MAXALLOWEDVALUE = 2147483647;
+	    TICKSPERBASE = 1;
+	    TYPE = HARDWARE {
+	      DEVICE = "DECREMENTER";
+	      SYSTEM_TIMER = TRUE;
+	    };
+	    SECONDSPERTICK = 0.001; // 1 msec tick duration
+	    CPU_ID = "default_cpu";
+	};
+
+	ALARM Alarm_Task_CanCom {
+	    COUNTER = system_timer;
+		ACTION = ACTIVATETASK {
+			TASK = Task_CanCom;
+		};
+
+		AUTOSTART = TRUE {
+		    ALARMTIME = 1;
+		    CYCLETIME = 1;
+		};
+	};
+
+    ALARM Alarm_Ccp_PeriodicTx {
+	    COUNTER = system_timer;
+		ACTION = ACTIVATETASK {
+			TASK = Task_Ccp_PeriodicTx;
+		};
+
+		AUTOSTART = TRUE {
+		    ALARMTIME = 1;
+		    CYCLETIME = 1;
+		};
+	};
+
+    ALARM Alarm_5msec {
+	    COUNTER = system_timer;
+		ACTION = ACTIVATETASK {
+			TASK = Task_5msec;
+		};
+
+		AUTOSTART = TRUE {
+		    ALARMTIME = 1;
+		    CYCLETIME = 5;
+		};
+	};
+
+	TASK Task_CanCom {
+			PRIORITY = 5;
+			ACTIVATION = 1;
+			SCHEDULE = FULL;
+			AUTOSTART = FALSE;
+			STACK = SHARED;
+	};
+
+	TASK Task_5msec {
+		PRIORITY = 4;
+		ACTIVATION = 1;
+		SCHEDULE = FULL;
+		AUTOSTART = FALSE;
+		STACK = SHARED;
+	};
+
+    TASK Task_Ccp_PeriodicTx {
+		PRIORITY = 3;
+		ACTIVATION = 1;
+		SCHEDULE = FULL;
+		AUTOSTART = TRUE;
+		STACK = SHARED;
+	};
+
+    /* Isr for FlexCAN0 message buffers */
+    ISR FlexCan0_0_3_isr_handler {
+		CATEGORY = 2;
+		PRIORITY = 13;
+		ENTRY = "68";
+        RESOURCE = FlexCAN_mutex;
+	};
+
+    /* Isr managing errors for both FlexCAN0 and FlexCAN1 */
+    ISR FlexCan0_ESR_ERR_INT {
+		CATEGORY = 2;
+		PRIORITY = 11;
+		ENTRY = "65";
+	};
+
+    ISR FlexCan0_ESR_BOFF_TX_RX_WARN_handler {
+		CATEGORY = 2;
+		PRIORITY = 11;
+		ENTRY = "66";
+	};
+
+	ISR WD_isr_handler {
+		CATEGORY = 2;
+		PRIORITY = 12;
+		ENTRY = "64";
+	};
+
+	ISR TRIGGER_isr_handler {
+		CATEGORY = 1;       /* This is the ONLY ISR Type 1 defined in the system */
+		PRIORITY = 16;      /* Highest priority (but it is irrelevant since it is automatically set to the highest value by the RT-Druid) */
+		ENTRY = "194";
+	};
+
+    /* System Watchdog ISR (SWT0) */
+    ISR WatchDog_SWT0_Timer_handler {
+		CATEGORY = 2;
+		PRIORITY = 15;
+		ENTRY = "28";
+	};
+
+    /* Resources */
+    RESOURCE FlexCAN_mutex {
+		RESOURCEPROPERTY = STANDARD; 
+	};
+};

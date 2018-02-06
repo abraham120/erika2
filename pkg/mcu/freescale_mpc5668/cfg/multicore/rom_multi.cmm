@@ -1,0 +1,128 @@
+;
+; Script for programming of MPC5668 internal flash.
+;
+; Internal Flash Memory 1.5 MByte:
+;   Flash A low address range   256 kByte (8 * 16, 2 * 64 kByte)
+;                               0x00000000--0x0003ffff
+;   Flash A Mid address range   256 kByte (2 * 128 kByte)
+;                               0x00040000--0x0007ffff
+;   High address range          1.5 MByte (6 * 256 kByte)
+;                               0x00080000--0x001fffff
+;   Shadow row 0 (flash A)      16 kByte
+;                               0x00ffc000--0x00ffffff
+;
+; Internal SRAM                 592 kByte
+;                               0x40000000--0x40093fff
+;
+; Flash register base address is
+;   Flash A                     0xffff8000
+;
+; NOTES:
+; 
+;   Flash register base addresses cannot be remapped, because target
+;   program does currently not support another base address.
+;
+; wrd - 01.10.2008
+; evi - 18.05.2010 Evidence Modifications, for t32 ver (4/12/2009)
+; evi - 19.04.2012 Evidence Modifications
+;
+
+; evi - ERIKA binary object and VLE setting (from the makefile)
+&filename_master="#MASTER_ELF#"
+&filename_slave="#CPU1_DIR#/#CPU1_EXE_NAME#"
+
+&flashbase=0x00000000
+&flashsize=0x000200000
+&shadowbase=0x00ffc000
+&shadowsize=0x00000400  ; 1 kByte
+&rambase=0x40000000
+
+;========================================================================
+; CPU setup
+
+SYStem.RESet
+SYStem.BdmClock 4.0MHz
+SYStem.CPU MPC5668
+
+; evi - configure the NEXUS port
+NExus.PORTSIze MDO12
+NExus.Dtm ReadWrite
+NExus.PORTMode 1/1
+
+SYStem.Option.WATCHDOG OFF
+SYStem.Up
+
+; initialize internal SRAM
+Data.Set EA:0x40000000--0x40093fff %quad 0
+
+; setup MMU for flash, RAM and register access, as BAM does
+; Flash programming wants the VLE flag cleared
+GOSUB setup_mmu 0
+
+;========================================================================
+; Flash declaration
+
+FLASH.RESet
+
+; Low address blocks (256 KB)
+FLASH.Create 1. (&flashbase+0x00000000)++0x03fff TARGET Quad 0. ; L0 - 16 kB
+FLASH.Create 1. (&flashbase+0x00004000)++0x03fff TARGET Quad 1. ; L1 - 16 kB
+FLASH.Create 1. (&flashbase+0x00008000)++0x03fff TARGET Quad 2. ; L2 - 16 kB
+FLASH.Create 1. (&flashbase+0x0000c000)++0x03fff TARGET Quad 3. ; L3 - 16 kB
+FLASH.Create 1. (&flashbase+0x00010000)++0x03fff TARGET Quad 4. ; L4 - 16 kB
+FLASH.Create 1. (&flashbase+0x00014000)++0x03fff TARGET Quad 5. ; L5 - 16 kB
+FLASH.Create 1. (&flashbase+0x00018000)++0x03fff TARGET Quad 6. ; L6 - 16 kB
+FLASH.Create 1. (&flashbase+0x0001C000)++0x03fff TARGET Quad 7. ; L7 - 16 kB
+FLASH.Create 1. (&flashbase+0x00020000)++0x0ffff TARGET Quad 8. ; L8 - 64 kB
+FLASH.Create 1. (&flashbase+0x00030000)++0x0ffff TARGET Quad 9. ; L9 - 64 kB
+
+; Mid address blocks (256 KB)
+FLASH.Create 2. (&flashbase+0x00040000)++0x1ffff TARGET Quad 0. ; M0 - 128 kB
+FLASH.Create 2. (&flashbase+0x00060000)++0x1ffff TARGET Quad 1. ; M1 - 128 kB
+
+; High address blocks (1.5 MB)
+FLASH.Create 3. (&flashbase+0x00080000)++0x3ffff TARGET Quad 0. ; H0 - 256 KB
+FLASH.Create 3. (&flashbase+0x000C0000)++0x3ffff TARGET Quad 1. ; H1 - 256 KB
+FLASH.Create 3. (&flashbase+0x00100000)++0x3ffff TARGET Quad 2. ; H2 - 256 KB
+FLASH.Create 3. (&flashbase+0x00140000)++0x3ffff TARGET Quad 3. ; H3 - 256 KB
+FLASH.Create 3. (&flashbase+0x00180000)++0x3ffff TARGET Quad 4. ; H4 - 256 KB
+FLASH.Create 3. (&flashbase+0x001C0000)++0x3ffff TARGET Quad 5. ; H5 - 256 KB
+
+; MPC5567 has 1 Kb of Shadow ROM
+FLASH.Create 4. (&shadowbase)++(&shadowsize-1) NOP Quad
+
+; Inform the debugger about the location of FLASH programming routine
+FLASH.TARGET E:&rambase E:&rambase+0x2000 0x1000 ~~/demo/powerpc/flash/quad/c90fl5668.bin /STACKSIZE 0x0200
+
+;========================================================================
+; Flash programming example
+;
+; Flash programming speed is about three times faster when memory class E:
+; is used for data buffer (DUALPORT memory access). For DUALPORT access it
+; is required to setup MemAccess NEXUS for both, NEXUS and JTAG debugger. 
+
+DIALOG.YESNO "Flash programming prepared. Program flash memory now?"
+entry &progflash
+
+if &progflash 
+(
+  FLASH.ReProgram ALL /Erase
+  Data.LOAD.Elf &filename_slave 0x0
+  Data.LOAD.Elf &filename_master 0x0
+  FLASH.ReProgram OFF
+)
+
+; close t32 after flash-write
+QUIT
+
+setup_mmu:
+	ENTRY &set_vle
+	if &set_vle==1
+		&vle_flag=0x20
+	else
+		&vle_flag=0
+	MMU.TLB1.SET 0x0 0xC0000500 0xFFF0002A 0xFFF0003F
+	MMU.TLB1.SET 0x1 0xC0000900 0x00000000+&vle_flag 0x0000003F
+	MMU.TLB1.SET 0x2 0xC0000900 0x20000000+&vle_flag 0x2000003F
+	MMU.TLB1.SET 0x3 0xC0000400 0x40000008+&vle_flag 0x4000003F
+	RETURN

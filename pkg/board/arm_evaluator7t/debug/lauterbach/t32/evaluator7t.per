@@ -1,0 +1,407 @@
+; ARM Evaluator 7T Peripherals
+
+config 16. 8.
+width 15.
+
+base 0x03ff0000
+
+tree "System Manager"
+
+  group.long 0x0 4
+    line.long 0x0 "SYSCFG" 
+  group.long 0x3000 4
+    line.long 0x0 "CLKCON"
+  group.long 0x3008 4
+    line.long 0x0 "EXTACON0"
+  group.long 0x300C 4
+    line.long 0x0 "EXTACON1"
+  group.long 0x3010 4
+    line.long 0x0 "EXTDBWTH"
+
+  group.long 0x3014 4
+    line.long 0x0 "ROMCON0"
+  group.long 0x3018 4
+    line.long 0x0 "ROMCON1"
+  group.long 0x301C 4
+    line.long 0x0 "ROMCON2"
+  group.long 0x3020 4
+    line.long 0x0 "ROMCON3"
+  group.long 0x3024 4
+    line.long 0x0 "ROMCON4"
+  group.long 0x3028 4
+    line.long 0x0 "ROMCON5"
+
+  group.long 0x302C 4
+    line.long 0x0 "DRAMCON0"
+  group.long 0x3030 4
+    line.long 0x0 "DRAMCON1"
+  group.long 0x3034 4
+    line.long 0x0 "DRAMCON2"
+  group.long 0x3038 4
+    line.long 0x0 "DRAMCON3"
+
+  group.long 0x303C 4
+    line.long 0x0 "REFEXTCON"
+
+tree.end
+
+tree "I/O ports"
+  group.long 0x5000 4
+    line.long 0x0 "IOPMOD"
+  group.long 0x5004 4
+    line.long 0x0 "IOPCON"
+  group.long 0x5008 4
+    line.long 0x0 "IOPDATA"
+textline ""
+textline ""
+  group.long 0x5000 4
+	textline " port 17  16  15  14  13  12  11  10   9   8   7   6   5   4   3   2   1   0"
+	textline ""
+	bitfld.long 0 17. "     " " In , Out"
+	bitfld.long 0 16. "" " In , Out"
+	bitfld.long 0 15. "" " In , Out"
+	bitfld.long 0 14. "" " In , Out"
+	bitfld.long 0 13. "" " In , Out"
+	bitfld.long 0 12. "" " In , Out"
+	bitfld.long 0 11. "" " In , Out"
+	bitfld.long 0 10. "" " In , Out"
+	bitfld.long 0  9. "" " In , Out"
+	bitfld.long 0  8. "" " In , Out"
+	bitfld.long 0 7. "" " In , Out"
+	bitfld.long 0 6. "" " In , Out"
+	bitfld.long 0 5. "" " In , Out"
+	bitfld.long 0 4. "" " In , Out"
+	bitfld.long 0 3. "" " In , Out"
+	bitfld.long 0 2. "" " In , Out"
+	bitfld.long 0 1. "" " In , Out"
+	bitfld.long 0 0. "" " In , Out"
+  group.long 0x5008 4
+    textline ""
+	bitfld.long 0 17. "      " " 0  , 1  "
+	bitfld.long 0 16. "" " 0  , 1  "
+	bitfld.long 0 15. "" " 0  , 1  "
+	bitfld.long 0 14. "" " 0  , 1  "
+	bitfld.long 0 13. "" " 0  , 1  "
+	bitfld.long 0 12. "" " 0  , 1  "
+	bitfld.long 0 11. "" " 0  , 1  "
+	bitfld.long 0 10. "" " 0  , 1  "
+	bitfld.long 0 9. "" " 0  , 1  "
+	bitfld.long 0 8. "" " 0  , 1  "
+	bitfld.long 0 7. "" " 0  , 1  "
+	bitfld.long 0 6. "" " 0  , 1  "
+	bitfld.long 0 5. "" " 0  , 1  "
+	bitfld.long 0 4. "" " 0  , 1  "
+	bitfld.long 0 3. "" " 0  , 1  "
+	bitfld.long 0 2. "" " 0  , 1  "
+	bitfld.long 0 1. "" " 0  , 1  "
+	bitfld.long 0 0. "" " 0  , 1  "
+tree.end
+
+tree "LEDs, Dip Switch"
+  group.long 0x5008 4
+
+	textline "Leds:  1    2    3    4"
+	textline ""
+	bitfld.long 0 7. "      " " off , on  "
+	bitfld.long 0 6. "" " off , on "
+	bitfld.long 0 5. "" " off , on "
+	bitfld.long 0 4. "" " off , on "
+
+  group.long 0x5008 4
+	textline "DipSwitch: 3  2  1  0"
+	textline ""
+	bitfld.long 0 3. "          " " 0 , 1 "
+	bitfld.long 0 2. "" " 0 , 1 "
+	bitfld.long 0 1. "" " 0 , 1 "
+	bitfld.long 0 0. "" " 0 , 1 "
+	
+tree.end
+
+tree "Interrupt Controller"
+  group.long 0x4000 4
+    line.long 0x0 "INTMOD"
+  group.long 0x4000 4
+	textline "FIQ Interrupts"
+	textline ""
+	bitfld.long 0 20. "     " ".         , I2C      "
+	bitfld.long 0 19. ""      ".         , EthMacRx "
+	bitfld.long 0 18. ""      ".         , EthMacTx "
+	bitfld.long 0 17. ""      ".         , EthBdmaRx"
+	bitfld.long 0 16. ""      ".         , EthBdmaTx"
+	textline ""
+	bitfld.long 0 15. "     " ".         , HDLC_B_RX"
+	bitfld.long 0 14. ""      ".         , HDLC_B_TX"
+	bitfld.long 0 13. ""      ".         , HDLC_A_RX"
+	bitfld.long 0 12. ""      ".         , HDLC_A_TX"
+	textline ""
+	bitfld.long 0 11. "     " ".         , Timer_1  "
+	bitfld.long 0 10. ""      ".         , Timer_0  "
+	bitfld.long 0 9. ""       ".         , GDMA_1   "
+	bitfld.long 0 8. ""       ".         , GDMA_0   "
+	textline ""
+	bitfld.long 0 7. "     "  ".         , UART_1_RX"
+	bitfld.long 0 6. ""       ".         , UART_1_TX"
+	bitfld.long 0 5. ""       ".         , UART_0_RX"
+	bitfld.long 0 4. ""       ".         , UART_0_TX"
+	textline ""
+	bitfld.long 0 3. "     "  ".         , EXT_3    "
+	bitfld.long 0 2. ""       ".         , EXT_2    "
+	bitfld.long 0 1. ""       ".         , EXT_1    "
+	bitfld.long 0 0. ""       ".         , EXT_0    "
+
+	textline "IRQ Interrupts"
+	textline ""
+	bitfld.long 0 20. "     " " I2C      ,.         "
+	bitfld.long 0 19. ""      " EthMacRx ,.         "
+	bitfld.long 0 18. ""      " EthMacTx,.         ."
+	bitfld.long 0 17. ""      " EthBdmaRx,.         "
+	bitfld.long 0 16. ""      " EthBdmaTx,.         "
+	textline ""
+	bitfld.long 0 15. "     " " HDLC_B_RX,.         "
+	bitfld.long 0 14. ""      " HDLC_B_TX,.         "
+	bitfld.long 0 13. ""      " HDLC_A_RX,.         "
+	bitfld.long 0 12. ""      " HDLC_A_TX,.         "
+	textline ""
+	bitfld.long 0 11. "     " " Timer_1  ,.         "
+	bitfld.long 0 10. ""      " Timer_0  ,.         "
+	bitfld.long 0 9. ""       " GDMA_1   ,.         "
+	bitfld.long 0 8. ""       " GDMA_0   ,.         "
+	textline ""
+	bitfld.long 0 7. "     "  " UART_1_RX,.         "
+	bitfld.long 0 6. ""       " UART_1_TX,.         "
+	bitfld.long 0 5. ""       " UART_0_RX,.         "
+	bitfld.long 0 4. ""       " UART_0_TX,.         "
+	textline ""
+	bitfld.long 0 3. "     "  " EXT_3    ,.         "
+	bitfld.long 0 2. ""       " EXT_2    ,.         "
+	bitfld.long 0 1. ""       " EXT_1    ,.         "
+	bitfld.long 0 0. ""       " EXT_0    ,.         "
+
+
+
+
+
+  group.long 0x4004 4
+    line.long 0x0 "INTPND"
+  group.long 0x4004 4
+	textline "Pending Interrupts"
+	textline ""
+	bitfld.long 0 20. "     " ".         , I2C      "
+	bitfld.long 0 19. ""      ".         , EthMacRx "
+	bitfld.long 0 18. ""      ".         , EthMacTx "
+	bitfld.long 0 17. ""      ".         , EthBdmaRx"
+	bitfld.long 0 16. ""      ".         , EthBdmaTx"
+	textline ""
+	bitfld.long 0 15. "     " ".         , HDLC_B_RX"
+	bitfld.long 0 14. ""      ".         , HDLC_B_TX"
+	bitfld.long 0 13. ""      ".         , HDLC_A_RX"
+	bitfld.long 0 12. ""      ".         , HDLC_A_TX"
+	textline ""
+	bitfld.long 0 11. "     " ".         , Timer_1  "
+	bitfld.long 0 10. ""      ".         , Timer_0  "
+	bitfld.long 0 9. ""       ".         , GDMA_1   "
+	bitfld.long 0 8. ""       ".         , GDMA_0   "
+	textline ""
+	bitfld.long 0 7. "     "  ".         , UART_1_RX"
+	bitfld.long 0 6. ""       ".         , UART_1_TX"
+	bitfld.long 0 5. ""       ".         , UART_0_RX"
+	bitfld.long 0 4. ""       ".         , UART_0_TX"
+	textline ""
+	bitfld.long 0 3. "     "  ".         , EXT_3    "
+	bitfld.long 0 2. ""       ".         , EXT_2    "
+	bitfld.long 0 1. ""       ".         , EXT_1    "
+	bitfld.long 0 0. ""       ".         , EXT_0    "
+
+
+
+  group.long 0x4008 4
+    line.long 0x0 "INTMSK"
+  group.long 0x4008 4
+	textline "Masked interrupts"
+	textline ""
+	bitfld.long 0 21. "     " ".         , Global   "
+	textline ""
+	bitfld.long 0 20. "     " ".         , I2C      "
+	bitfld.long 0 19. ""      ".         , EthMacRx "
+	bitfld.long 0 18. ""      ".         , EthMacTx "
+	bitfld.long 0 17. ""      ".         , EthBdmaRx"
+	bitfld.long 0 16. ""      ".         , EthBdmaTx"
+	textline ""
+	bitfld.long 0 15. "     " ".         , HDLC_B_RX"
+	bitfld.long 0 14. ""      ".         , HDLC_B_TX"
+	bitfld.long 0 13. ""      ".         , HDLC_A_RX"
+	bitfld.long 0 12. ""      ".         , HDLC_A_TX"
+	textline ""
+	bitfld.long 0 11. "     " ".         , Timer_1  "
+	bitfld.long 0 10. ""      ".         , Timer_0  "
+	bitfld.long 0 9. ""       ".         , GDMA_1   "
+	bitfld.long 0 8. ""       ".         , GDMA_0   "
+	textline ""
+	bitfld.long 0 7. "     "  ".         , UART_1_RX"
+	bitfld.long 0 6. ""       ".         , UART_1_TX"
+	bitfld.long 0 5. ""       ".         , UART_0_RX"
+	bitfld.long 0 4. ""       ".         , UART_0_TX"
+	textline ""
+	bitfld.long 0 3. "     "  ".         , EXT_3    "
+	bitfld.long 0 2. ""       ".         , EXT_2    "
+	bitfld.long 0 1. ""       ".         , EXT_1    "
+	bitfld.long 0 0. ""       ".         , EXT_0    "
+
+  group.long 0x400c 4
+    line.long 0x0 "INTPRI0"
+  group.long 0x400c 4
+	textline "      Prio 0    Prio 1    Prio 2    Prio 3    "
+	textline ""
+	bitfld.long 0 0.--4. "     "  " EXT_0    , EXT_1    , EXT_2    , EXT_3    , UART_0_TX, UART_0_RX, UART_1_TX, UART_1_RX, GDMA_0   , GDMA_1   , Timer_0  , Timer_1  , HDLC_A_TX, HDLC_A_RX, HDLC_B_TX, HDLC_B_RX, EthBdmaTx, EthBdmaRx, EthMacTx , EthMacRx , I2C     , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid "
+	bitfld.long 0 8.--12. ""  " EXT_0    , EXT_1    , EXT_2    , EXT_3    , UART_0_TX, UART_0_RX, UART_1_TX, UART_1_RX, GDMA_0   , GDMA_1   , Timer_0  , Timer_1  , HDLC_A_TX, HDLC_A_RX, HDLC_B_TX, HDLC_B_RX, EthBdmaTx, EthBdmaRx, EthMacTx , EthMacRx , I2C     , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid "
+	bitfld.long 0 16.--20. ""  " EXT_0    , EXT_1    , EXT_2    , EXT_3    , UART_0_TX, UART_0_RX, UART_1_TX, UART_1_RX, GDMA_0   , GDMA_1   , Timer_0  , Timer_1  , HDLC_A_TX, HDLC_A_RX, HDLC_B_TX, HDLC_B_RX, EthBdmaTx, EthBdmaRx, EthMacTx , EthMacRx , I2C     , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid "
+	bitfld.long 0 24.--28. ""  " EXT_0    , EXT_1    , EXT_2    , EXT_3    , UART_0_TX, UART_0_RX, UART_1_TX, UART_1_RX, GDMA_0   , GDMA_1   , Timer_0  , Timer_1  , HDLC_A_TX, HDLC_A_RX, HDLC_B_TX, HDLC_B_RX, EthBdmaTx, EthBdmaRx, EthMacTx , EthMacRx , I2C     , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid "
+
+
+  group.long 0x4010 4
+    line.long 0x0 "INTPRI1"
+  group.long 0x4010 4
+	textline "      Prio 4    Prio 5    Prio 6    Prio 7    "
+	textline ""
+	bitfld.long 0 0.--4. "     "  " EXT_0    , EXT_1    , EXT_2    , EXT_3    , UART_0_TX, UART_0_RX, UART_1_TX, UART_1_RX, GDMA_0   , GDMA_1   , Timer_0  , Timer_1  , HDLC_A_TX, HDLC_A_RX, HDLC_B_TX, HDLC_B_RX, EthBdmaTx, EthBdmaRx, EthMacTx , EthMacRx , I2C     , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid "
+	bitfld.long 0 8.--12. ""  " EXT_0    , EXT_1    , EXT_2    , EXT_3    , UART_0_TX, UART_0_RX, UART_1_TX, UART_1_RX, GDMA_0   , GDMA_1   , Timer_0  , Timer_1  , HDLC_A_TX, HDLC_A_RX, HDLC_B_TX, HDLC_B_RX, EthBdmaTx, EthBdmaRx, EthMacTx , EthMacRx , I2C     , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid "
+	bitfld.long 0 16.--20. ""  " EXT_0    , EXT_1    , EXT_2    , EXT_3    , UART_0_TX, UART_0_RX, UART_1_TX, UART_1_RX, GDMA_0   , GDMA_1   , Timer_0  , Timer_1  , HDLC_A_TX, HDLC_A_RX, HDLC_B_TX, HDLC_B_RX, EthBdmaTx, EthBdmaRx, EthMacTx , EthMacRx , I2C     , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid "
+	bitfld.long 0 24.--28. ""  " EXT_0    , EXT_1    , EXT_2    , EXT_3    , UART_0_TX, UART_0_RX, UART_1_TX, UART_1_RX, GDMA_0   , GDMA_1   , Timer_0  , Timer_1  , HDLC_A_TX, HDLC_A_RX, HDLC_B_TX, HDLC_B_RX, EthBdmaTx, EthBdmaRx, EthMacTx , EthMacRx , I2C     , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid "
+
+
+
+  group.long 0x4014 4
+    line.long 0x0 "INTPRI2"
+  group.long 0x4014 4
+	textline "      Prio 8    Prio 9    Prio 10   Prio 11   "
+	textline ""
+	bitfld.long 0 0.--4. "     "  " EXT_0    , EXT_1    , EXT_2    , EXT_3    , UART_0_TX, UART_0_RX, UART_1_TX, UART_1_RX, GDMA_0   , GDMA_1   , Timer_0  , Timer_1  , HDLC_A_TX, HDLC_A_RX, HDLC_B_TX, HDLC_B_RX, EthBdmaTx, EthBdmaRx, EthMacTx , EthMacRx , I2C     , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid "
+	bitfld.long 0 8.--12. ""  " EXT_0    , EXT_1    , EXT_2    , EXT_3    , UART_0_TX, UART_0_RX, UART_1_TX, UART_1_RX, GDMA_0   , GDMA_1   , Timer_0  , Timer_1  , HDLC_A_TX, HDLC_A_RX, HDLC_B_TX, HDLC_B_RX, EthBdmaTx, EthBdmaRx, EthMacTx , EthMacRx , I2C     , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid "
+	bitfld.long 0 16.--20. ""  " EXT_0    , EXT_1    , EXT_2    , EXT_3    , UART_0_TX, UART_0_RX, UART_1_TX, UART_1_RX, GDMA_0   , GDMA_1   , Timer_0  , Timer_1  , HDLC_A_TX, HDLC_A_RX, HDLC_B_TX, HDLC_B_RX, EthBdmaTx, EthBdmaRx, EthMacTx , EthMacRx , I2C     , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid "
+	bitfld.long 0 24.--28. ""  " EXT_0    , EXT_1    , EXT_2    , EXT_3    , UART_0_TX, UART_0_RX, UART_1_TX, UART_1_RX, GDMA_0   , GDMA_1   , Timer_0  , Timer_1  , HDLC_A_TX, HDLC_A_RX, HDLC_B_TX, HDLC_B_RX, EthBdmaTx, EthBdmaRx, EthMacTx , EthMacRx , I2C     , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid "
+
+
+  group.long 0x4018 4
+    line.long 0x0 "INTPRI3"
+  group.long 0x4018 4
+	textline "      Prio 12   Prio 13   Prio 14   Prio 15   "
+	textline ""
+	bitfld.long 0 0.--4. "     "  " EXT_0    , EXT_1    , EXT_2    , EXT_3    , UART_0_TX, UART_0_RX, UART_1_TX, UART_1_RX, GDMA_0   , GDMA_1   , Timer_0  , Timer_1  , HDLC_A_TX, HDLC_A_RX, HDLC_B_TX, HDLC_B_RX, EthBdmaTx, EthBdmaRx, EthMacTx , EthMacRx , I2C     , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid "
+	bitfld.long 0 8.--12. ""  " EXT_0    , EXT_1    , EXT_2    , EXT_3    , UART_0_TX, UART_0_RX, UART_1_TX, UART_1_RX, GDMA_0   , GDMA_1   , Timer_0  , Timer_1  , HDLC_A_TX, HDLC_A_RX, HDLC_B_TX, HDLC_B_RX, EthBdmaTx, EthBdmaRx, EthMacTx , EthMacRx , I2C     , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid "
+	bitfld.long 0 16.--20. ""  " EXT_0    , EXT_1    , EXT_2    , EXT_3    , UART_0_TX, UART_0_RX, UART_1_TX, UART_1_RX, GDMA_0   , GDMA_1   , Timer_0  , Timer_1  , HDLC_A_TX, HDLC_A_RX, HDLC_B_TX, HDLC_B_RX, EthBdmaTx, EthBdmaRx, EthMacTx , EthMacRx , I2C     , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid "
+	bitfld.long 0 24.--28. ""  " EXT_0    , EXT_1    , EXT_2    , EXT_3    , UART_0_TX, UART_0_RX, UART_1_TX, UART_1_RX, GDMA_0   , GDMA_1   , Timer_0  , Timer_1  , HDLC_A_TX, HDLC_A_RX, HDLC_B_TX, HDLC_B_RX, EthBdmaTx, EthBdmaRx, EthMacTx , EthMacRx , I2C     , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid "
+
+
+  group.long 0x401c 4
+    line.long 0x0 "INTPRI4"
+  group.long 0x401c 4
+	textline "      Prio 16   Prio 17   Prio 18   Prio 19   "
+	textline ""
+	bitfld.long 0 0.--4. "     "  " EXT_0    , EXT_1    , EXT_2    , EXT_3    , UART_0_TX, UART_0_RX, UART_1_TX, UART_1_RX, GDMA_0   , GDMA_1   , Timer_0  , Timer_1  , HDLC_A_TX, HDLC_A_RX, HDLC_B_TX, HDLC_B_RX, EthBdmaTx, EthBdmaRx, EthMacTx , EthMacRx , I2C     , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid "
+	bitfld.long 0 8.--12. ""  " EXT_0    , EXT_1    , EXT_2    , EXT_3    , UART_0_TX, UART_0_RX, UART_1_TX, UART_1_RX, GDMA_0   , GDMA_1   , Timer_0  , Timer_1  , HDLC_A_TX, HDLC_A_RX, HDLC_B_TX, HDLC_B_RX, EthBdmaTx, EthBdmaRx, EthMacTx , EthMacRx , I2C     , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid "
+	bitfld.long 0 16.--20. ""  " EXT_0    , EXT_1    , EXT_2    , EXT_3    , UART_0_TX, UART_0_RX, UART_1_TX, UART_1_RX, GDMA_0   , GDMA_1   , Timer_0  , Timer_1  , HDLC_A_TX, HDLC_A_RX, HDLC_B_TX, HDLC_B_RX, EthBdmaTx, EthBdmaRx, EthMacTx , EthMacRx , I2C     , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid "
+	bitfld.long 0 24.--28. ""  " EXT_0    , EXT_1    , EXT_2    , EXT_3    , UART_0_TX, UART_0_RX, UART_1_TX, UART_1_RX, GDMA_0   , GDMA_1   , Timer_0  , Timer_1  , HDLC_A_TX, HDLC_A_RX, HDLC_B_TX, HDLC_B_RX, EthBdmaTx, EthBdmaRx, EthMacTx , EthMacRx , I2C     , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid "
+
+
+  group.long 0x4020 4
+    line.long 0x0 "INTPRI5"
+  group.long 0x4020 4
+	textline "      Prio 20"
+	textline ""
+	bitfld.long 0 0.--4. "     "  " EXT_0    , EXT_1    , EXT_2    , EXT_3    , UART_0_TX, UART_0_RX, UART_1_TX, UART_1_RX, GDMA_0   , GDMA_1   , Timer_0  , Timer_1  , HDLC_A_TX, HDLC_A_RX, HDLC_B_TX, HDLC_B_RX, EthBdmaTx, EthBdmaRx, EthMacTx , EthMacRx , I2C     , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid , Invalid "
+
+
+  rgroup.long 0x4024 4
+    line.long 0x0 "INTOFFSET"
+  group.long 0x4024 4
+	textline "   Highest Priority IRQ/FIQ is"
+	bitfld.long 0 2.--6. "     "  " EXT_0    , EXT_1    , EXT_2    , EXT_3    , UART_0_TX, UART_0_RX, UART_1_TX, UART_1_RX, GDMA_0   , GDMA_1   , Timer_0  , Timer_1  , HDLC_A_TX, HDLC_A_RX, HDLC_B_TX, HDLC_B_RX, EthBdmaTx, EthBdmaRx, EthMacTx , EthMacRx , I2C     , None"
+
+  rgroup.long 0x4030 4
+    line.long 0x0 "INTOSET_FIQ"
+  group.long 0x4030 4
+	textline "   Highest Priority FIQ is"
+	bitfld.long 0 2.--6. "     "  " EXT_0    , EXT_1    , EXT_2    , EXT_3    , UART_0_TX, UART_0_RX, UART_1_TX, UART_1_RX, GDMA_0   , GDMA_1   , Timer_0  , Timer_1  , HDLC_A_TX, HDLC_A_RX, HDLC_B_TX, HDLC_B_RX, EthBdmaTx, EthBdmaRx, EthMacTx , EthMacRx , I2C     , None"
+
+  rgroup.long 0x4034 4
+    line.long 0x0 "INTOSET_IRQ"
+  group.long 0x4034 4
+	textline "   Highest Priority IRQ is"
+	bitfld.long 0 2.--6. "     "  " EXT_0    , EXT_1    , EXT_2    , EXT_3    , UART_0_TX, UART_0_RX, UART_1_TX, UART_1_RX, GDMA_0   , GDMA_1   , Timer_0  , Timer_1  , HDLC_A_TX, HDLC_A_RX, HDLC_B_TX, HDLC_B_RX, EthBdmaTx, EthBdmaRx, EthMacTx , EthMacRx , I2C     , None"
+
+
+
+tree.end
+
+tree "GDMA0"
+  group.long 0xB000 4
+    line.long 0x0 "GDMACON0"
+  group.long 0xB004 4
+    line.long 0x0 "GDMASRC0"
+  group.long 0xB008 4
+    line.long 0x0 "GDMADST0"
+  group.long 0xB00C 4
+    line.long 0x0 "GDMACNT0"
+tree.end
+
+tree "GDMA1"
+  group.long 0xC000 4
+    line.long 0x0 "GDMACON1"
+  group.long 0xC004 4
+    line.long 0x0 "GDMASRC1"
+  group.long 0xC008 4
+    line.long 0x0 "GDMADST1"
+  group.long 0xC00C 4
+    line.long 0x0 "GDMACNT1"
+tree.end
+
+tree "UART0"
+  group.long 0xD000 8
+    line.long 0x0 "ULCON0"
+    line.long 0x4 "UCON0"
+  rgroup.long 0xD008 4
+    line.long 0x0 "USTAT0"
+  wgroup.long 0xD00C 4
+    line.long 0x0 "UTXBUF0"
+  rgroup.long 0xD010 4
+    line.long 0x0 "URXBUF0"
+  group.long 0xD014 4
+    line.long 0x0 "UBRDIV0"
+tree.end
+
+tree "UART1"
+  group.long 0xE000 8
+    line.long 0x0 "ULCON1"
+    line.long 0x4 "UCON1"
+  rgroup.long 0xE008 4
+    line.long 0x0 "USTAT1"
+  wgroup.long 0xE00C 4
+    line.long 0x0 "UTXBUF1"
+  rgroup.long 0xE010 4
+    line.long 0x0 "URXBUF1"
+  group.long 0xE014 4
+    line.long 0x0 "UBRDIV1"
+tree.end
+
+tree "TIMERS"
+  group.long 0x6000 4
+    line.byte 0x0 "TMOD"
+	textline ""
+	bitfld 0 5 "    TCLR1, Timer 1 initial TOUT1 value" " 0, 1"
+	bitfld 0 4 " TMD1, Timer 1 mode selection" " Int   , Toggle"
+	bitfld 0 3 " TE1, Timer 1 enable", " no , yes"
+	textline ""
+	bitfld 0 2 "    TCLR0, Timer 0 initial TOUT0 value" " 0, 1"
+	bitfld 0 1 " TMD0, Timer 0 mode selection" " Int   , Toggle"
+	bitfld 0 0 " TE0, Timer 0 enable", " no , yes"
+  group.long 0x6004 4
+    line.long 0x0 "TDATA0"
+  group.long 0x6008 4
+    line.long 0x0 "TDATA1"
+  group.long 0x600c 4
+    line.long 0x0 "TCNT0"
+  group.long 0x6010 4
+    line.long 0x0 "TCNT1"
+tree.end
+
+

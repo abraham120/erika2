@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<evidence_example version="1" ID="pic30_touch_basic">
+
+ <category>pic30/FLEX Demo2 Board</category>
+ <title>Basic Touch Demo</title>
+   
+ <small_descr>
+ This is the demo to test the touchscreen using the Demo2 (Motion) board.
+ </small_descr>
+
+ <long_descr>
+ Acquires the position from the touchscreen and sends data using the Console library.
+ </long_descr>
+
+ <file_section>
+  <file     name="code.c"/> 
+  <file     name="conf.oil"/>
+ </file_section>
+
+</evidence_example>

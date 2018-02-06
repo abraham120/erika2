@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<evidence_example version="1" ID="lpc12xx_base_demo">
+
+ <category>Cortex-MX/STM32F4 Discovery Board</category>
+ <title>Accelerometer Demo</title>
+   
+ <small_descr>
+ This is a basic demo presenting the capabilities of the integrated accelerometer.
+ </small_descr>
+
+ <long_descr>
+This example shows how to configure the MEMS accelerometer to detect acceleration on X/Y axis and to detect the click/double click on Z axis.&lt;br&gt;
+&lt;br&gt;
+After startup the program checks the MEMS accelerometer status registers and behaves as follows:
+&lt;ol&gt;
+&lt;li&gt;If the board is moved the acceleration is detected on x/Y axis and LEDs toggles according to the motion direction and speed.&lt;/li&gt;
+&lt;li&gt;If a click is detected on Z axis LED3 and LED6 toggles during 3s.&lt;/li&gt;
+&lt;li&gt;If a double click is detected on Z axis all LEDs toggles during 3s.&lt;/li&gt;
+&lt;/ol&gt;
+Note: The LEDs lighting is managed by TIM4 capture compare channels.
+ </long_descr>
+
+ <file_section>
+  <file     name="code.c"/> 
+  <file     name="conf.oil"/>
+ </file_section>
+
+</evidence_example>

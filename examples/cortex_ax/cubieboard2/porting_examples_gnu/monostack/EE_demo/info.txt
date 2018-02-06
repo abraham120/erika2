@@ -1,0 +1,29 @@
+Demo Quick Guide.
+
+Make sure xen environment is properly setted:
+/etc/init.d/xencommons start
+
+Create a configuration file (e.g. erika.cfg) for erika demo binary like:
+
+	kernel = "A20.bin"
+	memory = 512
+	name = "ERIKA_Enterprise"
+	vcpus = 1
+	on_crash = 'destroy'
+	iomem = ["1c20,2"]
+
+
+Change xenstore permissions:
+xenstore-chmod /local b
+
+Start the erika demo with:
+xl create ./erika.cfg
+
+You can test the communication between xen and erika via sysfs with:
+echo 1 > /proc/sys/erika-xen/pin_state
+or
+echo 0 > /proc/sys/erika-xen/pin_state
+
+to respectively enable/disable the state of PD12 gpio pin.
+(you can check the pin value with an oscilloscope or a tester with
+the probe pointing on U14 pin 16 and on U14 pin 2).

@@ -1,0 +1,53 @@
+CPU test_application {
+
+	OS EE {
+		EE_OPT = "DEBUG";
+		EE_OPT = "__ASSERT__";
+		
+		/* specify optimisation level */
+		CFLAGS = "-O2 -Wall";
+		ASFLAGS = "-O2";
+				
+		/* select lightweight startup code */
+		LDFLAGS = "-mcrt0s";
+
+		CPU_DATA = ESI_RISC {
+			APP_SRC = "main.c";
+			MULTI_STACK = FALSE;
+		};
+		
+		MCU_DATA = ESI_RISC {
+			MODEL = CUSTOM {
+				MODEL = "-msoc=esi3200_cycloneiiidemo";
+			};
+		};
+
+		STATUS = EXTENDED;
+		STARTUPHOOK = FALSE;
+		ERRORHOOK = FALSE;
+		SHUTDOWNHOOK = FALSE;
+		PRETASKHOOK = FALSE;
+		POSTTASKHOOK = FALSE;
+		USEGETSERVICEID = FALSE;
+		USEPARAMETERACCESS = FALSE;
+		USERESSCHEDULER = FALSE;
+    };
+
+    /* this is the OIL part for the first task */
+    TASK Task1 {
+                PRIORITY = 0x02;
+                AUTOSTART = FALSE;
+                ACTIVATION = 1;
+        };
+
+    /* this is the OIL part for the second task */
+    TASK Task2 {
+                PRIORITY = 0x02;
+                SCHEDULE = FULL;
+                AUTOSTART = TRUE;
+    };
+
+    OS EE { KERNEL_TYPE = BCC1; EE_OPT = "__OO_STARTOS_OLD__";};
+        TASK Task1 { SCHEDULE = FULL; };
+        TASK Task2 { ACTIVATION = 1; };
+};

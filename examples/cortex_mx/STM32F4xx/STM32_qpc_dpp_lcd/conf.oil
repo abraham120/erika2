@@ -1,0 +1,199 @@
+/* ###*B*###
+ * ERIKA Enterprise - a tiny RTOS for small microcontrollers
+ *
+ * Copyright (C) 2002-2014  Evidence Srl
+ *
+ * This file is part of ERIKA Enterprise.
+ *
+ * ERIKA Enterprise is free software; you can redistribute it
+ * and/or modify it under the terms of the GNU General Public License
+ * version 2 as published by the Free Software Foundation, 
+ * (with a special exception described below).
+ *
+ * Linking this code statically or dynamically with other modules is
+ * making a combined work based on this code.  Thus, the terms and
+ * conditions of the GNU General Public License cover the whole
+ * combination.
+ *
+ * As a special exception, the copyright holders of this library give you
+ * permission to link this code with independent modules to produce an
+ * executable, regardless of the license terms of these independent
+ * modules, and to copy and distribute the resulting executable under
+ * terms of your choice, provided that you also meet, for each linked
+ * independent module, the terms and conditions of the license of that
+ * module.  An independent module is a module which is not derived from
+ * or based on this library.  If you modify this code, you may extend
+ * this exception to your version of the code, but you are not
+ * obligated to do so.  If you do not wish to do so, delete this
+ * exception statement from your version.
+ *
+ * ERIKA Enterprise is distributed in the hope that it will be
+ * useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License version 2 for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * version 2 along with ERIKA Enterprise; if not, write to the
+ * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ * Boston, MA 02110-1301 USA.
+ * ###*E*### */
+
+/*
+ * Simple demo that shows a to use to QP framework.
+ * This demo implements a simple state machine that handle
+ * the Dining Philosophers Problem (DPP). 
+ * The output is on the LCD module connected to the STM32F4DIS-BB base board.
+ *	
+ * HW: STM32F407 Discovery board plus STM32F4DIS-BB base board plus 
+ * STM32F4DIS-LCD module.
+ *
+ * Author: 2014  Gianluca Franchino.
+ *
+ */
+
+CPU mySystem {
+
+	OS myOs {
+		//EE_OPT = "DEBUG";
+		
+		/* Uncomment the following EE_OPTs when using KEIL*/
+		//EE_OPT = "__KEIL_USE_AXF_EXT__";
+		//EE_OPT = "__MICROLIB";
+		
+		CPU_DATA = CORTEX_MX {
+			MODEL = M4;
+			APP_SRC = "main.c";
+			APP_SRC = "bsp.c";
+			APP_SRC = "philo.c";
+			APP_SRC = "table.c";
+			
+			//COMPILER_TYPE = KEIL;
+			COMPILER_TYPE = GNU;
+			
+			MULTI_STACK = TRUE {
+				IRQ_STACK = TRUE {
+					SYS_SIZE=512;
+				};
+			};
+		};
+
+		EE_OPT = "__USE_SYSTICK__";
+
+		MCU_DATA = STM32 {
+			MODEL = STM32F4xx;
+		};
+
+		EE_OPT = "__ADD_LIBS__";
+		
+		LIB = ENABLE { NAME = "QPC_V521"; };
+		EE_OPT = "__LIB_QPC_V521__";		
+		
+		LIB = ENABLE { NAME = "ST_CMSIS"; };
+		
+		LIB = ENABLE { NAME = "STM32F4XX_SPD"; 
+			STM32F4XX_SPD = ENABLE {
+				USEGPIO = TRUE;
+                USESYSCFG = TRUE; 
+                USEMISC = TRUE;
+        	};
+		};
+		
+		LIB = ENABLE { NAME = "STM32F4_DISCOVERY";
+			STM32F4_DISCOVERY = ENABLE {
+				USEBUTTONS = TRUE;
+				USELCD = TRUE;
+				USELCDLOG = TRUE;
+				};
+		};
+		
+		
+		STATUS = EXTENDED;
+		STARTUPHOOK = FALSE; // this demo is using the StartupHook!
+		ERRORHOOK = FALSE;
+		SHUTDOWNHOOK = FALSE;
+		PRETASKHOOK = FALSE;
+		POSTTASKHOOK = FALSE;
+		USEGETSERVICEID = FALSE;
+		USEPARAMETERACCESS = FALSE;
+		USERESSCHEDULER = TRUE;
+
+        KERNEL_TYPE = ECC2;
+
+	};
+	
+	
+	TASK Philo0Task {
+		PRIORITY = 0x01;
+		AUTOSTART = TRUE;  /* NOTE: AUTOSTART should be always TRUE*/
+		STACK = PRIVATE {
+			SYS_SIZE = 512;
+		};
+		ACTIVATION = 1;    /* only one pending activation */
+		SCHEDULE = FULL;
+		EVENT = QFEvent;
+	};
+	
+	TASK Philo1Task {
+		PRIORITY = 0x02;
+		AUTOSTART = TRUE;  /* NOTE: AUTOSTART should be always TRUE*/
+		STACK = PRIVATE {
+			SYS_SIZE = 512;
+		};
+		ACTIVATION = 1;    /* only one pending activation */
+		SCHEDULE = FULL;
+		EVENT = QFEvent;
+	};
+	
+	TASK Philo2Task {
+		PRIORITY = 0x03;
+		AUTOSTART = TRUE;  /* NOTE: AUTOSTART should be always TRUE*/
+		STACK = PRIVATE {
+			SYS_SIZE = 512;
+		};
+		ACTIVATION = 1;    /* only one pending activation */
+		SCHEDULE = FULL;
+		EVENT = QFEvent;
+	};
+	
+	TASK Philo3Task {
+		PRIORITY = 0x04;
+		AUTOSTART = TRUE;  /* NOTE: AUTOSTART should be always TRUE*/
+		STACK = PRIVATE {
+			SYS_SIZE = 512;
+		};
+		ACTIVATION = 1;    /* only one pending activation */
+		SCHEDULE = FULL;
+		EVENT = QFEvent;
+	};
+	
+	TASK Philo4Task {
+		PRIORITY = 0x05;
+		AUTOSTART = TRUE;  /* NOTE: AUTOSTART should be always TRUE*/
+		STACK = PRIVATE {
+			SYS_SIZE = 512;
+		};
+		ACTIVATION = 1;    /* only one pending activation */
+		SCHEDULE = FULL;
+		EVENT = QFEvent;
+	};
+	
+	TASK TableTask {
+		PRIORITY = 0x06;
+		AUTOSTART = TRUE;  /* NOTE: AUTOSTART should be always TRUE*/
+		STACK = PRIVATE {
+			SYS_SIZE = 512;
+		};
+		ACTIVATION = 1;    /* only one pending activation */
+		SCHEDULE = FULL;
+		EVENT = QFEvent;
+	};
+	
+	EVENT QFEvent { MASK = AUTO; };
+	
+	ISR systick_handler {
+		CATEGORY = 2;
+		ENTRY = "SYSTICK";
+		PRIORITY = 1;
+	};
+
+};

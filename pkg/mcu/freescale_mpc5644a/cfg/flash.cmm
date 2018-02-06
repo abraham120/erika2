@@ -1,0 +1,173 @@
+;
+; Script for programming of MPC5644A internal flash.
+;
+; Internal Flash Memory 4 MByte:
+;   Flash A low address range   256 kByte (8 * 16, 2 * 64 kByte)
+;                               0x00000000--0x0003ffff
+;   Flash A Mid address range   256 kByte (2 * 128 kByte)
+;                               0x00040000--0x0007ffff
+;   Flash B low address range   256 kByte (8 * 16, 2 * 64 kByte)
+;                               0x00080000--0x000bffff
+;   Flash B Mid address range   256 kByte (2 * 128 kByte)
+;                               0x000c0000--0x000fffff
+;   High address range          3 MByte (12 * 256 kByte)
+;                               0x00080000--0x0037ffff
+;   Shadow row 1 (flash B)      16 kByte
+;                               0x00efc000--0x00efffff
+;   Shadow row 0 (flash A)      16 kByte
+;                               0x00ffc000--0x00ffffff
+; 
+; Internal SRAM                 32 + 224 kByte
+;                               0x40000000--0x40007fff 
+;                               0x40008000--0x4003ffff
+;
+; Flash register base address is 
+;   Flash A                     0xc3f88000
+;   Flash B                     0xc3f8c000
+;
+; NOTES:
+; 
+;   Flash register base addresses cannot be remapped, because target
+;   program does currently not support another base address.
+;
+; wrd - 01.10.2008
+; evi - 18.05.2010 Evidence Modifications, for t32 ver (4/12/2009)
+;
+
+; evi - ERIKA binary object and VLE setting (from the makefile)
+&filename="#EXE_NAME#"
+&use_vle=#USE_VLE#
+
+&flashbase=0x00000000
+&shadow0base=0x00ffc000
+&shadow1base=0x00efc000
+&rambase=0x40000000
+&flashsize=0x000400000
+
+; Optimize flash programming time by switching on PLL
+&optimize=0
+
+;========================================================================
+; CPU setup
+
+SYStem.RESet
+SYStem.BdmClock 4.0MHz
+SYStem.CPU MPC5674
+
+; evi - configure the NEXUS port
+NExus.PORTSIze MDO12
+NExus.Dtm ReadWrite
+NExus.PORTMode 1/1
+
+SYStem.Option.WATCHDOG OFF
+SYStem.Up
+
+if &optimize==1
+(
+  ; TBD
+  ; setup PLL
+  ; Data.Set ASD:0xC3F80000 %LONG 0x06000000
+  ; set JTAG clock to 25 MHz
+  ; SYStem.BdmClock 25MHz
+)
+
+; initialize internal SRAM
+Data.Set EA:0x40000000--0x4003ffff %quad 0
+
+; setup MMU for flash, RAM and register access, as BAM does
+; Flash programming wants the VLE flag cleared
+GOSUB setup_mmu 0
+
+;========================================================================
+; Flash declaration
+
+FLASH.RESet
+
+; LAS
+FLASH.Create 1. (&flashbase+0x00000000)++0x03fff TARGET Quad 0.  ; L0 bank 0
+FLASH.Create 1. (&flashbase+0x00004000)++0x03fff TARGET Quad 1.  ; L1 bank 0
+FLASH.Create 1. (&flashbase+0x00008000)++0x03fff TARGET Quad 2.  ; L2 bank 0
+FLASH.Create 1. (&flashbase+0x0000c000)++0x03fff TARGET Quad 3.  ; L3 bank 0
+FLASH.Create 1. (&flashbase+0x00010000)++0x03fff TARGET Quad 4.  ; L4 bank 0
+FLASH.Create 1. (&flashbase+0x00014000)++0x03fff TARGET Quad 5.  ; L5 bank 0
+FLASH.Create 1. (&flashbase+0x00018000)++0x03fff TARGET Quad 6.  ; L6 bank 0
+FLASH.Create 1. (&flashbase+0x0001c000)++0x03fff TARGET Quad 7.  ; L7 bank 0
+FLASH.Create 1. (&flashbase+0x00020000)++0x0ffff TARGET Quad 8.  ; L8 bank 0
+FLASH.Create 1. (&flashbase+0x00030000)++0x0ffff TARGET Quad 9.  ; L9 bank 0
+FLASH.Create 1. (&flashbase+0x00040000)++0x1ffff TARGET Quad 10. ; M0 bank 0
+FLASH.Create 1. (&flashbase+0x00060000)++0x1ffff TARGET Quad 11. ; M1 bank 0
+
+; MAS
+FLASH.Create 2. (&flashbase+0x00080000)++0x3ffff TARGET Quad 0.  ; L0 bank 1
+FLASH.Create 2. (&flashbase+0x000c0000)++0x3ffff TARGET Quad 1.  ; M0 bank 1
+
+; HAS
+&flashaddr=&flashbase+0x00100000
+&Hx=0.
+while &flashaddr<(&flashbase+&flashsize)
+(
+  FLASH.Create 3. &flashaddr++0x7ffff TARGET Quad &Hx ; H0..H5 bank 0 + bank 1
+  &flashaddr=&flashaddr+0x80000
+  &Hx=&Hx+1.
+)
+
+; Shadow rows
+FLASH.Create 4. (&shadow0base+0x00000000)++0x3fff NOP Quad
+FLASH.Create 5. (&shadow1base+0x00000000)++0x3fff NOP Quad
+
+FLASH.TARGET E:&rambase E:&rambase+0x2800 0x1000 ~~/demo/powerpc/flash/quad/c90fl5674.bin /STACKSIZE 0x0200
+
+;========================================================================
+; Flash programming example
+;
+; Flash programming speed is about three times faster when memory class E:
+; is used for data buffer (DUALPORT memory access). For DUALPORT access it
+; is required to setup MemAccess NEXUS for both, NEXUS and JTAG debugger. 
+
+DIALOG.YESNO "Flash programming prepared. Program flash memory now?"
+entry &progflash
+
+; evi - prepare VM for the copy
+Data.Set VM:0--(&flashsize-1) 0xff
+Data.LOAD &filename /VM
+
+if &progflash 
+(
+  ; evi - write RCHW and start address, VLE=0/1
+  if &use_vle==1
+    d.set VM:0x0 %LONG 0x015A0000
+  else
+    d.set VM:0x0 %LONG 0x005A0000
+  d.set VM:0x4 %LONG __start
+
+  FLASH.ReProgram ALL /Erase
+  Data.COPY VM:0x0--(&flashsize-1) E:0x0
+  FLASH.ReProgram OFF
+)
+
+; Setup the MMU with the correct VLE flag
+GOSUB setup_mmu &use_vle
+
+; Add symbol for BAM memory
+sYmbol.NEW.Function _BAM 0XFFFFC000--0xFFFFFFFF
+
+;set JTAG clock back to default
+SYStem.BdmClock 4MHz
+
+; evi - call orti.cmm if needed
+#ORTICMD#
+
+ENDDO
+
+setup_mmu:
+	ENTRY &set_vle
+	if &set_vle==1
+		&vle_flag=0x20
+	else
+		&vle_flag=0
+	MMU.TLB1.SET 0x0 0xC0000500 0xFFF0000A 0xFFF0003F
+	MMU.TLB1.SET 0x1 0xC0000700 0x00000000+&vle_flag 0x0000003F
+	MMU.TLB1.SET 0x2 0xC0000700 0x20000000+&vle_flag 0x0000003F
+	MMU.TLB1.SET 0x3 0xC0000400 0x40000008+&vle_flag 0x4000003F
+	MMU.TLB1.SET 0x4 0xC0000500 0xC3F0000A+&vle_flag 0xC3F0003F
+	RETURN

@@ -1,0 +1,295 @@
+/* ###*B*###
+ * ERIKA Enterprise - a tiny RTOS for small microcontrollers
+ *
+ * Copyright (C) 2010  Evidence Srl
+ *
+ * This file is part of ERIKA Enterprise.
+ *
+ * ERIKA Enterprise is free software; you can redistribute it
+ * and/or modify it under the terms of the GNU General Public License
+ * version 2 as published by the Free Software Foundation, 
+ * (with a special exception described below).
+ *
+ * Linking this code statically or dynamically with other modules is
+ * making a combined work based on this code.  Thus, the terms and
+ * conditions of the GNU General Public License cover the whole
+ * combination.
+ *
+ * As a special exception, the copyright holders of this library give you
+ * permission to link this code with independent modules to produce an
+ * executable, regardless of the license terms of these independent
+ * modules, and to copy and distribute the resulting executable under
+ * terms of your choice, provided that you also meet, for each linked
+ * independent module, the terms and conditions of the license of that
+ * module.  An independent module is a module which is not derived from
+ * or based on this library.  If you modify this code, you may extend
+ * this exception to your version of the code, but you are not
+ * obligated to do so.  If you do not wish to do so, delete this
+ * exception statement from your version.
+ *
+ * ERIKA Enterprise is distributed in the hope that it will be
+ * useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License version 2 for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * version 2 along with ERIKA Enterprise; if not, write to the
+ * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ * Boston, MA 02110-1301 USA.
+ * ###*E*### */
+ 
+ /** 
+    @file      conf.oil
+    @author    Dario Di Stefano
+    @date      2010
+*/
+
+CPU test_application {
+
+	OS EE {
+		CFLAGS = "-g2";
+		ASFLAGS = "";
+		LDFLAGS = ""; 
+
+		CPU_DATA = LM32 {
+			APP_SRC = "main.c";
+			MULTI_STACK = FALSE;
+			USESTANDALONEPRINTF = FALSE; // Optional, default is FALSE
+			USESMALLC = FALSE; // Optional, defautl is FALSE
+		};
+		
+		MCU_DATA = LATTICE_PLATFORM {
+			MODEL = LIBRARY {
+				PLATFORM_LIB_PATH = "../../platforms/fpg_eye_diamond/library";
+				PLATFORM_NAME = "fpg_eye_mico32";
+				PLATFORM_BLD_CFG = "Release";
+			};
+			
+			DEVICE = TIMER{
+				NAME = "timer_uwl";
+				OPTIONS = TIMER_IRQ_SUPPORT;
+			};
+			
+			DEVICE = TIMER{
+				NAME = "timer";
+				OPTIONS = TIMER_IRQ_SUPPORT;
+			};
+		};
+		
+		BOARD_DATA = FPG_EYE {
+			OPTIONS = RS232;
+			OPTIONS = ZIGBEE;
+			OPTIONS = ZIGBEE_IRQ_SUPPORT;
+		};
+		
+		KERNEL_TYPE = FP;
+		
+		/* ********************************************************** */
+		/*                Contrib Library Inlcusion                   */
+		/* ********************************************************** */
+		EE_OPT = "__ADD_LIBS__";
+
+		/* Console library using serial as output device */	
+		LIB = ENABLE {
+			NAME = "CONSOLE";
+		};	
+		CFLAGS = "-DUSE_CONSOLE";
+		CFLAGS = "-DUSE_CONSOLE_SERIAL";
+
+		/* use transceiver MRF24J40 */
+		LIB = ENABLE { NAME = "MRF24J40"; };
+		CFLAGS = "-DUSE_MRF24J40";
+		CFLAGS = "-DINT_POLARITY_HIGH";
+		//CFLAGS = "-DMRF24J40_DEBUG";
+		CFLAGS = "-DADD_RSSI_AND_LQI_TO_PACKET";
+		CFLAGS = "-DMRF24J40_DISABLE_AUTOMATIC_ACK";
+		CFLAGS = "-DMRF24J40_DISABLE_CSMA";
+		CFLAGS = "-DMRF24J40_ZERO_MIN_BE";
+		CFLAGS = "-DMRF24J40_PROMISCUOUS_MODE";
+		CFLAGS = "-DMRF24J40_UWL_MODE";
+		CFLAGS = "-DMRF24J40MB";
+		
+		/* Memory library */
+		LIB = ENABLE { NAME = "MEMORY"; };
+
+		/* uWIRELESS library for ZIGBEE stack */
+		LIB = ENABLE { NAME = "UWIRELESS"; };
+		EE_OPT = "UWL_USE_SIMPLE_802154";
+		CFLAGS = "-DEE_TYPETICK=EE_INT32"; /* Mandatory! */
+		CFLAGS = "-DUWL_HAL_BUS_FREQ=40000";
+		CFLAGS = "-DUWL_GTS_MANIPULATION"; /* Makes sense if Coord. */
+		/*
+		CFLAGS = "-DUWL_DEBUG";
+		CFLAGS = "-DUWL_DEBUG_LOG";
+		CFLAGS = "-DUWL_DEBUG_LOG_SERIAL";
+		CFLAGS = "-DUWL_DEBUG_LOG_SERIAL_PORT=CONSOLE_SERIAL_PORT_1";
+		CFLAGS = "-DUWL_DEBUG_LOG_SERIAL_BAUDRATE=115200"; 
+		CFLAGS = "-DUWL_DEBUG_LOG_HAS_PRINT";
+		*/
+	};
+	
+	/* ****************************************************************** */
+	/*                      ISR Handler setup                             */
+	/* ****************************************************************** */
+	
+	ISR Timer_UWL {
+		CATEGORY = 2;
+		LEVEL = "TIMER_UWL_IRQ";
+		HANDLER = "EE_timer_common_handler";
+	};
+	
+	ISR Timer {
+		CATEGORY = 2;
+		LEVEL = "TIMER_IRQ";
+		HANDLER = "EE_timer_common_handler";
+	};
+	
+	ISR Gpio {
+		CATEGORY = 2;
+		LEVEL = "EE_MRF24J40_IRQ";
+		HANDLER = "EE_mrf24j40_handler";
+	};
+	
+	
+	/* ****************************************************************** */
+	/*                      Application TASKs                             */
+	/* ****************************************************************** */
+	TASK myTask {
+		PRIORITY = 10;
+		STACK = SHARED;
+		SCHEDULE = FULL;
+		RESOURCE = "UWL_EE_RESOURCE_MAC_MUTEX ";
+		RESOURCE = "UWL_EE_RESOURCE_MAC_SEND_MUTEX ";
+	};
+	
+	COUNTER myCounter;
+
+	ALARM myAlarm {
+		COUNTER = myCounter;
+		ACTION = ACTIVATETASK { TASK = myTask; };
+	};
+	
+	/* ****************************************************************** */
+	/*                    Resources Declaration                           */
+	/* ****************************************************************** */
+
+
+	/* -------------------------------------------------------------------- 
+	|                  --  uWireless OIL Section  --                       |
+	|                                                                      |
+	|  - 1 Global Task counter                                             |
+	|  - 1 PHY Task (read from radio)                                      |
+	|  - 7 MAC Tasks (superframe management + rx parsing)                  |
+	|  - 6 Resources (rx parsing tasks + general mac protection)           |
+	-------------------------------------------------------------------- */
+
+	COUNTER UWL_EE_TASK_COUNTER;
+	
+	TASK UWL_EE_TASK_PHY_READ_DISPATCHER {
+		PRIORITY = 30;
+		STACK = SHARED;
+		SCHEDULE = FULL;
+		RESOURCE = UWL_EE_RESOURCE_MAC_RX_BEACON_MUTEX;
+		RESOURCE = UWL_EE_RESOURCE_MAC_RX_DATA_MUTEX;
+		RESOURCE = UWL_EE_RESOURCE_MAC_RX_COMMAND_MUTEX;
+		RESOURCE =UWL_EE_RESOURCE_MAC_SEND_MUTEX;
+	};
+
+	TASK UWL_EE_TASK_MAC_PROCESS_RX_BEACON {
+		PRIORITY = 25;
+		STACK = SHARED;
+		SCHEDULE = FULL;
+		RESOURCE = UWL_EE_RESOURCE_MAC_RX_BEACON_MUTEX;
+	};
+
+	TASK UWL_EE_TASK_MAC_PROCESS_RX_DATA {
+		PRIORITY = 20;
+		STACK = SHARED;
+		SCHEDULE = FULL;
+		RESOURCE = UWL_EE_RESOURCE_MAC_RX_DATA_MUTEX;
+	};
+
+	TASK UWL_EE_TASK_MAC_PROCESS_RX_COMMAND {
+		PRIORITY = 20;
+		STACK = SHARED;
+		SCHEDULE = FULL;
+		RESOURCE = UWL_EE_RESOURCE_MAC_RX_COMMAND_MUTEX;
+		RESOURCE =UWL_EE_RESOURCE_MAC_SEND_MUTEX;
+		RESOURCE =UWL_EE_RESOURCE_MAC_SEND_MUTEX;
+	};
+
+	TASK UWL_EE_TASK_MAC_TIMESLOT {
+		PRIORITY = 20;
+		STACK = SHARED;
+		SCHEDULE = FULL;
+		RESOURCE = UWL_EE_RESOURCE_MAC_MUTEX;
+		RESOURCE = UWL_EE_RESOURCE_MAC_GTS_SEND_MUTEX;
+	};
+	ALARM UWL_EE_ALARM_MAC_TIMESLOT {
+		COUNTER = UWL_EE_TASK_COUNTER;
+		ACTION = ACTIVATETASK {TASK=UWL_EE_TASK_MAC_TIMESLOT;};
+	};
+
+	TASK UWL_EE_TASK_MAC_BEFORE_TIMESLOT {
+		PRIORITY = 20;
+		STACK = SHARED;
+		SCHEDULE = FULL;
+	};
+	ALARM UWL_EE_ALARM_MAC_BEFORE_TIMESLOT {
+		COUNTER = UWL_EE_TASK_COUNTER;
+		ACTION = ACTIVATETASK {TASK=UWL_EE_TASK_MAC_BEFORE_TIMESLOT;};
+	};
+
+	TASK UWL_EE_TASK_MAC_BACKOFF_PERIOD {
+		PRIORITY = 20;
+		STACK = SHARED;
+		SCHEDULE = FULL;
+		RESOURCE =UWL_EE_RESOURCE_MAC_SEND_MUTEX;
+	};
+	ALARM UWL_EE_ALARM_MAC_BACKOFF_PERIOD {
+		COUNTER = UWL_EE_TASK_COUNTER;
+		ACTION = ACTIVATETASK {TASK=UWL_EE_TASK_MAC_BACKOFF_PERIOD;};
+	};
+
+	TASK UWL_EE_TASK_MAC_GTS_SEND {
+		PRIORITY = 15;
+		STACK = SHARED;
+		SCHEDULE = FULL;
+		RESOURCE = UWL_EE_RESOURCE_MAC_GTS_SEND_MUTEX;
+	};
+	ALARM UWL_EE_ALARM_MAC_GTS_SEND {
+		COUNTER = UWL_EE_TASK_COUNTER;
+		ACTION = ACTIVATETASK {TASK=UWL_EE_TASK_MAC_GTS_SEND;};
+	};
+
+	/* ****************************************************************** */
+	/*                    Resources Declaration                           */
+	/* ****************************************************************** */
+	RESOURCE UWL_EE_RESOURCE_MAC_MUTEX { 
+		RESOURCEPROPERTY = STANDARD; 
+	};
+	RESOURCE UWL_EE_RESOURCE_MAC_SEND_MUTEX {
+		RESOURCEPROPERTY = STANDARD;
+	};
+	RESOURCE UWL_EE_RESOURCE_MAC_GTS_SEND_MUTEX { 
+		RESOURCEPROPERTY = STANDARD; 
+	};
+	RESOURCE UWL_EE_RESOURCE_MAC_RX_BEACON_MUTEX { 
+		RESOURCEPROPERTY = STANDARD; 
+	};
+	RESOURCE UWL_EE_RESOURCE_MAC_RX_DATA_MUTEX { 
+		RESOURCEPROPERTY = STANDARD; 
+	};
+	RESOURCE UWL_EE_RESOURCE_MAC_RX_COMMAND_MUTEX { 
+		RESOURCEPROPERTY = STANDARD; 
+	};
+	
+	
+};
+
+
+
+
+
+
+

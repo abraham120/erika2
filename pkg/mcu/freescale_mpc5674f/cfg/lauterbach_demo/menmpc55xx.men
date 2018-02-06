@@ -1,0 +1,1962 @@
+//! $LastChangedDate: 2014-02-14 14:58:29 +0100 (Fr, 14 Feb 2014) $
+//! $LastChangedRevision: 4974 $
+//! $LastChangedBy: rweiss $
+
+add
+
+menu
+(
+  popup "MPC5XXX"
+  (
+    if CPUIS(MPC55XX)
+    (
+      menuitem "[:config]Detect CPU" "SYStem.DETECT CPU"
+      separator
+    )
+  
+    if !CPUIS(MPC55XX)&&(STRING.MID(CPU(),1.,5.)!="PC560")&&(STRING.MID(CPU(),1.,5.)!="PC551")&&(STRING.MID(CPU(),1.,5.)!="PC553")&&(STRING.MID(CPU(),1.,5.)!="PC563")
+    (
+      menuitem "[:cachereg]CACHE Control" "CACHE"
+      popup "[:cache]CACHE display"
+      (
+        if CPUIS(?PC567*)||CPUIS(SPC56H*)||CPUIS(?PC57*)||CPUIS(?C580*)
+        (
+          menuitem "ICACHE Dump" "CACHE.DUMP IC"
+          menuitem "ICACHE List" "CACHE.List IC"
+          menuitem "ICACHE List Functions" "CACHE.ListFunc"
+          separator
+          menuitem "DCACHE Dump" "CACHE.DUMP DC"
+          menuitem "DCACHE List" "CACHE.List DC"
+          menuitem "DCACHE List Variables" "CACHE.ListVar"
+        )
+        else 
+        (
+          if CPUIS(?PC564*)||CPUIS(SPC56E*)
+          (
+            menuitem "ICACHE Dump" "CACHE.DUMP IC"
+            menuitem "ICACHE List" "CACHE.List IC"
+            menuitem "ICACHE List Functions" "CACHE.ListFunc"
+          )
+          else 
+          (
+              menuitem "CACHE Dump" "CACHE.DUMP"
+              menuitem "CACHE List" "CACHE.List"
+              menuitem "CACHE List Functions" "CACHE.ListFunc"
+              menuitem "CACHE List Variables" "CACHE.ListVar"
+          )
+        )
+      )
+      separator
+    )
+
+    if (CPUIS(MPC55*)||CPUIS(?PC56*)||CPUIS(?C57*)||CPUIS(MPC5777C))&&(!CPUIS(?PC560*))&&(!CPUIS(MPC55XX))
+    (
+      menuitem "[:mmureg]MMU Control" "MMU"
+      menuitem "[:mmu]MMU TLB1 Table" "MMU.DUMP.TLB1"
+      separator
+    )
+    if (CPUIS(?PC57*)||CPUIS(?C580*))&&(!(CPUIS(MPC5777C)))
+    (
+      menuitem "[:mmureg]MPU Control" "MMU"
+      menuitem "[:mmu]MPU Table" "MMU.DUMP.TLB2"
+      separator
+    )
+    if (!CPUIS(MPC55XX))&&(!CPUIS(?PC560*))&&(!CPUIS(MPC551*))&&(!CPUIS(?PC57*)||CPUIS(MPC5777C))&&(!CPUIS(?C58*))
+    (
+      menuitem "[:reg]SPE Registers" "SPE"
+      menuitem "[:reg]SPE Registers (floating point view)" "FPU"
+      separator
+    )
+    if CPUIS(?PC57*)&&((!(CPUIS(MPC5777C))&&(!(CPUIS(MPC5744P))&&(!CPUIS(MPC577?K))&&(!CPUIS(MPC577?N))&&(!CPUIS(MPC5748G)))))
+    (
+      popup "[:alist]Onchip Trace"
+      (
+        menuitem "[:aconfig]Onchip Trace Configuration..." "Onchip"
+        popup "[:aconfig]Set Onchip Trace Buffer"
+        (
+          menuitem "[:aconfig]Use PD Buffer"
+          (
+            if CPUIS(MPC572?L)||CPUIS(SPC572L*)
+              Onchip.TBAddress A:0x0D000000--0x0D001FFF
+            else
+              Onchip.TBAddress A:0x0D000000--0x0D003FFF
+          )
+          menuitem "[:aconfig]Use BD Buffer"
+          (
+            if CPUIS(MPC5777M)||CPUIS(SPC57HM90)
+              Onchip.TBAddress EEC:0x0C000000--0x0C1FFFFF
+            else
+              Onchip.TBAddress EEC:0x0C000000--0x0C0FFFFF
+          )
+        )
+        menuitem "[:alist]Onchip Trace List" "Onchip.List"
+      )
+      separator
+    )
+    if CPUIS(MPC555*)||CPUIS(MPC553*)||CPUIS(MPC556*)||CPUIS(?PC563*)||CPUIS(?PC564*)||CPUIS(SPC56E*)||CPUIS(?PC567*)||CPUIS(SPC56H*)||CPUIS(MPC5777C)
+    (
+      menuitem "[:alist]Onchip Trace (PCFIFO) List" "Onchip.List"
+      separator
+    )
+    
+    if CPUIS(?PC57*)&&!CPUIS(MPC5744P)&&!CPUIS(SPC570S)&&!CPUIS(?PC572*)&&!CPUIS(MPC5777C)&&!CPUIS(MPC5748G)
+    (
+      popup "[:config]Select Core"
+      (
+        menuitem "Core running first after reset"
+        (
+          LOCAL &core
+          &core=1.
+          if CPUIS(MPC5746R)
+            &core=2.
+          if CPUIS(MPC5746M)||CPUIS(SPC57EM80)||CPUIS(MPC577M)||CPUIS(SPC57HM90)||CPUIS(MPC577?K)||CPUIS(MPC577?N)||CPUIS(MPC574?K)||CPUIS(SPC574K??)
+            &core=3.
+          SYStem.Down
+          SYStem.CONFIG.CORE &core 1.
+          PRINT "SYStem.CONFIG.CORE &core 1."
+        )
+        separator
+        menuitem "CORE_0"
+        ( 
+          SYStem.Down
+          SYStem.CONFIG.CORE 1. 1.
+          CORE.NUMber 1
+        )
+        if CPUIS(MPC5746M)||CPUIS(SPC57EM80)||CPUIS(MPC577M)||CPUIS(SPC57HM90)||CPUIS(MPC577?K)||CPUIS(MPC577?N)
+        (
+          menuitem "CORE_1"
+          ( 
+            SYStem.Down
+            SYStem.CONFIG.CORE 2. 1.
+            CORE.NUMber 1
+          )
+          menuitem "SMP (CORE_0 + CORE_1)"
+          ( 
+            SYStem.Down
+            SYStem.CONFIG.CORE 1. 1.
+            CORE.ASSIGN 1 2
+          )
+        )
+        menuitem "IOP (CORE_2)"
+        ( 
+          SYStem.Down
+          SYStem.CONFIG.CORE 3. 1.
+          CORE.NUMber 1
+        )
+      )
+    )
+
+    popup "[:config]Tools"
+    (
+      menuitem "[:flash]Program FLASH (dialog)"
+      (
+        DO ~~/demo/powerpc/flash/mpc5xxx.cmm
+      )
+      menuitem "[:flash]Program FLASH (prepare only)"
+      (
+        DO ~~/demo/powerpc/flash/mpc5xxx.cmm PREPAREONLY
+        FLASH.List
+      )
+      if CPUIS(MPC56*)||CPUIS(SPC56*)
+      (
+        menuitem "[:flash]Program non-volatile registers"
+        (
+          DO ~~/demo/powerpc/flash/mpc5xxx_nvconfig.cmm
+        )
+      )
+      menuitem "[6 2B2Xs 2Xs,6B2 2XsB2Xs, 4B3 2Xs 2Xs,2 3B3 2Xs 2Xs, B 2B3 2Xs 2Xs, B2 B3 2Xs 2Xs,B7 2Xs 2XsB,B7 2Xs 2XsB,B7 3s 3sB,B14 B, B9 B2 B, B9 2B B,2 B8 3B,3 B7 4B,4 2B4 6B,6 4B]Halt core at power-on reset"
+      (
+        DO ~~/demo/powerpc/etc/standby/haltatpoweronreset.cmm
+      )
+      menuitem "[4 G,4 2G,4 3G,4 4G,2B2 3BGB2 B2 B,B B B3G4B B B,B B B3GB2GB B B,B B 3BGB2GB B B,B B B3GB2GB B B,B B B3GB2GB B B,B B B3GBG B B B,2B2 3BGB2 B2 B,4 4G,4 3G,4 2G,4 G]Start Demo"
+      (
+        LOCAL &demoscriptpath
+        ON ERROR goto skip
+        SYStem.CPU MPC55XX
+        SYStem.Down
+        SYStem.Detect.CPU
+skip:
+        ON ERROR  
+        if CPUIS(MPC555*)||CPUIS(MPC556*)||CPUIS(MPC553*)||CPUIS(MPC566*)||SIMULATOR()
+          &demoscriptpath="mpc55xx/mpc55xxdemo/demo_int.cmm"
+        else if CPUIS(MPC551*)
+          &demoscriptpath="mpc55xx/mpc551xdemo/demo.cmm"
+        else if CPUIS(?PC563*)
+          &demoscriptpath="mpc56xx/mpc563xm/demo.cmm"
+        else if CPUIS(?PC560*)
+          &demoscriptpath="mpc56xx/mpc560x/demo.cmm"
+        else if CPU()=="SPC56AP60"
+          &demoscriptpath="spc56xx/spc56ap/demo.cmm"
+        else if CPUIS(MPC5674*)||(CPU()=="MPC5676R")
+          &demoscriptpath="mpc56xx/mpc5674f/demo.cmm"
+        else if CPUIS(MPC564?A*)||CPUIS(SPC564A*)
+          &demoscriptpath="mpc56xx/mpc564xa/demo.cmm"
+        else if CPU()=="MPC5645S"
+          &demoscriptpath="mpc56xx/mpc5645s/demo.cmm"
+        else if CPUIS(MPC564?L)||CPUIS(SPC56?L*)
+          &demoscriptpath="mpc56xx/mpc5643l/demo.cmm"
+        else if CPUIS(MPC567?K)||CPUIS(SPC56?K*)
+          &demoscriptpath="mpc56xx/mpc567xk/demo.cmm"
+        else if CPUIS(MPC564?B)||CPUIS(MPC564?C)||CPUIS(SPC564B*)||CPUIS(SPC56EC*)
+          &demoscriptpath="mpc56xx/mpc564xbc/demo.cmm"
+        else if (CPU()=="MPC5746M")||(CPU()=="SPC57EM80")
+          &demoscriptpath="mpc57xx/mpc5746m/demo.cmm"
+        else if (CPU()=="MPC5777M")||(CPU()=="SPC57HM90")
+          &demoscriptpath="mpc57xx/mpc5777m/demo.cmm"
+        else if (CPU()=="MPC5748G")
+          &demoscriptpath="mpc57xx/mpc5748g/demo.cmm"
+        else if CPUIS(MPC574?K)||CPUIS(SPC574K??)
+          &demoscriptpath="mpc57xx/mpc574xk/demo.cmm"
+        else if CPUIS(MPC577?K)
+          &demoscriptpath="mpc57xx/mpc5775k/demo.cmm"
+        else if CPUIS(MPC5744P)
+          &demoscriptpath="mpc57xx/mpc5744p/demo.cmm"
+        else if CPUIS(MPC5777C)
+          &demoscriptpath="mpc57xx/mpc5777c/demo.cmm"
+        else if CPUIS(SPC570S??)
+          &demoscriptpath="spc57xx/spc570s/demo.cmm"
+        else if (CPU()=="MPC55XX")
+        (
+          PRINT %error "ERROR: Processor detection failed."
+          ENDDO
+        )
+        else
+        (
+          DIALOG.OK "This software version does not include demo scripts for "+CPU()+"."
+          ENDDO
+        )
+        &demoscriptpath=OS.PSD()+"/demo/powerpc/hardware/&demoscriptpath"
+        if FILE.EXIST("&demoscriptpath")
+          DO "&demoscriptpath"
+        else
+          DIALOG.OK "Demo script &demoscriptpath not found." "Get the latest demo scripts from http://www.lauterbach.com/scripts.html"
+        
+      )
+    )
+    
+    if !CPUIS(MPC55XX)
+    (
+      separator
+      
+      menuitem "[:per]Core Registers" "PER , ""Core Registers"""
+      menuitem "[:per]Nexus Registers" "NEXUS.Register"
+      separator
+      popup "On-Chip Peripherals"
+      (
+        if (CPU()=="MPC5514")||(CPU()=="MPC5515")||(CPU()=="MPC5516")||(CPU()=="MPC5517")
+        (
+          menuitem "[:per]CRP;Clock Reset and Power Control"                        "PER , ""Clock, Reset and Power Control"""
+          menuitem "[:per]DMA_MUX;DMA Channel Mux"                                  "PER , ""DMA Channel Mux"""
+          menuitem "[:per]DSPI;Deserial Serial Peripheral Interface"                "PER , ""Deserial Serial Peripheral Interface"""
+          menuitem "[:per]EBI;External Bus Interface"                               "PER , ""External Bus Interface"""
+          menuitem "[:per]eDMA;Enhanced Direct Memory Access"                       "PER , ""Enhanced Direct Memory Access"""
+          menuitem "[:per]eMIOS200;Enhanced Modular Input/Output Subsystem"         "PER , ""Enhanced Modular Input/Output Subsystem"""
+          menuitem "[:per]eQADC;Enhanced Queued Analog-to-Digital Converter"        "PER , ""Enhanced Queued Analog-to-Digital Converter"""
+          menuitem "[:per]eSCI;Enhanced Serial Communication Interface"             "PER , ""Enhanced Serial Communication Interface"""
+          menuitem "[:per]FLASH;Flash Memory"                                       "PER , ""Flash Memory"""
+          menuitem "[:per]FlexCAN2;FlexCAN2 Controller Area Network"                "PER , ""FlexCAN2 Controller Area Network"""
+          menuitem "[:per]FlexRay;FlexRay"                                          "PER , ""FlexRay"""
+          menuitem "[:per]I2C;I2C Bus Controller Module"                            "PER , ""I2C Bus Controller Module"""
+          menuitem "[:per]INTC;Interrupt Controller"                                "PER , ""Interrupt Controller"""
+          menuitem "[:per]MCM;Miscellaneous Control Module"                         "PER , ""Miscellaneous Control Module"""
+          menuitem "[:per]MPU;Memory Protection Unit"                               "PER , ""Memory Protection Unit"""
+          menuitem "[:per]PIT_RTI;Periodic Interrupt Timer/Real Time Interrupt"     "PER , ""Periodic Interrupt Timer and Real Time Interrupt"""
+          menuitem "[:per]FMPLL;Frequency Modulated Phase Locked Loop"              "PER , ""Frequency Modulated Phase Locked Loop"""
+          menuitem "[:per]SEMA;Semaphores"                                          "PER , ""Semaphores"""
+          menuitem "[:per]SIU;System Integration Unit"                              "PER , ""System Integration Unit"""
+        )
+        if CPU()=="MPC5554"
+        (
+          menuitem "[:per]DSPI;Deserial Serial Peripheral Interface"                "PER , ""Deserial Serial Peripheral Interface"""
+          menuitem "[:per]EBI;External Bus Interface"                               "PER , ""External Bus Interface"""
+          menuitem "[:per]ECSM;Error Correction Status Module"                      "PER , ""Error Correction Status Module"""
+          menuitem "[:per]eDMA;Enhanced Direct Memory Access"                       "PER , ""Enhanced Direct Memory Access"""
+          menuitem "[:per]eMIOS;Enhanced Modular Input/Output Subsystem"            "PER , ""Enhanced Modular Input/Output Subsystem"""
+          menuitem "[:per]eQADC;Enhanced Queued Analog-to-Digital Converter"        "PER , ""Enhanced Queued Analog-to-Digital Converter"""
+          menuitem "[:per]eSCI;Enhanced Serial Communication Interface"             "PER , ""Enhanced Serial Communication Interface"""
+          menuitem "[:per]eTPU;Enhanced Time Processing Unit"                       "PER , ""Enhanced Time Processing Unit"""
+          menuitem "[:per]FlexCAN;FlexCAN2 Controller Area Network"                   "PER , ""FlexCAN2 Controller Area Network"""
+          menuitem "[:per]FLASH;Flash Memory"                                       "PER , ""Flash Memory"""
+          menuitem "[:per]FMPLL;Frequency Modulated Phase Locked Loop"              "PER , ""Frequency Modulated Phase Locked Loop"""
+          menuitem "[:per]INTC;Interrupt Controller"                                "PER , ""Interrupt Controller"""
+          menuitem "[:per]PBRIDGE_A;Peripheral Bridge A"                            "PER , ""Peripheral Bridge A"""
+          menuitem "[:per]PBRIDGE_B;Peripheral Bridge B"                            "PER , ""Peripheral Bridge B"""
+          menuitem "[:per]SIU;System Integration Unit"                              "PER , ""System Integration Unit"""
+          menuitem "[:per]XBAR;Crossbar Switch"                                     "PER , ""XBAR Switch"""
+        )
+        if (CPU()=="MPC5553")
+        (
+          menuitem "[:per]DSPI;Deserial Serial Peripheral Interface"                "PER , ""Deserial Serial Peripheral Interface"""
+          menuitem "[:per]EBI;External Bus Interface"                               "PER , ""External Bus Interface"""
+          menuitem "[:per]ECSM;Error Correction Status Module"                      "PER , ""Error Correction Status Module"""
+          menuitem "[:per]eDMA;Enhanced Direct Memory Access"                       "PER , ""Enhanced Direct Memory Access"""
+          menuitem "[:per]eMIOS;Enhanced Modular Input/Output Subsystem"            "PER , ""Enhanced Modular Input/Output Subsystem"""
+          menuitem "[:per]eQADC;Enhanced Queued Analog-to-Digital Converter"        "PER , ""Enhanced Queued Analog-to-Digital Converter"""
+          menuitem "[:per]eSCI;Enhanced Serial Communication Interface"             "PER , ""Enhanced Serial Communication Interface"""
+          menuitem "[:per]eTPU;Enhanced Time Processing Unit"                       "PER , ""Enhanced Time Processing Unit"""
+          menuitem "[:per]FlexCAN;FlexCAN2 Controller Area Network"                   "PER , ""FlexCAN2 Controller Area Network"""
+          menuitem "[:per]FEC;Fast Ethernet Controller"                             "PER , ""Fast Ethernet Controller Registers (FEC)"""
+          menuitem "[:per]FLASH;Flash Memory"                                       "PER , ""Flash Memory"""
+          menuitem "[:per]FMPLL;Frequency Modulated Phase Locked Loop"              "PER , ""Frequency Modulated Phase Locked Loop"""
+          menuitem "[:per]INTC;Interrupt Controller"                                "PER , ""Interrupt Controller"""
+          menuitem "[:per]PBRIDGE_A;Peripheral Bridge A"                            "PER , ""Peripheral Bridge A"""
+          menuitem "[:per]PBRIDGE_B;Peripheral Bridge B"                            "PER , ""Peripheral Bridge B"""
+          menuitem "[:per]SIU;System Integration Unit"                              "PER , ""System Integration Unit"""
+          menuitem "[:per]XBAR;Crossbar Switch"                                     "PER , ""XBAR Switch"""
+        )
+        if (CPU()=="MPC5533")
+        (
+          menuitem "[:per]DSPI;Deserial Serial Peripheral Interface"                "PER , ""Deserial Serial Peripheral Interface"""
+          menuitem "[:per]EBI;External Bus Interface"                               "PER , ""External Bus Interface"""
+          menuitem "[:per]ECSM;Error Correction Status Module"                      "PER , ""Error Correction Status Module"""
+          menuitem "[:per]eDMA;Enhanced Direct Memory Access"                       "PER , ""Enhanced Direct Memory Access"""
+          menuitem "[:per]eQADC;Enhanced Queued Analog-to-Digital Converter"        "PER , ""Enhanced Queued Analog-to-Digital Converter"""
+          menuitem "[:per]eSCI;Enhanced Serial Communication Interface"             "PER , ""Enhanced Serial Communication Interface"""
+          menuitem "[:per]eTPU;Enhanced Time Processing Unit"                       "PER , ""Enhanced Time Processing Unit"""
+          menuitem "[:per]FlexCAN;FlexCAN2 Controller Area Network"                   "PER , ""FlexCAN2 Controller Area Network"""
+          menuitem "[:per]FLASH;Flash Memory"                                       "PER , ""Flash Memory"""
+          menuitem "[:per]FMPLL;Frequency Modulated Phase Locked Loop"              "PER , ""Frequency Modulated Phase Locked Loop"""
+          menuitem "[:per]INTC;Interrupt Controller"                                "PER , ""Interrupt Controller"""
+          menuitem "[:per]PBRIDGE_A;Peripheral Bridge A"                            "PER , ""Peripheral Bridge A"""
+          menuitem "[:per]PBRIDGE_B;Peripheral Bridge B"                            "PER , ""Peripheral Bridge B"""
+          menuitem "[:per]SIU;System Integration Unit"                              "PER , ""System Integration Unit"""
+          menuitem "[:per]XBAR;Crossbar Switch"                                     "PER , ""XBAR Switch"""
+        )
+        if (CPU()=="MPC5534")
+        (
+          menuitem "[:per]DSPI;Deserial Serial Peripheral Interface"                "PER , ""Deserial Serial Peripheral Interface"""
+          menuitem "[:per]EBI;External Bus Interface"                               "PER , ""External Bus Interface"""
+          menuitem "[:per]ECSM;Error Correction Status Module"                      "PER , ""Error Correction Status Module"""
+          menuitem "[:per]eDMA;Enhanced Direct Memory Access"                       "PER , ""Enhanced Direct Memory Access"""
+          menuitem "[:per]eMIOS;Enhanced Modular Input/Output Subsystem"            "PER , ""Enhanced Modular Input/Output Subsystem"""
+          menuitem "[:per]eQADC;Enhanced Queued Analog-to-Digital Converter"        "PER , ""Enhanced Queued Analog-to-Digital Converter"""
+          menuitem "[:per]eSCI;Enhanced Serial Communication Interface"             "PER , ""Enhanced Serial Communication Interface"""
+          menuitem "[:per]eTPU;Enhanced Time Processing Unit"                       "PER , ""Enhanced Time Processing Unit"""
+          menuitem "[:per]FlexCAN;FlexCAN2 Controller Area Network"                   "PER , ""FlexCAN2 Controller Area Network"""
+          menuitem "[:per]FLASH;Flash Memory"                                       "PER , ""Flash Memory"""
+          menuitem "[:per]FMPLL;Frequency Modulated Phase Locked Loop"              "PER , ""Frequency Modulated Phase Locked Loop"""
+          menuitem "[:per]INTC;Interrupt Controller"                                "PER , ""Interrupt Controller"""
+          menuitem "[:per]PBRIDGE_A;Peripheral Bridge A"                            "PER , ""Peripheral Bridge A"""
+          menuitem "[:per]PBRIDGE_B;Peripheral Bridge B"                            "PER , ""Peripheral Bridge B"""
+          menuitem "[:per]SIU;System Integration Unit"                              "PER , ""System Integration Unit"""
+          menuitem "[:per]XBAR;Crossbar Switch"                                     "PER , ""XBAR Switch"""
+        )
+        if (CPU()=="MPC5561")
+        (
+          menuitem "[:per]DSPI;Deserial Serial Peripheral Interface"                "PER , ""Deserial Serial Peripheral Interface"""
+          menuitem "[:per]EBI;External Bus Interface"                               "PER , ""External Bus Interface"""
+          menuitem "[:per]ECSM;Error Correction Status Module"                      "PER , ""Error Correction Status Module"""
+          menuitem "[:per]eDMA;Enhanced Direct Memory Access"                       "PER , ""Enhanced Direct Memory Access"""
+          menuitem "[:per]eMIOS;Enhanced Modular Input/Output Subsystem"            "PER , ""Enhanced Modular Input/Output Subsystem"""
+          menuitem "[:per]eQADC;Enhanced Queued Analog-to-Digital Converter"        "PER , ""Enhanced Queued Analog-to-Digital Converter"""
+          menuitem "[:per]eSCI;Enhanced Serial Communication Interface"             "PER , ""Enhanced Serial Communication Interface"""
+          menuitem "[:per]FlexCAN;FlexCAN2 Controller Area Network"                   "PER , ""FlexCAN2 Controller Area Network"""
+          menuitem "[:per]FLASH;Flash Memory"                                       "PER , ""Flash Memory"""
+          menuitem "[:per]FLEXRAY;FlexRay"                                          "PER , ""FlexRay"""
+          menuitem "[:per]FMPLL;Frequency Modulated Phase Locked Loop"              "PER , ""Frequency Modulated Phase Locked Loop"""
+          menuitem "[:per]INTC;Interrupt Controller"                                "PER , ""Interrupt Controller"""
+          menuitem "[:per]PBRIDGE_A;Peripheral Bridge A"                            "PER , ""Peripheral Bridge A"""
+          menuitem "[:per]PBRIDGE_B;Peripheral Bridge B"                            "PER , ""Peripheral Bridge B"""
+          menuitem "[:per]PDI;Parallel Digital Interface"                           "PER , ""Parallel Digital Interface"""
+          menuitem "[:per]SIU;System Integration Unit"                              "PER , ""System Integration Unit"""
+          menuitem "[:per]XBAR;Crossbar Switch"                                     "PER , ""XBAR Switch"""
+        )
+        if (CPU()=="MPC5565")
+        (
+          menuitem "[:per]DSPI;Deserial Serial Peripheral Interface"                "PER , ""Deserial Serial Peripheral Interface"""
+          menuitem "[:per]EBI;External Bus Interface"                               "PER , ""External Bus Interface"""
+          menuitem "[:per]ECSM;Error Correction Status Module"                      "PER , ""Error Correction Status Module"""
+          menuitem "[:per]eDMA;Enhanced Direct Memory Access"                       "PER , ""Enhanced Direct Memory Access"""
+          menuitem "[:per]eMIOS;Enhanced Modular Input/Output Subsystem"            "PER , ""Enhanced Modular Input/Output Subsystem"""
+          menuitem "[:per]eQADC;Enhanced Queued Analog-to-Digital Converter"        "PER , ""Enhanced Queued Analog-to-Digital Converter"""
+          menuitem "[:per]eSCI;Enhanced Serial Communication Interface"             "PER , ""Enhanced Serial Communication Interface"""
+          menuitem "[:per]eTPU;Enhanced Time Processing Unit"                       "PER , ""Enhanced Time Processing Unit"""
+          menuitem "[:per]FlexCAN;FlexCAN2 Controller Area Network"                   "PER , ""FlexCAN2 Controller Area Network"""
+          menuitem "[:per]FLASH;Flash Memory"                                       "PER , ""Flash Memory"""
+          menuitem "[:per]FMPLL;Frequency Modulated Phase Locked Loop"              "PER , ""Frequency Modulated Phase Locked Loop"""
+          menuitem "[:per]INTC;Interrupt Controller"                                "PER , ""Interrupt Controller"""
+          menuitem "[:per]PBRIDGE_A;Peripheral Bridge A"                            "PER , ""Peripheral Bridge A"""
+          menuitem "[:per]PBRIDGE_B;Peripheral Bridge B"                            "PER , ""Peripheral Bridge B"""
+          menuitem "[:per]SIU;System Integration Unit"                              "PER , ""System Integration Unit"""
+          menuitem "[:per]XBAR;Crossbar Switch"                                     "PER , ""XBAR Switch"""
+        )
+        if (CPU()=="MPC5566")
+        (
+          menuitem "[:per]DSPI;Deserial Serial Peripheral Interface"                "PER , ""Deserial Serial Peripheral Interface"""
+          menuitem "[:per]EBI;External Bus Interface"                               "PER , ""External Bus Interface"""
+          menuitem "[:per]ECSM;Error Correction Status Module"                      "PER , ""Error Correction Status Module"""
+          menuitem "[:per]eDMA;Enhanced Direct Memory Access"                       "PER , ""Enhanced Direct Memory Access"""
+          menuitem "[:per]eMIOS;Enhanced Modular Input/Output Subsystem"            "PER , ""Enhanced Modular Input/Output Subsystem"""
+          menuitem "[:per]eQADC;Enhanced Queued Analog-to-Digital Converter"        "PER , ""Enhanced Queued Analog-to-Digital Converter"""
+          menuitem "[:per]eSCI;Enhanced Serial Communication Interface"             "PER , ""Enhanced Serial Communication Interface"""
+          menuitem "[:per]eTPU;Enhanced Time Processing Unit"                       "PER , ""Enhanced Time Processing Unit"""
+          menuitem "[:per]FlexCAN;FlexCAN2 Controller Area Network"                   "PER , ""FlexCAN2 Controller Area Network"""
+          menuitem "[:per]FEC;Fast Ethernet Controller"                             "PER , ""Fast Ethernet Controller Registers (FEC)"""
+          menuitem "[:per]FLASH;Flash Memory"                                       "PER , ""Flash Memory"""
+          menuitem "[:per]FMPLL;Frequency Modulated Phase Locked Loop"              "PER , ""Frequency Modulated Phase Locked Loop"""
+          menuitem "[:per]INTC;Interrupt Controller"                                "PER , ""Interrupt Controller"""
+          menuitem "[:per]PBRIDGE_A;Peripheral Bridge A"                            "PER , ""Peripheral Bridge A"""
+          menuitem "[:per]PBRIDGE_B;Peripheral Bridge B"                            "PER , ""Peripheral Bridge B"""
+          menuitem "[:per]SIU;System Integration Unit"                              "PER , ""System Integration Unit"""
+          menuitem "[:per]XBAR;Crossbar Switch"                                     "PER , ""XBAR Switch"""
+        )
+        if (CPU()=="MPC5567")
+        (
+          menuitem "[:per]DSPI;Deserial Serial Peripheral Interface"                "PER , ""Deserial Serial Peripheral Interface"""
+          menuitem "[:per]eSCI;Enhanced Serial Communication Interface"             "PER , ""Enhanced Serial Communication Interface"""
+          menuitem "[:per]EBI;External Bus Interface"                               "PER , ""External Bus Interface"""
+          menuitem "[:per]ECSM;Error Correction Status Module"                      "PER , ""Error Correction Status Module"""
+          menuitem "[:per]eDMA;Enhanced Direct Memory Access"                       "PER , ""Enhanced Direct Memory Access"""
+          menuitem "[:per]eMIOS;Enhanced Modular Input/Output Subsystem"            "PER , ""Enhanced Modular Input/Output Subsystem"""
+          menuitem "[:per]eTPU;Enhanced Time Processing Unit"                       "PER , ""Enhanced Time Processing Unit"""
+          menuitem "[:per]eQADC;Enhanced Queued Analog-to-Digital Converter"        "PER , ""Enhanced Queued Analog-to-Digital Converter"""
+          menuitem "[:per]FlexCAN;FlexCAN2 Controller Area Network"                   "PER , ""FlexCAN2 Controller Area Network"""
+          menuitem "[:per]FEC;Fast Ethernet Controller"                             "PER , ""Fast Ethernet Controller Registers (FEC)"""
+          menuitem "[:per]FLASH;Flash Memory"                                       "PER , ""Flash Memory"""
+          menuitem "[:per]FLEXRAY;FlexRay"                                          "PER , ""FlexRay"""
+          menuitem "[:per]FMPLL;Frequency Modulated Phase Locked Loop"              "PER , ""Frequency Modulated Phase Locked Loop"""
+          menuitem "[:per]INTC;Interrupt Controller"                                "PER , ""Interrupt Controller"""
+          menuitem "[:per]PBRIDGE_A;Peripheral Bridge A"                            "PER , ""Peripheral Bridge A"""
+          menuitem "[:per]PBRIDGE_B;Peripheral Bridge B"                            "PER , ""Peripheral Bridge B"""
+          menuitem "[:per]SIU;System Integration Unit"                              "PER , ""System Integration Unit"""
+          menuitem "[:per]XBAR;Crossbar Switch"                                     "PER , ""XBAR Switch"""
+        )
+        if CPUIS("MPC5668*")
+        (
+          menuitem "[:per]ADC;Analog to Digital Converter"                          "PER , ""Analog to Digital Converter"""
+          menuitem "[:per]AXBS;AMBA Crossbar Switch"                                "PER , ""AMBA Crossbar Switch"""
+          menuitem "[:per]CRP;Clock, Reset and Power Control"                       "PER , ""Clock, Reset and Power Control"""
+          menuitem "[:per]CTU;Cross Triggering Unit"                                "PER , ""Cross Triggering Unit"""
+          menuitem "[:per]DMA_MUX;DMA Channel Mux"                                  "PER , ""DMA Channel Mux"""
+          menuitem "[:per]DSPI;Deserial Serial Peripheral Interface"                "PER , ""Deserial Serial Peripheral Interface"""
+          menuitem "[:per]ECSM;Error Correction Status Module"                      "PER , ""Error Correction Status Module"""
+          menuitem "[:per]eDMA;Enhanced Direct Memory Access"                       "PER , ""Enhanced Direct Memory Access"""
+          menuitem "[:per]eMIOS200;Enhanced Modular Input/Output Subsystem"         "PER , ""Enhanced Modular Input/Output Subsystem"""
+          menuitem "[:per]eSCI;Enhanced Serial Communication Interface"             "PER , ""Enhanced Serial Communication Interface"""
+          menuitem "[:per]FEC;Fast Ethernet Controller Registers"                   "PER , ""Fast Ethernet Controller Registers"""
+          menuitem "[:per]FLASH;Flash Memory"                                       "PER , ""Flash Memory"""
+          menuitem "[:per]FlexCAN;FlexCAN2 Controller Area Network"                 "PER , ""FlexCAN2 Controller Area Network"""
+          menuitem "[:per]FlexRAY;FlexRay Communication Controller"                 "PER , ""FlexRay Communication Controller"""
+          menuitem "[:per]FMPLL;Frequency Modulated Phase Locked Loop"              "PER , ""Frequency Modulated Phase Locked Loop"""
+          menuitem "[:per]I2C;I2C Bus Controller Module"                            "PER , ""I2C Bus Controller Module"""
+          menuitem "[:per]INTC;Interrupt Controller"                                "PER , ""Interrupt Controller"""
+          menuitem "[:per]MLB;Media Local Bus"                                      "PER , ""Media Local Bus"""
+          menuitem "[:per]MPU;Memory Protection Unit"                               "PER , ""Memory Protection Unit"""
+          menuitem "[:per]PIT;Periodic Interval Timer"                              "PER , ""Periodic Interval Timer"""
+          menuitem "[:per]SEMA;Semaphores"                                          "PER , ""Semaphores"""
+          menuitem "[:per]SIU;System Integration Unit"                              "PER , ""System Integration Unit"""
+          menuitem "[:per]STM;System Timer Module"                                  "PER , ""System Timer Module"""
+          menuitem "[:per]SWT;Software Watchdog Timer"                              "PER , ""Software Watchdog Timer"""
+        )
+        if (CPU()=="MPC5632M")||(CPU()=="MPC5633M")||(CPU()=="MPC5634M")||(CPU()=="SPC563M54")||(CPU()=="SPC563M60")||(CPU()=="SPC563M64")
+        (
+          menuitem "[:per]DF;Decimation Filter"                                     "PER , ""Decimation Filter"""
+          menuitem "[:per]DSPI;Deserial Serial Peripheral Interface"                "PER , ""Deserial Serial Peripheral Interface"""
+          menuitem "[:per]EBI;External Bus Interface"                               "PER , ""External Bus Interface"""
+          menuitem "[:per]ECSM;Error Correction Status Module"                      "PER , ""Error Correction Status Module"""
+          menuitem "[:per]eDMA;Enhanced Direct Memory Access"                       "PER , ""Enhanced Direct Memory Access"""
+          menuitem "[:per]eMIOS200;Enhanced Modular Input/Output Subsystem"         "PER , ""Enhanced Modular Input/Output Subsystem"""
+          menuitem "[:per]eQADC;Enhanced Queued Analog-to-Digital Converter"        "PER , ""Enhanced Queued Analog-to-Digital Converter"""
+          menuitem "[:per]eSCI;Enhanced Serial Communication Interface"             "PER , ""Enhanced Serial Communication Interface"""
+          menuitem "[:per]eTPU;Enhanced Time Processing Unit"                       "PER , ""Enhanced Time Processing Unit"""
+          menuitem "[:per]FLASH;Flash Memory"                                       "PER , ""Flash Memory"""
+          menuitem "[:per]FlexCAN;FlexCAN2 Controller Area Network"                 "PER , ""FlexCAN2 Controller Area Network"""
+          menuitem "[:per]FMPLL;Frequency Modulated Phase Locked Loop"              "PER , ""Frequency Modulated Phase Locked Loop"""
+          menuitem "[:per]INTC;Interrupt Controller"                                "PER , ""Interrupt Controller"""
+          menuitem "[:per]PIT_RTI;Periodic Interval Timer"                              "PER , ""Periodic Interval Timer"""
+          menuitem "[:per]PMC;Power Management Controller"                          "PER , ""Power Management Controller"""
+          menuitem "[:per]SIU;System Integration Unit"                              "PER , ""System Integration Unit"""
+          menuitem "[:per]XBAR;Crossbar Switch"                                     "PER , ""XBAR Switch"""
+          menuitem "[:per]STM;System Timer Module"                                  "PER , ""System Timer Module"""
+          menuitem "[:per]SWT;Software Watchdog Timer"                              "PER , ""Software Watchdog Timer"""
+        )
+        if CPUIS("MPC5674*")
+        (
+          menuitem "[:per]DF;Decimation Filter"                                     "PER , ""Decimation Filter"""
+          menuitem "[:per]DSPI;Deserial Serial Peripheral Interface"                "PER , ""Deserial Serial Peripheral Interface"""
+          menuitem "[:per]EBI;External Bus Interface"                               "PER , ""External Bus Interface"""
+          menuitem "[:per]ECSM;Error Correction Status Module"                      "PER , ""Error Correction Status Module"""
+          menuitem "[:per]eDMA;Enhanced Direct Memory Access"                       "PER , ""eDMA"""
+          menuitem "[:per]eMIOS;Enhanced Modular Input/Output Subsystem"            "PER , ""Enhanced Modular Input/Output Subsystem"""
+          menuitem "[:per]eSCI;Enhanced Serial Communication Interface"             "PER , ""Enhanced Serial Communication Interface"""
+          menuitem "[:per]eTPU;Enhanced Time Processing Unit"                       "PER , ""Enhanced Time Processing Unit"""
+          menuitem "[:per]eQADC;Enhanced Queued Analog-to-Digital Converter"        "PER , ""Enhanced Queued Analog-to-Digital Converter"""
+          menuitem "[:per]FLASH;Flash Memory"                                       "PER , ""Flash Memory"""
+          menuitem "[:per]FlexCAN;FlexCAN2 Controller Area Network"                 "PER , ""FlexCAN2 Controller Area Network"""
+          menuitem "[:per]FlexRAY;FlexRay Communication Controller"                 "PER , ""FlexRay"""
+          menuitem "[:per]FMPLL;Frequency Modulated Phase Locked Loop"              "PER , ""Frequency Modulated Phase Locked Loop"""
+          menuitem "[:per]INTC;Interrupt Controller"                                "PER , ""Interrupt Controller"""
+          menuitem "[:per]MPU;Memory Protection Unit"                               "PER , ""Memory Protection Unit"""
+          menuitem "[:per]PBRIDGE_A;Peripheral Bridge A"                            "PER , ""Peripheral Bridge A"""
+          menuitem "[:per]PBRIDGE_B;Peripheral Bridge B"                            "PER , ""Peripheral Bridge B"""
+          menuitem "[:per]PIT;Periodic Interval Timer"                              "PER , ""Periodic Interval Timer"""
+          menuitem "[:per]PMC;Power Management Controller"                          "PER , ""Power Management Controller"""
+          menuitem "[:per]SIM;System Information Module"                            "PER , ""System Information Module"""
+          menuitem "[:per]SIU;System Integration Unit"                              "PER , ""System Integration Unit"""
+          menuitem "[:per]STM;System Timer Module"                                  "PER , ""System Timer Module"""
+          menuitem "[:per]SWT;Software Watchdog Timer"                              "PER , ""Software Watchdog Timer"""
+          menuitem "[:per]XBAR;Crossbar Switch"                                     "PER , ""XBAR Switch"""
+        )
+        if (CPU()=="MPC5606S")||(CPU()=="SPC560S")
+        (
+          menuitem "[:per]ADC;Analog to Digital Converter" "PER , ""Analog to Digital Converter"""
+          menuitem "[:per]CLOCK_CONF;Clock Configuration" "PER , ""Clock Configuration"""
+          menuitem "[:per]CAN_SAMP;CAN sampler" "PER , ""CAN sampler"""
+          menuitem "[:per]CTU-LITE;Cross Triggering Unit" "PER , ""Cross Triggering Unit"""
+          menuitem "[:per]DCU;Display Control Unit" "PER , ""Display Control Unit"""
+          menuitem "[:per]DMA_MUX;DMA Channel Mux" "PER , ""DMA Channel Mux"""
+          menuitem "[:per]DSPI;Deserial Serial Peripheral Interface" "PER , ""Deserial Serial Peripheral Interface"""
+          menuitem "[:per]EBI;External Bus Interface" "PER , ""External Bus Interface"""
+          menuitem "[:per]ECSM;Error Correction Status Module" "PER , ""Error Correction Status Module"""
+          menuitem "[:per]eDMA;Enhanced Direct Memory Access" "PER , ""Enhanced Direct Memory Access"""
+          menuitem "[:per]eMIOS200;Enhanced Modular Input/Output Subsystem" "PER , ""Enhanced Modular Input/Output Subsystem"""
+          menuitem "[:per]FLASH;Flash" "PER , ""Flash"""
+          menuitem "[:per]FlexCAN;FlexCAN" "PER , ""FlexCAN"""
+          menuitem "[:per]FLEXRAY;FlexRay Communication Controller" "PER , ""FlexRay Communication Controller"""
+          menuitem "[:per]I2C;Inter-Integrated Circuit Bus Controller Module" "PER , ""I2C"""
+          menuitem "[:per]INTC;Interrupt Controller" "PER , ""Interrupt Controller"""
+          menuitem "[:per]LCD64F6B;LCD Driver" "PER , ""LCD Driver"""
+          menuitem "[:per]LINFlex;LINFlex Module" "PER , ""LINFlex Module"""
+          menuitem "[:per]MC_ME;Mode Entry Module" "PER , ""Mode Entry Module"""
+          menuitem "[:per]MC_PCU;Power Control Unit" "PER , ""Power Control Unit"""
+          menuitem "[:per]MC_RGM;Reset Generation Module" "PER , ""Reset Generation Module"""
+          menuitem "[:per]MPU;Memory Protection Unit" "PER , ""Memory Protection Unit"""
+          menuitem "[:per]PIT_RTI;Periodic Interrupt Timer and Real Time Interrupt" "PER , ""Periodic Interrupt Timer and Real Time Interrupt"""
+          menuitem "[:per]QuadSPI;Quad Serial Peripheral Interface" "PER , ""Quad Serial Peripheral Interface"""
+          menuitem "[:per]RTC/API;Real Time Clock" "PER , ""Real Time Clock"""
+          menuitem "[:per]SGL;Sound Generation Logic" "PER , ""Sound Generation Logic"""
+          menuitem "[:per]SIUL;System Integration Unit" "PER , ""System Integration Unit Lite"""
+          menuitem "[:per]SMC;Stepper Motor Controller" "PER , ""Stepper Motor Controller"""
+          menuitem "[:per]SSCM;System Status and Configuration Module" "PER , ""System Status and Configuration Module"""
+          menuitem "[:per]SSDU;Stepper Stall Detect Units" "PER , ""Stepper Stall Detect"""
+          menuitem "[:per]STM;System Timer Module" "PER , ""System Timer Module"""
+          menuitem "[:per]SWT;Software Watchdog Timer" "PER , ""Software Watchdog Timer"""
+          menuitem "[:per]WKPU;Wakeup Unit" "PER , ""Wakeup Unit"""
+        )
+        if (CPU()=="MPC5644B")||(CPU()=="MPC5644C")||(CPU()=="MPC5645B")||(CPU()=="MPC5645C")||(CPU()=="MPC5646B")||(CPU()=="MPC5646C")||(CPU()=="SPC564B64")||(CPU()=="SPC564B70")||(CPU()=="SPC564B74")||(CPU()=="SPC56EC64")||(CPU()=="SPC56EC70")||(CPU()=="SPC56EC74")
+        (
+          menuitem "[:per]ADC;Analog to Digital Converter" "PER , ""Analog to Digital Converter"""
+          menuitem "[:per]CAN_SAMP;CAN sampler" "PER , ""CAN sampler"""
+          menuitem "[:per]CLOCK_CONF;Clock Configuration" "PER , ""Clock Configuration"""
+          menuitem "[:per]CSE;Cryptographic Services Engine" "PER , ""Cryptographic Services Engine"""
+          menuitem "[:per]CTU;Cross Triggering Unit" "PER , ""Cross Triggering Unit"""
+          menuitem "[:per]DMA_MUX;DMA Channel Mux" "PER , ""DMA Channel Mux"""
+          menuitem "[:per]DSPI;Deserial Serial Peripheral Interface" "PER , ""Deserial Serial Peripheral Interface"""
+          menuitem "[:per]ECSM;Error Correction Status Module" "PER , ""Error Correction Status Module"""
+          menuitem "[:per]eDMA;Enhanced Direct Memory Access" "PER , ""Enhanced Direct Memory Access"""
+          menuitem "[:per]eMIOS200;Enhanced Modular Input/Output Subsystem" "PER , ""Enhanced Modular Input/Output Subsystem"""
+          menuitem "[:per]FEC;Fast Ethernet Controller Registers"              "PER , ""FEC"""
+          menuitem "[:per]FLASH;Flash" "PER , ""Flash"""
+          menuitem "[:per]FlexCAN;FlexCAN" "PER , ""FlexCAN"""
+          menuitem "[:per]FLEXRAY;FlexRay Communication Controller" "PER , ""FlexRay Communication Controller"""
+          menuitem "[:per]I2C;Inter-Integrated Circuit Bus Controller Module" "PER , ""Inter-Integrated Circuit Bus Controller Module"""
+          menuitem "[:per]INTC;Interrupt Controller" "PER , ""Interrupt Controller"""
+          menuitem "[:per]LINFlex;LINFlex Module" "PER , ""LINFlex Module"""
+          menuitem "[:per]MC_ME;Mode Entry Module" "PER , ""Mode Entry Module"""
+          menuitem "[:per]MC_PCU;Power Control Unit" "PER , ""Power Control Unit"""
+          menuitem "[:per]MC_RGM;Reset Generation Module" "PER , ""Reset Generation Module"""
+          menuitem "[:per]MPU;Memory Protection Unit" "PER , ""Memory Protection Unit"""
+          menuitem "[:per]PIT_RTI;Periodic Interrupt Timer and Real Time Interrupt" "PER , ""Periodic Interrupt Timer and Real Time Interrupt"""
+          menuitem "[:per]RTC/API;Real Time Clock" "PER , ""Real Time Clock"""
+          menuitem "[:per]SEMA;Semaphores" "PER , ""Semaphores"""
+          menuitem "[:per]SIUL;System Integration Unit" "PER , ""System Integration Unit Lite"""
+          menuitem "[:per]SSCM;System Status and Configuration Module" "PER , ""System Status and Configuration Module"""
+          menuitem "[:per]STCU;Self-Test Control Unit" "PER , ""STCU"""
+          menuitem "[:per]STM;System Timer Module" "PER , ""System Timer Module"""
+          menuitem "[:per]SWT;Software Watchdog Timer" "PER , ""Software Watchdog Timer"""
+          menuitem "[:per]XBAR;Crossbar Switch" "PER , ""XBAR Switch"""
+          menuitem "[:per]WKPU;Wakeup Unit" "PER , ""Wakeup Unit"""
+        )
+        if (CPU()=="MPC5645S")
+        (
+          menuitem "[:per]ADC;Analog to Digital Converter" "PER , ""Analog to Digital Converter"""
+          menuitem "[:per]CAN_SAMP;CAN sampler" "PER , ""CAN sampler"""
+          menuitem "[:per]CLOCK_CONF;Clock Configuration" "PER , ""Clock Configuration"""
+          menuitem "[:per]DCU3;Display Control Unit" "PER , ""Display Control Unit"""
+          menuitem "[:per]DCULite;Display Control Unit Lite" "PER , ""Display Control Unit Lite"""
+          menuitem "[:per]DMA_MUX;DMA Channel Mux" "PER , ""DMA Channel Mux"""
+          menuitem "[:per]DRAMC;DRAM Controller" "PER , ""DRAM Controller"""
+          menuitem "[:per]DRAMC_PM;DRAM Priority Manager" "PER , ""DRAM Priority Manager"""
+          menuitem "[:per]DSPI;Deserial Serial Peripheral Interface" "PER , ""Deserial Serial Peripheral Interface"""
+          menuitem "[:per]ECSM;Error Correction Status Module" "PER , ""Error Correction Status Module"""
+          menuitem "[:per]eDMA;Enhanced Direct Memory Access" "PER , ""Enhanced Direct Memory Access"""
+          menuitem "[:per]eMIOS200;Enhanced Modular Input/Output Subsystem" "PER , ""Enhanced Modular Input/Output Subsystem"""
+          menuitem "[:per]FLASH;Flash" "PER , ""Flash"""
+          menuitem "[:per]FlexCAN2;FlexCAN2" "PER , ""FlexCAN2"""
+          menuitem "[:per]GFX2D;OpenVG Graphics Accelerator" "PER , ""OpenVG Graphics Accelerator"""
+          menuitem "[:per]GXG;Graphics Accelerator Gasket" "PER , ""Graphics Accelerator Gasket"""
+          menuitem "[:per]I2C;I2C Controllers" "PER , ""I2C Controllers"""
+          menuitem "[:per]INTC;Interrupt Controller" "PER , ""Interrupt Controller"""
+          menuitem "[:per]LINFlex;LINFlex Module" "PER , ""LINFlex Module"""
+          menuitem "[:per]MC_ME;Mode Entry Module" "PER , ""Mode Entry Module"""
+          menuitem "[:per]MC_PCU;Power Control Unit" "PER , ""Power Control Unit"""
+          menuitem "[:per]MC_RGM;Reset Generation Module" "PER , ""Reset Generation Module"""
+          menuitem "[:per]MPU;Memory Protection Unit" "PER , ""Memory Protection Unit"""
+          menuitem "[:per]PIT_RTI;Periodic Interrupt Timer and Real Time Interrupt" "PER , ""Periodic Interrupt Timer and Real Time Interrupt"""
+          menuitem "[:per]QuadSPI;Quad Serial Peripheral Interface" "PER , ""Quad Serial Peripheral Interface"""
+          menuitem "[:per]RTC/API;Real Time Clock" "PER , ""Real Time Clock"""
+          menuitem "[:per]RLE_DEC;Run-Length Encoding Decoder" "PER , ""Run-Length Encoding Decoder"""
+          menuitem "[:per]SGM;Sound Generator Module" "PER , ""Sound Generator Module"""
+          menuitem "[:per]SIUL;System Integration Unit" "PER , ""System Integration Unit Lite"""
+          menuitem "[:per]SMC;Stepper Motor Controller" "PER , ""Stepper Motor Controller"""
+          menuitem "[:per]SSCM;System Status and Configuration Module" "PER , ""System Status and Configuration Module"""
+          menuitem "[:per]SSDU;Stepper Stall Detect Units" "PER , ""Stepper Stall Detect Units"""
+          menuitem "[:per]STM;System Timer Module" "PER , ""System Timer Module"""
+          menuitem "[:per]SWT;Software Watchdog Timer" "PER , ""Software Watchdog Timer"""
+          menuitem "[:per]TCON;Timing Controller" "PER , ""Timing Controller"""
+          menuitem "[:per]VIU;Video Input Unit" "PER , ""Video Input Unit"""
+          menuitem "[:per]VRPS;Voltage Regulators and Power Supplies" "PER , ""Voltage Regulators and Power Supplies"""
+          menuitem "[:per]WKPU;Wakeup Unit" "PER , ""Wakeup Unit"""
+          menuitem "[:per]XBAR;Crossbar Switch" "PER , ""XBAR Switch"""
+        )
+        if (CPU()=="MPC5601P")||(CPU()=="MPC5602P")||(CPU()=="MPC5603P")||(CPU()=="MPC5604P")||(CPU()=="SPC560P34")||(CPU()=="SPC560P40")||(CPU()=="SPC560P44")||(CPU()=="SPC560P50")
+        (
+          menuitem "[:per]ADC;Analog to Digital Converter" "PER , ""Analog to Digital Converter"""
+          menuitem "[:per]CLOCK_CONF;Clock Configuration" "PER , ""Clock Configuration"""
+          menuitem "[:per]CTU;Cross Triggering Unit" "PER , ""Cross Triggering Unit"""
+          menuitem "[:per]DMA_MUX;DMA Channel Mux" "PER , ""DMA Channel Mux"""
+          menuitem "[:per]DSPI;Deserial Serial Peripheral Interface" "PER , ""Deserial Serial Peripheral Interface"""
+          menuitem "[:per]ECSM;Error Correction Status Module" "PER , ""Error Correction Status Module"""
+          menuitem "[:per]eDMA;Enhanced Direct Memory Access" "PER , ""Enhanced Direct Memory Access"""
+          menuitem "[:per]eTimer;eTimer" "PER , ""eTimer"""
+          menuitem "[:per]FLASH;Flash" "PER , ""Flash"""
+          menuitem "[:per]FlexCAN;FlexCAN" "PER , ""FlexCAN"""
+          menuitem "[:per]FlexPWM;FlexPWM" "PER , ""FlexPWM"""
+          menuitem "[:per]FLEXRAY;FlexRay Communication Controller" "PER , ""FlexRay Communication Controller"""
+          menuitem "[:per]INTC;Interrupt Controller" "PER , ""Interrupt Controller"""
+          menuitem "[:per]LINFlex;LINFlex Module" "PER , ""LINFlex Module"""
+          menuitem "[:per]MC_ME;Mode Entry Module" "PER , ""Mode Entry Module"""
+          menuitem "[:per]MC_PCU;Power Control Unit" "PER , ""Power Control Unit"""
+          menuitem "[:per]MC_RGM;Reset Generation Module" "PER , ""Reset Generation Module"""
+          menuitem "[:per]PIT_RTI;Periodic Interrupt Timer and Real Time Interrupt" "PER , ""Periodic Interrupt Timer and Real Time Interrupt"""
+          menuitem "[:per]SSCM;System Status and Configuration Module" "PER , ""System Status and Configuration Module"""
+          menuitem "[:per]SIUL;System Integration Unit" "PER , ""System Integration Unit Lite"""
+          menuitem "[:per]STM;System Timer Module" "PER , ""System Timer Module"""
+          menuitem "[:per]SWT;Software Watchdog Timer" "PER , ""Software Watchdog Timer"""
+          menuitem "[:per]WKPU;Wakeup Unit" "PER , ""Wakeup Unit"""
+        )
+        if (CPU()=="MPC5602B")||(CPU()=="MPC5603B")||(CPU()=="MPC5604B")||(CPU()=="MPC5602C")||(CPU()=="MPC5603C")||(CPU()=="MPC5604C")||(CPU()=="MPC5605B")||(CPU()=="MPC5606B")||(CPU()=="MPC5607B")||(CPU()=="SPC560B40")||(CPU()=="SPC560B44")||(CPU()=="SPC560B50")||(CPU()=="SPC560C40")||(CPU()=="SPC560C44")||(CPU()=="SPC560C50")||(CPU()=="SPC560B54")||(CPU()=="SPC560B60")||(CPU()=="SPC560B64")
+        (
+          menuitem "[:per]ADCDIG;ADC Digital Interface" "PER , ""ADC Digital Interface"""
+          menuitem "[:per]CAN_SAMP;CAN sampler" "PER , ""CAN sampler"""
+          menuitem "[:per]CLOCK_CONF;Clock Configuration" "PER , ""Clock Configuration"""
+          menuitem "[:per]CTU-LITE;Cross Triggering Unit" "PER , ""Cross Triggering Unit"""
+          menuitem "[:per]DSPI;Deserial Serial Peripheral Interface" "PER , ""Deserial Serial Peripheral Interface"""
+          menuitem "[:per]ECSM;Error Correction Status Module" "PER , ""Error Correction Status Module"""
+          menuitem "[:per]eMIOS200;Enhanced Modular Input/Output Subsystem" "PER , ""Enhanced Modular Input/Output Subsystem"""
+          menuitem "[:per]FLASH;Flash" "PER , ""Flash"""
+          menuitem "[:per]FlexCAN;FlexCAN" "PER , ""FlexCAN"""
+          menuitem "[:per]FLEXRAY;FlexRay Communication Controller" "PER , ""FlexRay Communication Controller"""
+          menuitem "[:per]I2C;Inter-Integrated Circuit Bus Controller Module" "PER , ""Inter-Integrated Circuit Bus Controller Module"""
+          menuitem "[:per]INTC;Interrupt Controller" "PER , ""Interrupt Controller"""
+          menuitem "[:per]LINFlex;LINFlex Module" "PER , ""LINFlex Module"""
+          menuitem "[:per]MC_ME;Mode Entry Module" "PER , ""Mode Entry Module"""
+          menuitem "[:per]MC_PCU;Power Control Unit" "PER , ""Power Control Unit"""
+          menuitem "[:per]MC_RGM;Reset Generation Module" "PER , ""Reset Generation Module"""
+          menuitem "[:per]MPU;Memory Protection Unit" "PER , ""Memory Protection Unit"""
+          menuitem "[:per]SIUL;System Integration Unit" "PER , ""System Integration Unit Lite"""
+          menuitem "[:per]SSCM;System Status and Configuration Module" "PER , ""System Status and Configuration Module"""
+          menuitem "[:per]STM;System Timer Module" "PER , ""System Timer Module"""
+          menuitem "[:per]SWT;Software Watchdog Timer" "PER , ""Software Watchdog Timer"""
+          menuitem "[:per]PIT_RTI;Periodic Interrupt Timer and Real Time Interrupt" "PER , ""Periodic Interrupt Timer and Real Time Interrupt"""
+          menuitem "[:per]RTC/API;Real Time Clock" "PER , ""Real Time Clock"""
+          menuitem "[:per]WKPU;Wakeup Unit" "PER , ""Wakeup Unit"""
+        )
+        if (CPU()=="MPC5601D")||(CPU()=="MPC5602D")||(CPU()=="SPC560D30")||(CPU()=="SPC560D40")
+        (
+          menuitem "[:per]ADC;Analog-to-Digital Converter" "PER , ""ADC"""
+          menuitem "[:per]CAN_SAMP;CAN sampler" "PER , ""CAN sampler"""
+          menuitem "[:per]CLOCK_CONF;Clock Configuration" "PER , ""Clock Configuration"""
+          menuitem "[:per]CTU-LITE;Cross Triggering Unit" "PER , ""Cross Triggering Unit"""
+          menuitem "[:per]DSPI;Deserial Serial Peripheral Interface" "PER , ""Deserial Serial Peripheral Interface"""
+          menuitem "[:per]ECSM;Error Correction Status Module" "PER , ""Error Correction Status Module"""
+          menuitem "[:per]eMIOS200;Enhanced Modular Input/Output Subsystem" "PER , ""Enhanced Modular Input/Output Subsystem"""
+          menuitem "[:per]FLASH;Flash" "PER , ""Flash"""
+          menuitem "[:per]FlexCAN;FlexCAN" "PER , ""FlexCAN"""
+          menuitem "[:per]I2C;Inter-Integrated Circuit Bus Controller Module" "PER , ""Inter-Integrated Circuit Bus Controller Module"""
+          menuitem "[:per]INTC;Interrupt Controller" "PER , ""Interrupt Controller"""
+          menuitem "[:per]LINFlex;LINFlex Module" "PER , ""LINFlex Module"""
+          menuitem "[:per]MC_ME;Mode Entry Module" "PER , ""Mode Entry Module"""
+          menuitem "[:per]MC_PCU;Power Control Unit" "PER , ""Power Control Unit"""
+          menuitem "[:per]MC_RGM;Reset Generation Module" "PER , ""Reset Generation Module"""
+          menuitem "[:per]MPU;Memory Protection Unit" "PER , ""Memory Protection Unit"""
+          menuitem "[:per]SIUL;System Integration Unit" "PER , ""System Integration Unit Lite"""
+          menuitem "[:per]SSCM;System Status and Configuration Module" "PER , ""System Status and Configuration Module"""
+          menuitem "[:per]STM;System Timer Module" "PER , ""System Timer Module"""
+          menuitem "[:per]SWT;Software Watchdog Timer" "PER , ""Software Watchdog Timer"""
+          menuitem "[:per]PIT_RTI;Periodic Interrupt Timer and Real Time Interrupt" "PER , ""Periodic Interrupt Timer and Real Time Interrupt"""
+          menuitem "[:per]RTC/API;Real Time Clock" "PER , ""Real Time Clock"""
+          menuitem "[:per]WKPU;Wakeup Unit" "PER , ""Wakeup Unit"""
+        )
+        if (CPU()=="MPC5604E") 
+        (
+          menuitem "[:per]ADC;Analog-to-Digital Converter" "PER , ""ADC"""
+          menuitem "[:per]CLOCK_CONF;Clock Configuration" "PER , ""Clock Configuration"""
+          menuitem "[:per]CRCU;Cyclic Redundancy Checker Units"                     "PER , ""Cyclic Redundancy Checker Units"""
+          menuitem "[:per]DMA_MUX;DMA Channel Mux" "PER , ""DMA Channel Mux"""
+          menuitem "[:per]DSPI;Deserial Serial Peripheral Interface" "PER , ""Deserial Serial Peripheral Interface"""
+          menuitem "[:per]ECSM;Error Correction Status Module" "PER , ""Error Correction Status Module"""
+          menuitem "[:per]eDMA;Enhanced Direct Memory Access" "PER , ""Enhanced Direct Memory Access"""
+          menuitem "[:per]eTimer;eTimer"  "PER , ""eTimer"""
+          menuitem "[:per]FCU;Fault Collection Unit" "PER , ""Fault Collection Unit"""
+          menuitem "[:per]FEC;Fast Ethernet Controller Registers"              "PER , ""FEC"""
+          menuitem "[:per]FLASH;Flash" "PER , ""Flash"""
+          menuitem "[:per]FlexCAN;FlexCAN" "PER , ""FlexCAN"""
+          menuitem "[:per]I2C;I2C Modules" "PER , ""I2C Modules"""
+          menuitem "[:per]I2S_SAI;Integrated Interchip Sound" "PER , ""Integrated Interchip Sound"""
+          menuitem "[:per]INTC;Interrupt Controller" "PER , ""Interrupt Controller"""
+          menuitem "[:per]LINFlex;LINFlex Modules" "PER , ""LINFlex Modules"""
+          menuitem "[:per]MC_ME;Mode Entry Module" "PER , ""Mode Entry Module"""
+          menuitem "[:per]MC_PCU;Power Control Unit" "PER , ""Power Control Unit"""
+          menuitem "[:per]MC_RGM;Reset Generation Module" "PER , ""Reset Generation Module"""
+          menuitem "[:per]PIT_RTI;Periodic Interrupt Timer and Real Time Interrupt" "PER , ""Periodic Interrupt Timer and Real Time Interrupt"""
+          menuitem "[:per]PTP;IEEE 1588 PTP" "PER , ""IEEE 1588 - PTP"""
+          menuitem "[:per]RTC;IEEE 1588 RTC" "PER , ""IEEE 1588 - RTC"""
+          menuitem "[:per]SSCM;System Status and Configuration Module" "PER , ""System Status and Configuration Module"""
+          menuitem "[:per]SIUL;System Integration Unit" "PER , ""System Integration Unit Lite"""
+          menuitem "[:per]STM;System Timer Module" "PER , ""System Timer Module"""
+          menuitem "[:per]SWT;Software Watchdog Timer" "PER , ""Software Watchdog Timer"""
+          menuitem "[:per]VE;Video Encoder Wrapper" "PER , ""Video Encoder Wrapper"""
+          menuitem "[:per]WKPU;Wakeup Unit" "PER , ""Wakeup Unit"""
+        )
+        if (CPU()=="MPC5644A")||(CPU()=="SPC564A80")
+        (
+          menuitem "[:per]CRCU;Cyclic Redundancy Checker Units"                     "PER , ""Cyclic Redundancy Checker Units"""
+          menuitem "[:per]DF;Decimation Filter"                                     "PER , ""Decimation Filter"""
+          menuitem "[:per]DSPI;Deserial Serial Peripheral Interface"                "PER , ""Deserial Serial Peripheral Interface"""
+          menuitem "[:per]EBI;External Bus Interface"                               "PER , ""External Bus Interface"""
+          menuitem "[:per]ECSM;Error Correction Status Module"                      "PER , ""Error Correction Status Module"""
+          menuitem "[:per]eDMA;Enhanced Direct Memory Access"                       "PER , ""Enhanced Direct Memory Access"""
+          menuitem "[:per]eMIOS200;Enhanced Modular Input/Output Subsystem"         "PER , ""Enhanced Modular Input/Output Subsystem"""
+          menuitem "[:per]eQADC;Enhanced Queued Analog-to-Digital Converter"        "PER , ""Enhanced Queued Analog-to-Digital Converter"""
+          menuitem "[:per]eSCI;Enhanced Serial Communication Interface"             "PER , ""Enhanced Serial Communication Interface"""
+          menuitem "[:per]eTPU;Enhanced Time Processing Unit"                       "PER , ""Enhanced Time Processing Unit"""
+          menuitem "[:per]FMPLL;Frequency Modulated Phase Locked Loop"              "PER , ""Frequency Modulated Phase Locked Loop"""
+          menuitem "[:per]FFL;Flash Fuse Loader"                                    "PER , ""Power Management Controller"""
+          menuitem "[:per]FLASH;Flash"                                              "PER , ""Flash"""
+          menuitem "[:per]FlexCAN;FlexCAN"                                          "PER , ""FlexCAN"""
+          menuitem "[:per]FLEXRAY;FlexRay Communication Controller"                 "PER , ""FlexRay Communication Controller"""
+          menuitem "[:per]INTC;Interrupt Controller"                                "PER , ""Interrupt Controller"""
+          menuitem "[:per]MPU;Memory Protection Unit"                               "PER , ""Memory Protection Unit"""
+          menuitem "[:per]PIT_RTI;Periodic Interrupt Timer and Real Time Interrupt" "PER , ""Periodic Interrupt Timer and Real Time Interrupt"""
+          menuitem "[:per]PMC;Power Management Controller"                          "PER , ""Power Management Controller"""
+          menuitem "[:per]SIU;System Integration Unit"                              "PER , ""System Integration Unit Lite"""
+          menuitem "[:per]STM;System Timer Module"                                  "PER , ""System Timer Module"""
+          menuitem "[:per]SWT;Software Watchdog Timer"                              "PER , ""Software Watchdog Timer"""
+          menuitem "[:per]XBAR;XBAR Switch"                                         "PER , ""XBAR Switch"""
+        )
+        if (CPU()=="MPC5644A-V2")||(CPU()=="SPC564A80-V2")||(CPU()=="MPC5642A")||(CPU()=="SPC564A70")
+        (
+          menuitem "[:per]CRCU;Cyclic Redundancy Checker Units"                     "PER , ""Cyclic Redundancy Checker Units"""
+          menuitem "[:per]DF;Decimation Filter"                                     "PER , ""Decimation Filter"""
+          menuitem "[:per]DSPI;Deserial Serial Peripheral Interface"                "PER , ""Deserial Serial Peripheral Interface"""
+          menuitem "[:per]DTS;Development Trigger Semaphore"                        "PER , ""Development Trigger Semaphore"""
+          menuitem "[:per]EBI;External Bus Interface"                               "PER , ""External Bus Interface"""
+          menuitem "[:per]ECSM;Error Correction Status Module"                      "PER , ""Error Correction Status Module"""
+          menuitem "[:per]eDMA;Enhanced Direct Memory Access"                       "PER , ""Enhanced Direct Memory Access"""
+          menuitem "[:per]eMIOS200;Enhanced Modular Input/Output Subsystem"         "PER , ""Enhanced Modular Input/Output Subsystem"""
+          menuitem "[:per]eQADC;Enhanced Queued Analog-to-Digital Converter"        "PER , ""Enhanced Queued Analog-to-Digital Converter"""
+          menuitem "[:per]eSCI;Enhanced Serial Communication Interface"             "PER , ""Enhanced Serial Communication Interface"""
+          menuitem "[:per]eTPU;Enhanced Time Processing Unit"                       "PER , ""Enhanced Time Processing Unit"""
+          menuitem "[:per]FMPLL;Frequency Modulated Phase Locked Loop"              "PER , ""Frequency Modulated Phase Locked Loop"""
+          menuitem "[:per]FFL;Flash Fuse Loader"                                    "PER , ""Power Management Controller"""
+          menuitem "[:per]FLASH;Flash"                                              "PER , ""Flash"""
+          menuitem "[:per]FlexCAN;FlexCAN"                                          "PER , ""FlexCAN"""
+          menuitem "[:per]FLEXRAY;FlexRay Communication Controller"                 "PER , ""FlexRay Communication Controller"""
+          menuitem "[:per]INTC;Interrupt Controller"                                "PER , ""Interrupt Controller"""
+          menuitem "[:per]MPU;Memory Protection Unit"                               "PER , ""Memory Protection Unit"""
+          menuitem "[:per]PIT_RTI;Periodic Interrupt Timer and Real Time Interrupt" "PER , ""Periodic Interrupt Timer and Real Time Interrupt"""
+          menuitem "[:per]PMC;Power Management Controller"                          "PER , ""Power Management Controller"""
+          menuitem "[:per]REACM;Reaction Module"                                    "PER , ""Reaction Module"""
+          menuitem "[:per]SIU;System Integration Unit"                              "PER , ""System Integration Unit Lite"""
+          menuitem "[:per]STM;System Timer Module"                                  "PER , ""System Timer Module"""
+          menuitem "[:per]SWT;Software Watchdog Timer"                              "PER , ""Software Watchdog Timer"""
+          menuitem "[:per]XBAR;XBAR Switch"                                         "PER , ""XBAR Switch"""
+        )    
+        if (CPU()=="MPC5643L")||(CPU()=="SPC56EL60")
+        (
+          popup "ADC;Analog-to-Digital Converters"
+          (
+            menuitem "[:per]ADC0"                                                        "PER , ""ADC,ADC0"""
+            menuitem "[:per]ADC1"                                                        "PER , ""ADC,ADC1"""
+          )
+          popup "CMU;Clock Monitor Units"
+          (
+            menuitem "[:per]CMU0"                                                        "PER , ""CMU,CMU0"""
+            menuitem "[:per]CMU1"                                                        "PER , ""CMU,CMU1"""
+            menuitem "[:per]CMU2"                                                        "PER , ""CMU,CMU2"""
+          )
+          menuitem "[:per]CRCU;Cyclic Redundancy Checker Unit"                      "PER , ""Cyclic Redundancy Checker Unit"""
+          menuitem "[:per]CTU;Cross Triggering Unit"                                "PER , ""Cross Triggering Unit"""
+          menuitem "[:per]DMA_CMUX;DMA Channel Mux"                                 "PER , ""DMA Channel Mux"""
+          popup "DSPI;Deserial Serial Peripheral Interfaces"
+          (
+            menuitem "[:per]DSPI0"                                                        "PER , ""DSPI,DSPI 0"""
+            menuitem "[:per]DSPI1"                                                        "PER , ""DSPI,DSPI 1"""
+            menuitem "[:per]DSPI2"                                                        "PER , ""DSPI,DSPI 2"""
+          )
+          popup "ECSM;Error Correction Status Module"
+          (
+            menuitem "[:per]ECSM0"                                                  "PER , ""Error Correction Status Module (ECSM) 0"""
+            menuitem "[:per]ECSM1 - DPM only"                                       "PER , ""Error Correction Status Module (ECSM) 1"""
+          )
+          popup "eDMA;Enhanced Direct Memory Access"
+          (
+            menuitem "[:per]eDMA0"                                                  "PER , ""Enhanced Direct Memory Access (eDMA) 0"""
+            menuitem "[:per]eDMA1"                                                  "PER , ""Enhanced Direct Memory Access (eDMA) 1"""
+          )  
+          popup "eTimer;eTimer"
+          (
+            menuitem "[:per]eTimer0"                                                  "PER , ""eTimer,eTimer 0"""
+            menuitem "[:per]eTimer1"                                                  "PER , ""eTimer,eTimer 1"""
+            menuitem "[:per]eTimer2"                                                  "PER , ""eTimer,eTimer 2"""
+          )  
+          menuitem "[:per]FCCU;Fault Collection and Control Unit"                   "PER , ""FCCU"""
+          menuitem "[:per]FLASH;Flash"                                              "PER , ""Flash"""
+          menuitem "[:per]FLASHNV;Flash Non-Volatile Registers"                          "PER , ""Flash Non-Volatile Registers"""
+          popup "FlexCAN2;FlexCAN2 Controller Area Network"
+          (
+            menuitem "[:per]FlexCAN0"                                                        "PER , ""FlexCAN2,FlexCAN 0"""
+            menuitem "[:per]FlexCAN1"                                                        "PER , ""FlexCAN2,FlexCAN 1"""
+            if CPU()=="SPC56EL70"
+            (
+              menuitem "[:per]FlexCAN2"                                                        "PER , ""FlexCAN2,FlexCAN2"""
+            )
+          )
+          popup "FlexPWM;FlexPWM"
+          (
+            menuitem "[:per]FlexPWM0"                                                        "PER , ""FlexPWM,FlexPWM 0"""
+            menuitem "[:per]FlexPWM1"                                                        "PER , ""FlexPWM,FlexPWM 1"""
+          )
+          menuitem "[:per]FLEXRAY;FlexRay Communication Controller"                 "PER , ""FlexRay Communication Controller"""
+          popup "FMPLL;Frequency Modulated Phase Locked Loop"
+          (
+            menuitem "[:per]FMPLL0"                                                 "PER , ""Frequency Modulated Phase Locked Loop 0"""
+            menuitem "[:per]FMPLL1"                                                 "PER , ""Frequency Modulated Phase Locked Loop 1"""
+          )
+          popup "INTC;Interrupt Controller"
+          (
+            menuitem "[:per]INTC0"                                                  "PER , ""Interrupt Controller (INTC) 0"""
+            menuitem "[:per]INTC1 - DPM only"                                       "PER , ""Interrupt Controller (INTC) 1"""
+          )
+          menuitem "[:per]IRCOSC;16 MHz internal RC Oscillator"                     "PER , ""IRCOSC"""
+          menuitem "[:per]LINFlex;LINFlex Module"                                   "PER , ""LINFlex Module"""
+          menuitem "[:per]MC_CGM;Clock Generation Module"                           "PER , ""Clock Generation Module"""
+          menuitem "[:per]MC_RGM;Reset Generation Module"                           "PER , ""Reset Generation Module"""
+          menuitem "[:per]MC_ME;Mode Entry Module"                                  "PER , ""Mode Entry Module"""
+          menuitem "[:per]MC_PCU;Power Control Unit"                                  "PER , ""Power Control Unit"""
+          popup "MPU;Memory Protection Unit"
+          (
+            menuitem "[:per]MPU0"                                                   "PER , ""Memory Protection Unit (MPU) 0"""
+            menuitem "[:per]MPU1 - DPM only"                                        "PER , ""Memory Protection Unit (MPU) 1"""
+          )
+          popup "PBRIDGE;Peripheral Bridge"
+          (
+            menuitem "[:per]PBRIDGE0"                                               "PER , ""Peripheral Bridge (AIPS_Lite) 0"""
+            menuitem "[:per]PBRIDGE1 - DPM only"                                    "PER , ""Peripheral Bridge (AIPS_Lite) 1"""
+          )
+          menuitem "[:per]PIT;Periodic Interrupt Timer"                             "PER , ""Periodic Interrupt Timer"""
+          menuitem "[:per]PMU;Power Management Unit"                                "PER , ""Power Management Unit"""
+          menuitem "[:per]SEMA;Semaphores"                                          "PER , ""Semaphores"""
+          menuitem "[:per]SIUL;System Integration Unit"                             "PER , ""System Integration Unit Lite"""
+          menuitem "[:per]SSCM;System Status and Configuration Module"              "PER , ""System Status and Configuration Module"""
+          menuitem "[:per]STCU;Self-Test Control Unit"                                  "PER , ""Self-Test Control Unit"""
+          popup "STM;System Timer Module"
+          (
+            menuitem "[:per]STM0"                                                   "PER , ""System Timer Module (STM) 0"""
+            menuitem "[:per]STM1"                                                   "PER , ""System Timer Module (STM) 1"""
+          )
+          menuitem "[:per]SWG;Sine Wave Generator"                                  "PER , ""Sine Wave Generator"""
+          popup "SWT;Software Watchdog Timer"
+          (
+            menuitem "[:per]SWT0"                                                   "PER , ""Software Watchdog Timer (SWT) 0"""
+            menuitem "[:per]SWT1 - DPM only"                                        "PER , ""Software Watchdog Timer (SWT) 1"""
+          )
+          menuitem "[:per]WKPU;Wakeup Unit"                                         "PER , ""Wakeup Unit"""
+          popup "XBAR;XBAR Switch"
+          (
+            menuitem "[:per]XBAR0"                                                  "PER , ""XBAR Switch 0"""
+            menuitem "[:per]XBAR1 - DPM only"                                       "PER , ""XBAR Switch 1"""
+          )
+          menuitem "[:per]XOSC;External Oscillator"                                 "PER , ""XOSC"""
+        )
+        if CPU()=="MPC5676R"
+        (
+          menuitem "[:per]CRC;CRC Units"                                                      "PER , ""CRC"""
+          menuitem "[:per]DF;Decimation Filters"                                              "PER , ""Decimation Filters"""
+          menuitem "[:per]DSPI;Deserial Serial Peripheral Interface"              "PER , ""DSPI"""
+          menuitem "[:per]DTS;Development Trigger Semaphore"                      "PER , ""DTS"""
+          menuitem "[:per]EBI;External Bus Interface"                              "PER , ""EBI"""
+          menuitem "[:per]ECSM;Error Correction Status Module"                      "PER , ""ECSM"""
+          menuitem "[:per]eDMA;eDMA controllers"                                              "PER , ""eDMA"""
+          menuitem "[:per]eMIOS200;Enhanced Modular Input/Output Subsystem"  "PER , ""eMIOS200"""
+          menuitem "[:per]eQADC;Enhanced Queued Analog-to-Digital Converter"    "PER , ""eQADC"""
+          menuitem "[:per]eSCI;Enhanced Serial Communication Interface"              "PER , ""eSCI"""
+          menuitem "[:per]eTPU_AB;Enhanced Time Processing Unit"              "PER , ""eTPU_AB"""
+          menuitem "[:per]eTPU_C;Enhanced Time Processing Unit"                      "PER , ""eTPU_C"""
+          menuitem "[:per]FlexCAN;FlexCAN2 Controller Area Network"                              "PER , ""FlexCAN2 Controller Area Network"""
+          menuitem "[:per]FLASH;Flash Memory Controller"                                      "PER , ""Decimation"""
+          menuitem "[:per]FMPLL;Frequency Modulated Phase Locked Loop"              "PER , ""FLASH"""
+          menuitem "[:per]FlexRay;FlexRay"                                                      "PER , ""FlexRay"""
+          menuitem "[:per]INTC;Interrupt Controller"                              "PER , ""INTC"""
+          menuitem "[:per]MPU;Memory Protection Unit"                              "PER , ""MPU"""
+          menuitem "[:per]PIT;Periodic Interval Timer"                              "PER , ""PIT"""
+          menuitem "[:per]PMC;Power Management Controller"                              "PER , ""PMC"""
+          menuitem "[:per]SEMA4;Semaphores"                                      "PER , ""SEMA4"""
+          menuitem "[:per]STCU;Self-Test Control Unit"                              "PER , ""STCU"""
+          menuitem "[:per]STM;System Timer Module"                                      "PER , ""STM"""
+          menuitem "[:per]SIM;System Information Module"                              "PER , ""SIM"""
+          menuitem "[:per]SIU;System Integration Unit"                              "PER , ""SIU"""
+          menuitem "[:per]SIU_B;System Integration Unit B"                      "PER , ""SIU_B"""
+          menuitem "[:per]SWT_A;Software Watchdog Timer A"                      "PER , ""SWT_A"""
+          menuitem "[:per]SWT_B;Software Watchdog Timer B"                      "PER , ""SWT_B"""
+          menuitem "[:per]XBAR;XBAR Switch"                                              "PER , ""XBAR"""
+        )
+        if CPU()=="MPC5777C"
+        (
+          menuitem "[:per]AIPS;Peripheral Bridges"                            "PER , ""AIPS"""
+          menuitem "[:per]C55FMC;Embedded Flash Memory"                       "PER , ""C55FMC"""
+          menuitem "[:per]CAN;FlexCan modules"                                "PER , ""CAN"""
+          menuitem "[:per]CRC;Cyclic Redundancy Check Unit"                   "PER , ""CRC"""
+          menuitem "[:per]CSE;Cryptographic Services Engine"                  "PER , ""CSE"""
+          menuitem "[:per]DF;Decimation Filters"                              "PER , ""DF"""
+          menuitem "[:per]DMA;Direct Memory Access"                           "PER , ""DMA"""
+          menuitem "[:per]DSPI;Deserial Serial Peripheral Interface"          "PER , ""DSPI"""
+          menuitem "[:per]DTS;Development Trigger Semaphore"                  "PER , ""DTS"""
+          menuitem "[:per]EBI;External Bus Interface"                         "PER , ""EBI"""
+          menuitem "[:per]EIM;Error Injection Module"                         "PER , ""EIM"""
+          menuitem "[:per]eMIOS;Enhanced Modular Input/Output Subsystem"      "PER , ""eMIOS"""
+          menuitem "[:per]eQADC;Enhanced Queued Analog-to-Digital Converter"  "PER , ""eQADC"""
+          menuitem "[:per]ERM;Error Reporting Module"                         "PER , ""ERM"""
+          menuitem "[:per]eSCI;Enhanced Serial Communication Interface"       "PER , ""eSCI"""
+          menuitem "[:per]eTPU;Enhanced Time Processing Units"                "PER , ""eTPU"""
+          menuitem "[:per]FCCU;Fault Collection and Control Unit"             "PER , ""FCCU"""
+          menuitem "[:per]FEC;Fast Ethernet Controller"                       "PER , ""FEC"""
+          menuitem "[:per]IGF;Input Glitch Filters"                           "PER , ""IGF"""       
+          menuitem "[:per]INTC;Interrupt Controller"                          "PER , ""INTC"""
+          menuitem "[:per]JDC;JTAG Data Communication"                        "PER , ""JDC"""
+          menuitem "[:per]LFAST;LVDS Fast Asynchronous Serial Transmission"   "PER , ""LFAST"""
+          menuitem "[:per]M_CAN;Modular Controller Area Network"              "PER , ""M_CAN"""
+          menuitem "[:per]MPU;Memory Protection Unit"                         "PER , ""MPU"""
+          menuitem "[:per]PASS;Password and Device Security Module"           "PER , ""PASS"""
+          menuitem "[:per]PCM;Platform Configuration Module"                  "PER , ""PCM"""
+          menuitem "[:per]PCS;Progressive Clock Switch"                       "PER , ""PCS"""
+          menuitem "[:per]PFLASH;Platform Flash Controller"                   "PER , ""PFLASH"""
+          menuitem "[:per]PIT;Periodic Interval Timer"                        "PER , ""PIT"""
+          menuitem "[:per]PLLDIG;Dual PLL Digital Interface"                  "PER , ""PLLDIG"""
+          menuitem "[:per]PMC;Power Management Controller"                    "PER , ""PMC"""
+          menuitem "[:per]PRAMC;RAM controllers"                              "PER , ""PRAMC"""
+          menuitem "[:per]PSI;Peripheral Sensor Interfaces"                   "PER , ""PSI"""
+          menuitem "[:per]REACM2;Reaction Module"                             "PER , ""REACM2"""
+          menuitem "[:per]SDADC;Sigma-Delta Analog-to-Digital Converters"     "PER , ""SDADC"""
+          menuitem "[:per]SEMA4;Semaphores"                                   "PER , ""SEMA4"""
+          menuitem "[:per]SIPI;System Interprocessor Interface"               "PER , ""SIPI"""
+          menuitem "[:per]SIU;System Integration Unit"                        "PER , ""SIU"""
+          menuitem "[:per]SRX;SENT (SAE J2716) Receivers"                     "PER , ""SRX"""
+          menuitem "[:per]SSCM;System Status and Configuration Module"        "PER , ""SSCM"""
+          menuitem "[:per]STCU2;Self-Test Control Unit"                       "PER , ""STCU2"""
+          menuitem "[:per]STM_A;System Timer Module"                          "PER , ""STM_A"""
+          menuitem "[:per]SWT;Software Watchdog Timer"                        "PER , ""SWT"""
+          menuitem "[:per]TDM;Tamper Detection Module"                        "PER , ""TDM"""
+          menuitem "[:per]XBAR;XBAR Switch"                                   "PER , ""XBAR"""
+          menuitem "[:per]XBIC;Crossbar Integrity Checker"                    "PER , ""XBIC"""
+        )
+        if CPUIS(MPC567?K)||CPUIS(SPC56HK*)
+        (
+          popup "ADC;Analog-to-Digital Converters"
+          (
+            menuitem "[:per]ADC0"                                                        "PER , ""ADC,ADC0"""
+            menuitem "[:per]ADC1"                                                        "PER , ""ADC,ADC1"""
+            menuitem "[:per]ADC2"                                                        "PER , ""ADC,ADC2"""
+            menuitem "[:per]ADC3"                                                        "PER , ""ADC,ADC3"""
+          )
+          popup "CMU;Clock Monitor Units"
+          (
+            menuitem "[:per]CMU0"                                                        "PER , ""CMU,CMU0"""
+            menuitem "[:per]CMU1"                                                        "PER , ""CMU,CMU1"""
+            menuitem "[:per]CMU2"                                                        "PER , ""CMU,CMU2"""
+          )
+          popup "CRC;Cyclic Redundancy Checker Units"
+          (
+            menuitem "[:per]CRCU0"                                                        "PER , ""CRCU,CRCU 0"""
+            menuitem "[:per]CRCU1"                                                        "PER , ""CRCU,CRCU 1"""
+          )
+          popup "CTU;Cross Triggering Units"
+          (
+            menuitem "[:per]CTU0"                                                        "PER , ""CTU,CTU 0"""
+            menuitem "[:per]CTU1"                                                        "PER , ""CTU,CTU 1"""
+          )
+          menuitem "[:per]CU;Coherency Unit"                                        "PER , ""Coherency Unit"""
+          popup "DSPI;Deserial Serial Peripheral Interfaces"
+          (
+            menuitem "[:per]DSPI0"                                                        "PER , ""DSPI,DSPI 0"""
+            menuitem "[:per]DSPI1"                                                        "PER , ""DSPI,DSPI 1"""
+            menuitem "[:per]DSPI2"                                                        "PER , ""DSPI,DSPI 2"""
+          )
+          menuitem "[:per]EBI;External Bus Interface"                                "PER , ""EBI"""
+          popup "ECSM;Error Correction Status Modules"
+          (
+            menuitem "[:per]ECSM0"                                                      "PER , ""Error Correction Status Module (ECSM) 0"""
+            menuitem "[:per]ECSM1 - DPM only"                                              "PER , ""Error Correction Status Module (ECSM) 1"""
+          )
+          popup "eDMA;Enhanced Direct Memory Access"
+          (
+            menuitem "[:per]eDMA0"                                                        "PER , ""Enhanced Direct Memory Access (eDMA) 0"""
+            menuitem "[:per]DMA_CMUX0"                                                        "PER , ""DMA Channel Mux (DMA_CMUX) 0"""
+            menuitem "[:per]eDMA1 - DPM only"                                                "PER , ""Enhanced Direct Memory Access (eDMA) 1"""
+            menuitem "[:per]DMA_CMUX1 - DPM only"                                        "PER , ""DMA Channel Mux (DMA_CMUX) 1"""
+          )
+          popup "eTimer;eTimer"
+          (
+            menuitem "[:per]eTimer0"                                                  "PER , ""eTimer,eTimer 0"""
+            menuitem "[:per]eTimer1"                                                  "PER , ""eTimer,eTimer 1"""
+            menuitem "[:per]eTimer2"                                                  "PER , ""eTimer,eTimer 2"""
+          )  
+          menuitem "[:per]FLASH;Flash Controllers"                                        "PER , ""Flash Controllers"""
+          menuitem "[:per]FLASHNV;Flash Non-Volatile Registers"                                "PER , ""Flash Non-Volatile Registers"""
+          menuitem "[:per]FCCU;Fault Collection and Control Unit"              "PER , ""FCCU"""
+          menuitem "[:per]FEC;Fast Ethernet Controller Registers"              "PER , ""FEC"""
+          popup "FlexCAN2;FlexCAN2 Controller Area Network"
+          (
+            menuitem "[:per]FlexCAN0"                                                        "PER , ""FlexCAN2,FlexCAN 0"""
+            menuitem "[:per]FlexCAN1"                                                        "PER , ""FlexCAN2,FlexCAN 1"""
+            menuitem "[:per]FlexCAN2"                                                        "PER , ""FlexCAN2,FlexCAN 2"""
+            menuitem "[:per]FlexCAN3"                                                        "PER , ""FlexCAN2,FlexCAN 3"""
+          )
+          popup "FlexPWM;FlexPWM"
+          (
+            menuitem "[:per]FlexPWM0"                                                        "PER , ""FlexPWM,FlexPWM 0"""
+            menuitem "[:per]FlexPWM1"                                                        "PER , ""FlexPWM,FlexPWM 1"""
+            menuitem "[:per]FlexPWM2"                                                        "PER , ""FlexPWM,FlexPWM 2"""
+          )
+          menuitem "[:per]FlexRay;FlexRay Communication Controller"              "PER , ""FlexRay"""
+          popup "FMPLL;Frequency Modulated Phase Locked Loop"
+          (
+            menuitem "[:per]FMPLL0"                                                      "PER , ""FMPLL0"""
+            menuitem "[:per]FMPLL1"                                                      "PER , ""FMPLL1"""
+          )
+          popup "I2C;I2C Controllers"
+          (
+            menuitem "[:per]I2C0"                                                        "PER , ""I2C,I2C 0"""
+            menuitem "[:per]I2C1"                                                        "PER , ""I2C,I2C 1"""
+            menuitem "[:per]I2C2"                                                        "PER , ""I2C,I2C 2"""
+          )
+          popup "INTC;Interrupt Controllers"
+          (
+            menuitem "[:per]INTC0"                                                      "PER , ""Interrupt Controller (INTC) 0"""
+            menuitem "[:per]INTC1 - DPM only"                                              "PER , ""Interrupt Controller (INTC) 1"""
+          )
+          popup "LinFlexD;LinFlexD Controllers"
+          (
+            menuitem "[:per]LinFlexD0"                                                      "PER , ""LinFlexD,LinFlexD 0"""
+            menuitem "[:per]LinFlexD1"                                                      "PER , ""LinFlexD,LinFlexD 1"""
+            menuitem "[:per]LinFlexD2"                                                      "PER , ""LinFlexD,LinFlexD 2"""
+            menuitem "[:per]LinFlexD3"                                                      "PER , ""LinFlexD,LinFlexD 3"""
+          )
+          menuitem "[:per]MC_CGM;Clock Generation Module"                        "PER , ""MC_CGM"""
+          menuitem "[:per]MC_ME;Mode Entry Module"                              "PER , ""MC_ME"""
+          menuitem "[:per]MC_PCU;Power Control Unit"                             "PER , ""MC_PCU"""
+          menuitem "[:per]MC_RGM;Reset Generation Module"                     "PER , ""MC_RGM"""
+          menuitem "[:per]MDDRC;Multi-Port DDR DRAM Controller"              "PER , ""MDDRC"""
+          menuitem "[:per]MDDRC_PM;MDDRC Priority Manager"                      "PER , ""MDDRC_PM"""
+          popup "MPU;Memory Protection Unit"
+          (
+            menuitem "[:per]MPU0"                                                     "PER , ""Memory Protection Unit (MPU) 0"""
+            menuitem "[:per]MPU1 - DPM only"                                             "PER , ""Memory Protection Unit (MPU) 1"""
+          )
+          menuitem "[:per]OSC;Oscillators"                                             "PER , ""Oscillators"""
+          popup "PBRIDGE;Peripheral Bridge"
+          (
+            menuitem "[:per]PBRIDGE0"                                                        "PER , ""Peripheral Bridge (AIPS-Lite) 0"""
+            menuitem "[:per]PBRIDGE1 - DPM only"                                        "PER , ""Peripheral Bridge (AIPS-Lite) 1"""
+          )
+          menuitem "[:per]PDI;Parallel Digital Interface"                     "PER , ""PDI"""
+          menuitem "[:per]PIT;Periodic Interval Timer"                             "PER , ""PIT"""
+          menuitem "[:per]PMC;Power Management Controller"                     "PER , ""PMC"""
+          menuitem "[:per]SEMA4;Semaphores - DPM only"                                     "PER , ""Semaphores"""
+          menuitem "[:per]SIUL;System Integration Unit Lite"                     "PER , ""SIUL"""
+          menuitem "[:per]SSCM;System Status and Configuration Module"             "PER , ""SSCM"""
+          menuitem "[:per]STCU;Self-Test Control Unit"                             "PER , ""STCU"""
+          popup "STM;System Timer Module"
+          (
+            menuitem "[:per]STM0"                                                     "PER , ""System Timer Module (STM) 0"""
+            menuitem "[:per]STM1 - DPM only"                                             "PER , ""System Timer Module (STM) 1"""
+          )
+          popup "SWT;Software Watchdog Timer"
+          (
+            menuitem "[:per]SWT0"                                                     "PER , ""Software Watchdog Timer (SWT) 0"""
+            menuitem "[:per]SWT1 - DPM only"                                             "PER , ""Software Watchdog Timer (SWT) 1"""
+          )
+          menuitem "[:per]TSENS;Temperature Sensor"                             "PER , ""TSENS"""
+          menuitem "[:per]WKPU;Wakeup Unit"                                     "PER , ""WKPU"""
+          popup "XBAR;XBAR Switch"
+          (
+            menuitem "[:per]XBAR0"                                                        "PER , ""XBAR Switch 0"""
+            menuitem "[:per]XBAR1 - DPM only"                                                "PER , ""XBAR Switch 1"""
+          )  
+        )
+        if (CPU()=="MPC5746M")||(CPU()=="SPC57EM80")
+        (
+          popup "System Modules"
+          (
+            menuitem "[:per]DMA;Enhanced Direct Memory Access" "PER , ""DMA"""
+            menuitem "[:per]DMACHMUX" "PER , ""DMACHMUX"""
+            menuitem "[:per]INTC_0;Interrupt Controller" "PER , ""INTC_0"""
+            popup "PBridge;Peripheral Bridges"
+            (
+              menuitem "[:per]PBridge_A" "PER , ""PBridge,PBridge_A"""
+              menuitem "[:per]PBridge_B" "PER , ""PBridge,PBridge_B"""
+            )
+            menuitem "[:per]SIUL2;System Integration Unit Lite2" "PER , ""SIUL2,SIUL2"""
+            menuitem "[:per]SEMA42;Semaphores" "PER , ""SEMA42"""
+            popup "SMPU;System Memory Protection Units"
+            (
+              menuitem "[:per]SMPU0" "PER , ""SMPU,SMPU0"""
+              menuitem "[:per]SMPU1" "PER , ""SMPU,SMPU1"""
+            )
+            popup "XBAR;Crossbar Switch"
+            (
+              menuitem "[:per]XBAR_0" "PER , ""XBAR,XBAR_0"""
+              menuitem "[:per]XBAR_1" "PER , ""XBAR,XBAR_1"""
+            )
+          )
+          popup "Clocking"
+          (
+            popup "CMU;Clock Monitor Units"
+            (
+              menuitem "[:per]CMU_ADCSAR" "PER , ""CMU,CMU_ADCSAR"""
+              menuitem "[:per]CMU_ADCSD" "PER , ""CMU,CMU_ADCSD"""
+              menuitem "[:per]CMU_CAN" "PER , ""CMU,CMU_CAN"""
+              menuitem "[:per]CMU_CORE" "PER , ""CMU,CMU_CORE"""
+              menuitem "[:per]CMU_FLEXRAY" "PER , ""CMU,CMU_FLEXRAY"""
+              menuitem "[:per]CMU_IOP" "PER , ""CMU,CMU_IOP"""
+              menuitem "[:per]CMU_PBRIDGE" "PER , ""CMU,CMU_PBRIDGE"""
+              menuitem "[:per]CMU_PER" "PER , ""CMU,CMU_PER"""
+              menuitem "[:per]CMU_PSI5_1US" "PER , ""CMU,CMU_PSI5_1US"""
+              menuitem "[:per]CMUPSI5_F189" "PER , ""CMU,CMUPSI5_F189"""
+              menuitem "[:per]CMU_SENT" "PER , ""CMU,CMU_SENT"""
+              menuitem "[:per]CMU_SXBAR" "PER , ""CMU,CMU_SXBAR"""
+              menuitem "[:per]CMU_SYS" "PER , ""CMU,CMU_SYS"""
+            )
+            menuitem "[:per]MC_CGM;Clock Generation Module" "PER , ""MC_CGM"""
+            menuitem "[:per]PLLDIG;PLL Digital Interface" "PER , ""PLLDIG"""
+            menuitem "[:per]XOSC;Externally driven oscillator" "PER , ""XOSC"""
+          )
+          popup "Memories and Memory Interfaces"
+          (
+            menuitem "[:per]PRAM;Platform RAM Controller" "PER , ""PRAM"""
+            menuitem "[:per]FLASH" "PER , ""FLASH"""
+            menuitem "[:per]PFLASH;Platform Flash Controller" "PER , ""PFLASH"""
+          )
+          popup "Analog Modules"
+          (
+            popup "SARADC;Successive Approximation ADC"
+            (
+              menuitem "[:per]SARADC_0" "PER , ""SARADC,SARADC_0"""
+              menuitem "[:per]SARADC_1" "PER , ""SARADC,SARADC_1"""
+              menuitem "[:per]SARADC_2" "PER , ""SARADC,SARADC_2"""
+              menuitem "[:per]SARADC_3" "PER , ""SARADC,SARADC_3"""
+              menuitem "[:per]SARADC_4" "PER , ""SARADC,SARADC_4"""
+              menuitem "[:per]SARADC_6" "PER , ""SARADC,SARADC_6"""
+              menuitem "[:per]SARADC_7" "PER , ""SARADC,SARADC_7"""
+              menuitem "[:per]SARADC_B" "PER , ""SARADC,SARADC_B"""
+            )
+            popup "SDADC;Sigma-Delta ADC"
+            (
+              menuitem "[:per]SDADC_0" "PER , ""SDADC,SDADC_0"""
+              menuitem "[:per]SDADC_1" "PER , ""SDADC,SDADC_1"""
+              menuitem "[:per]SDADC_2" "PER , ""SDADC,SDADC_2"""
+              menuitem "[:per]SDADC_3" "PER , ""SDADC,SDADC_3"""
+              menuitem "[:per]SDADC_4" "PER , ""SDADC,SDADC_4"""
+              menuitem "[:per]SDADC_5" "PER , ""SDADC,SDADC_5"""
+            )
+          )
+          popup "Timers"
+          (
+            popup "PIT;Periodic Interval Timers"
+            (
+              menuitem "[:per]PIT_0" "PER , ""PIT,PIT_0"""
+              menuitem "[:per]PIT_1" "PER , ""PIT,PIT_1"""
+            )
+            popup "STM;System Timer Modules"
+            (
+              menuitem "[:per]STM_0" "PER , ""STM,STM_0"""
+              menuitem "[:per]STM_1" "PER , ""STM,STM_1"""
+              menuitem "[:per]STM_2" "PER , ""STM,STM_2"""
+            )
+            popup "SWT;Software Watchdog Timers"
+            (
+              menuitem "[:per]SWT_0" "PER , ""SWT,SWT_0"""
+              menuitem "[:per]SWT_1" "PER , ""SWT,SWT_1"""
+              menuitem "[:per]SWT_2" "PER , ""SWT,SWT_2"""
+            )
+          )
+          popup "Communication Interface Modules"
+          (
+            popup "DSPI;Deserial Serial Peripheral Interfaces"
+            (
+              menuitem "[:per]DSPI0" "PER , ""DSPI,DSPI0"""
+              menuitem "[:per]DSPI1" "PER , ""DSPI,DSPI1"""
+              menuitem "[:per]DSPI2" "PER , ""DSPI,DSPI2"""
+              menuitem "[:per]DSPI3" "PER , ""DSPI,DSPI3"""
+              menuitem "[:per]DSPI4" "PER , ""DSPI,DSPI4"""
+              menuitem "[:per]DSPI5" "PER , ""DSPI,DSPI5"""
+              menuitem "[:per]DSPI12" "PER , ""DSPI,DSPI12"""
+            )
+            menuitem "[:per]FEC;Fast Ethernet Controller" "PER , ""FEC"""
+            menuitem "[:per]FR;FlexRay Communication Controller" "PER , ""FlexRay"""
+            menuitem "[:per]I2C;Inter-Integrated Circuit" "PER , ""I2C"""
+            menuitem "[:per]LFAST;Interprocessor Communications" "PER , ""LFAST,LFAST"""
+            popup "LINFlexD Controllers"
+            (
+              menuitem "[:per]LINFlexD_0" "PER , ""LINFlexD,LINFlexD_0"""
+              menuitem "[:per]LINFlexD_1" "PER , ""LINFlexD,LINFlexD_1"""
+              menuitem "[:per]LINFlexD_2" "PER , ""LINFlexD,LINFlexD_2"""
+              menuitem "[:per]LINFlexD_14" "PER , ""LINFlexD,LINFlexD_14"""
+              menuitem "[:per]LINFlexD_15" "PER , ""LINFlexD,LINFlexD_15"""
+            )
+            popup "MCAN;Modular Controller Area Network Modules"
+            (
+              menuitem "[:per]MCAN_1" "PER , ""MCAN,MCAN_1"""
+              menuitem "[:per]MCAN_2" "PER , ""MCAN,MCAN_2"""
+              menuitem "[:per]MCAN_3" "PER , ""MCAN,MCAN_3"""
+            )
+            popup "PSI;Peripheral Sensor Interfaces"
+            (
+              menuitem "[:per]PSI5_0" "PER , ""PSI,PSI5_0"""
+              menuitem "[:per]PSI5_1" "PER , ""PSI,PSI5_1"""
+            )
+            menuitem "[:per]SIPI;System Interprocessor Interface" "PER , ""SIPI"""
+            popup "SRX;SENT (SAE J2716) Receivers"
+            (
+              menuitem "[:per]SRX_0" "PER , ""SRX,SRX_0"""
+              menuitem "[:per]SRX_1" "PER , ""SRX,SRX_1"""
+            )
+            menuitem "[:per]TTCAN;Time Triggered CAN" "PER , ""TTCAN"""
+          )
+          popup "Reset and Boot Modules"
+          (
+            menuitem "[:per]MC_RGM;Reset Generation Module" "PER , ""MC_RGM"""
+            menuitem "[:per]SSCM;System Status and Configuration Module" "PER , ""SSCM"""
+          )
+          popup "Power Management Modules"
+          (
+            menuitem "[:per]PMCDIG;Power Management Controller" "PER , ""PMCDIG"""
+            menuitem "[:per]MC_PCU;Power Control Unit" "PER , ""MC_PCU"""
+            menuitem "[:per]MC_ME;Mode Entry Module" "PER , ""MC_ME"""
+          )
+          popup "Calibration and Debug Modules"
+          (
+            menuitem "[:per]JDC;JTAG Data Communication" "PER , ""JDC"""
+            menuitem "[:per]JTAGM_PD;JTAG Master" "PER , ""JTAGM_PD"""
+            popup "LFASTdbg;Interprocessor Communications"
+            (
+              menuitem "[:per]LFASTdbg_1" "PER , ""LFAST,LFASTdbg_1"""
+            )
+            menuitem "[:per]DTS;Development Trigger Semaphore" "PER , ""DTS"""
+          )
+          popup "Safety Modules"
+          (
+            popup "CRC;Cyclic Redundancy Check Units"
+            (
+              menuitem "[:per]CRC_0" "PER , ""CRC,CRC_0"""
+              menuitem "[:per]CRC_1" "PER , ""CRC,CRC_1"""
+            )
+            menuitem "[:per]FCCU;Fault Collection and Control Unit" "PER , ""FCCU"""
+            menuitem "[:per]IMA;Indirect Memory Access" "PER , ""IMA"""
+            menuitem "[:per]MEMU;Memory Error Management Unit" "PER , ""MEMU"""
+            menuitem "[:per]STCU2;Self-Test Control Unit" "PER , ""STCU2"""
+          )
+          popup "Security Modules"
+          (
+            menuitem "[:per]PASS;Password and Device Security Module" "PER , ""PASS"""
+          )
+          popup "Other Modules"
+          (
+            menuitem "[:per]AMU;Arithmetic Modeling Unit" "PER , ""AMU"""
+            menuitem "[:per]WKPU;Wakeup Unit" "PER , ""WKPU"""
+            menuitem "[:per]GTMINT;GTM103 Integration Module" "PER , ""GTMINT"""
+          )
+          popup "Buddy Device"
+          (
+            menuitem "[:per]LFASTdbg_BD;High Speed Debug" "PER , ""LFAST,LFASTdbg_BD"""
+            menuitem "[:per]JTAGM_BD;JTAG Master" "PER , ""JTAGM_BD"""
+            menuitem "[:per]SIUL2_BD;System Integration Unit Lite2" "PER , ""SIUL2,SIUL2_BD"""
+            menuitem "[:per]XBAR_BD;Crossbar Switch" "PER , ""XBAR_BD"""
+          )
+        )
+        if (CPU()=="MPC5777M")||(CPU()=="SPC57HM90")
+        (
+          popup "System Modules"
+          (
+            popup "[:per]DMA;Direct Memory Access"
+            (
+              menuitem "[:per]DMA_0" "PER , ""DMA,DMA_0"""
+              menuitem "[:per]DMA_1" "PER , ""DMA,DMA_1"""
+              menuitem "[:per]DMAMUX_0" "PER , ""DMAMUX,DMAMUX_0"""
+              menuitem "[:per]DMAMUX_1" "PER , ""DMAMUX,DMAMUX_1"""
+              menuitem "[:per]DMAMUX_2" "PER , ""DMAMUX,DMAMUX_2"""
+              menuitem "[:per]DMAMUX_3" "PER , ""DMAMUX,DMAMUX_3"""
+              menuitem "[:per]DMAMUX_4" "PER , ""DMAMUX,DMAMUX_4"""
+              menuitem "[:per]DMAMUX_5" "PER , ""DMAMUX,DMAMUX_5"""
+              menuitem "[:per]DMAMUX_6" "PER , ""DMAMUX,DMAMUX_6"""
+              menuitem "[:per]DMAMUX_7" "PER , ""DMAMUX,DMAMUX_7"""
+              menuitem "[:per]DMAMUX_8" "PER , ""DMAMUX,DMAMUX_8"""
+              menuitem "[:per]DMAMUX_9" "PER , ""DMAMUX,DMAMUX_9"""
+            )
+            menuitem "[:per]INTC_0;Interrupt Controller" "PER , ""INTC_0"""
+            popup "PBridge;Peripheral Bridges"
+            (
+              menuitem "[:per]PBridge_A" "PER , ""PBridge,PBridge_A"""
+              menuitem "[:per]PBridge_B" "PER , ""PBridge,PBridge_B"""
+            )
+            menuitem "[:per]SEMA42;Semaphores" "PER , ""SEMA42"""
+            menuitem "[:per]SIUL2;System Integration Unit Lite2" "PER , ""SIUL2,SIUL2"""
+            popup "SMPU;System Memory Protection Units"
+            (
+              menuitem "[:per]SMPU0" "PER , ""SMPU,SMPU0"""
+              menuitem "[:per]SMPU1" "PER , ""SMPU,SMPU1"""
+            )
+            popup "XBAR;Crossbar Switch"
+            (
+              menuitem "[:per]XBAR_0" "PER , ""XBAR,XBAR_0"""
+              menuitem "[:per]XBAR_1" "PER , ""XBAR,XBAR_1"""
+            )
+            popup "XBIC;Crossbar Integrity Checkers"
+            (
+              menuitem "[:per]XBIC_0" "PER , ""XBIC,XBIC_0"""
+              menuitem "[:per]XBIC_1" "PER , ""XBIC,XBIC_1"""
+            )
+          )
+          popup "Clocking"
+          (
+            popup "CMU;Clock Monitor Units"
+            (
+              menuitem "[:per]CMU_ADCSAR" "PER , ""CMU,CMU_ADCSAR"""
+              menuitem "[:per]CMU_ADCSD" "PER , ""CMU,CMU_ADCSD"""
+              menuitem "[:per]CMU_CORE" "PER , ""CMU,CMU_CORE"""
+              menuitem "[:per]CMU_FXBAR" "PER , ""CMU,CMU_FXBAR"""
+              menuitem "[:per]CMU_PBRIDGE" "PER , ""CMU,CMU_PBRIDGE"""
+              menuitem "[:per]CMU_PER" "PER , ""CMU,CMU_PER"""
+              menuitem "[:per]CMU_PSI5_1US" "PER , ""CMU,CMU_PSI5_1US"""
+              menuitem "[:per]CMUPSI5_F125" "PER , ""CMU,CMUPSI5_F125"""
+              menuitem "[:per]CMUPSI5_F189" "PER , ""CMU,CMUPSI5_F189"""
+              menuitem "[:per]CMU_SENT" "PER , ""CMU,CMU_SENT"""
+              menuitem "[:per]CMU_SXBAR" "PER , ""CMU,CMU_SXBAR"""
+            )
+            menuitem "[:per]MC_CGM;Clock Generation Module" "PER , ""MC_CGM"""
+            menuitem "[:per]PLLDIG;Dual PLL Interface" "PER , ""PLLDIG"""
+            menuitem "[:per]RCOSC;RC Oscillator" "PER , ""RCOSC"""
+            menuitem "[:per]XOSC;Externally driven oscillator" "PER , ""XOSC"""
+          )
+          popup "Memories and Memory Interfaces"
+          (
+            menuitem "[:per]C55FMC;Embedded Flash Memory" "PER , ""C55FMC"""
+            menuitem "[:per]EBI;External Bus Interface" "PER , ""EBI"""
+            menuitem "[:per]PFLASH;Platform Flash Controller" "PER , ""PFLASH"""
+            menuitem "[:per]PRAM;Platform RAM Controller" "PER , ""PRAM"""
+          )
+          popup "Analog Modules"
+          (
+            popup "SARADC;Successive Approximation ADC"
+            (
+              menuitem "[:per]SARADC_0" "PER , ""SARADC,SARADC_0"""
+              menuitem "[:per]SARADC_1" "PER , ""SARADC,SARADC_1"""
+              menuitem "[:per]SARADC_2" "PER , ""SARADC,SARADC_2"""
+              menuitem "[:per]SARADC_3" "PER , ""SARADC,SARADC_3"""
+              menuitem "[:per]SARADC_4" "PER , ""SARADC,SARADC_4"""
+              menuitem "[:per]SARADC_6" "PER , ""SARADC,SARADC_6"""
+              menuitem "[:per]SARADC_7" "PER , ""SARADC,SARADC_7"""
+              menuitem "[:per]SARADC_8" "PER , ""SARADC,SARADC_8"""
+              menuitem "[:per]SARADC_9" "PER , ""SARADC,SARADC_9"""
+              menuitem "[:per]SARADC_10" "PER , ""SARADC,SARADC_10"""
+              menuitem "[:per]SARADC_B" "PER , ""SARADC,SARADC_B"""
+            )
+            popup "SDADC;Sigma-Delta ADC"
+            (
+              menuitem "[:per]SDADC_0" "PER , ""SDADC,SDADC_0"""
+              menuitem "[:per]SDADC_1" "PER , ""SDADC,SDADC_1"""
+              menuitem "[:per]SDADC_2" "PER , ""SDADC,SDADC_2"""
+              menuitem "[:per]SDADC_3" "PER , ""SDADC,SDADC_3"""
+              menuitem "[:per]SDADC_4" "PER , ""SDADC,SDADC_4"""
+              menuitem "[:per]SDADC_5" "PER , ""SDADC,SDADC_5"""
+              menuitem "[:per]SDADC_6" "PER , ""SDADC,SDADC_6"""
+              menuitem "[:per]SDADC_7" "PER , ""SDADC,SDADC_7"""
+              menuitem "[:per]SDADC_8" "PER , ""SDADC,SDADC_8"""
+              menuitem "[:per]SDADC_9" "PER , ""SDADC,SDADC_9"""
+            )
+          )
+          popup "Timers"
+          (
+            popup "PIT;Periodic Interval Timers"
+            (
+              menuitem "[:per]PIT_0" "PER , ""PIT,PIT_0"""
+              menuitem "[:per]PIT_1" "PER , ""PIT,PIT_1"""
+            )
+            popup "STM;System Timer Modules"
+            (
+              menuitem "[:per]STM_0" "PER , ""STM,STM_0"""
+              menuitem "[:per]STM_1" "PER , ""STM,STM_1"""
+              menuitem "[:per]STM_2" "PER , ""STM,STM_2"""
+            )
+            popup "SWT;Software Watchdog Timers"
+            (
+              menuitem "[:per]SWT_0" "PER , ""SWT,SWT_0"""
+              menuitem "[:per]SWT_1" "PER , ""SWT,SWT_1"""
+              menuitem "[:per]SWT_2" "PER , ""SWT,SWT_2"""
+              menuitem "[:per]SWT_3" "PER , ""SWT,SWT_3"""
+            )
+          )
+          popup "Communication Interface Modules"
+          (
+            popup "DSPI;Deserial Serial Peripheral Interfaces"
+            (
+              menuitem "[:per]DSPI0" "PER , ""DSPI,DSPI0"""
+              menuitem "[:per]DSPI1" "PER , ""DSPI,DSPI1"""
+              menuitem "[:per]DSPI2" "PER , ""DSPI,DSPI2"""
+              menuitem "[:per]DSPI3" "PER , ""DSPI,DSPI3"""
+              menuitem "[:per]DSPI4" "PER , ""DSPI,DSPI4"""
+              menuitem "[:per]DSPI5" "PER , ""DSPI,DSPI5"""
+              menuitem "[:per]DSPI12" "PER , ""DSPI,DSPI12"""
+            )
+            menuitem "[:per]FEC;Fast Ethernet Controller" "PER , ""FEC"""
+            menuitem "[:per]FR;FlexRay Communication Controller" "PER , ""FlexRay"""
+            popup "I2C Controllers"
+            (
+              menuitem "[:per]I2C_0" "PER , ""I2C,I2C_0"""
+              menuitem "[:per]I2C_1" "PER , ""I2C,I2C_1"""
+            )
+            menuitem "[:per]LFAST;Interprocessor Communications" "PER , ""LFAST,LFAST"""
+            popup "LINFlexD Controllers"
+            (
+              menuitem "[:per]LINFlexD_0" "PER , ""LINFlexD,LINFlexD_0"""
+              menuitem "[:per]LINFlexD_1" "PER , ""LINFlexD,LINFlexD_1"""
+              menuitem "[:per]LINFlexD_2" "PER , ""LINFlexD,LINFlexD_2"""
+              menuitem "[:per]LINFlexD_14" "PER , ""LINFlexD,LINFlexD_14"""
+              menuitem "[:per]LINFlexD_15" "PER , ""LINFlexD,LINFlexD_15"""
+            )
+            popup "MCAN;Modular Controller Area Network Modules"
+            (
+              menuitem "[:per]MCAN_1" "PER , ""MCAN,MCAN_1"""
+              menuitem "[:per]MCAN_2" "PER , ""MCAN,MCAN_2"""
+              menuitem "[:per]MCAN_3" "PER , ""MCAN,MCAN_3"""
+              menuitem "[:per]MCAN_4" "PER , ""MCAN,MCAN_4"""
+            )
+            menuitem "[:per]M_TTCAN;Time Triggered CAN" "PER , ""M_TTCAN"""
+            popup "PSI;Peripheral Sensor Interfaces"
+            (
+              menuitem "[:per]PSI5_0" "PER , ""PSI,PSI5_0"""
+              menuitem "[:per]PSI5_1" "PER , ""PSI,PSI5_1"""
+            )
+            menuitem "[:per]SIPI;System Interprocessor Interface" "PER , ""SIPI"""
+            popup "SRX;SENT (SAE J2716) Receivers"
+            (
+              menuitem "[:per]SRX_0" "PER , ""SRX,SRX_0"""
+              menuitem "[:per]SRX_1" "PER , ""SRX,SRX_1"""
+            )
+          )
+          popup "Reset and Boot Modules"
+          (
+            menuitem "[:per]MC_RGM;Reset Generation Module" "PER , ""MC_RGM"""
+            menuitem "[:per]SSCM;System Status and Configuration Module" "PER , ""SSCM"""
+          )
+          popup "Power Management Modules"
+          (
+            menuitem "[:per]PMCDIG;Power Management Controller" "PER , ""PMCDIG"""
+            menuitem "[:per]MC_PCU;Power Control Unit" "PER , ""MC_PCU"""
+            menuitem "[:per]MC_ME;Mode Entry Module" "PER , ""MC_ME"""
+          )
+          popup "Calibration and Debug Modules"
+          (
+            menuitem "[:per]JDC;JTAG Data Communication" "PER , ""JDC"""
+            menuitem "[:per]JTAGM;JTAG Master" "PER , ""JTAGM"""
+            popup "LFASTdbg;Interprocessor Communications"
+            (
+              menuitem "[:per]LFASTdbg_1" "PER , ""LFAST,LFASTdbg_1"""
+            )
+            menuitem "[:per]DTS;Development Trigger Semaphore" "PER , ""DTS"""
+          )
+          popup "Safety Modules"
+          (
+            popup "CRC;Cyclic Redundancy Check Units"
+            (
+              menuitem "[:per]CRC_0" "PER , ""CRC,CRC_0"""
+              menuitem "[:per]CRC_1" "PER , ""CRC,CRC_1"""
+            )
+            menuitem "[:per]FCCU;Fault Collection and Control Unit" "PER , ""FCCU"""
+            menuitem "[:per]IMA;Indirect Memory Access" "PER , ""IMA"""
+            menuitem "[:per]MEMU;Memory Error Management Unit" "PER , ""MEMU"""
+            menuitem "[:per]STCU2;Self-Test Control Unit" "PER , ""STCU2"""
+          )
+          popup "Security Modules"
+          (
+            menuitem "[:per]PASS;Password and Device Security Module" "PER , ""PASS"""
+            menuitem "[:per]TDM;Tamper Detection Module" "PER , ""TDM"""
+          )
+          popup "Other Modules"
+          (
+            menuitem "[:per]AMU;Arithmetic Modeling Unit" "PER , ""AMU"""
+            menuitem "[:per]GTMINT;GTM103 Integration Module" "PER , ""GTMINT"""
+            menuitem "[:per]WKPU;Wakeup Unit" "PER , ""WKPU"""
+          )
+          popup "Buddy Die Modules"
+          (
+            menuitem "[:per]DWPU;Data Write Processing Unit" "PER , ""Buddy,BD_DWPU"""
+            menuitem "[:per]JTAGM;JTAG Master" "PER , ""Buddy,BD_JTAGM"""
+            menuitem "[:per]LFAST;High Speed Debug" "PER , ""Buddy,BD_LFAST"""
+            menuitem "[:per]SIUL2;System Integration Unit Lite2" "PER , ""Buddy,BD_SIUL2"""
+          )
+        )
+        if CPUIS(MPC574?K)||CPUIS(SPC574K??)
+        (
+          popup "System Modules"
+          (
+            popup "[:per]DMA;Direct Memory Access"
+            (
+              menuitem "[:per]eDMA_0" "PER , ""DMA,eDMA_0"""
+              menuitem "[:per]DMAMUX_0" "PER , ""DMAMUX,DMAMUX_0"""
+              menuitem "[:per]DMAMUX_1" "PER , ""DMAMUX,DMAMUX_1"""
+              menuitem "[:per]DMAMUX_2" "PER , ""DMAMUX,DMAMUX_2"""
+              menuitem "[:per]DMAMUX_3" "PER , ""DMAMUX,DMAMUX_3"""
+            )
+            menuitem "[:per]INTC;Interrupt Controller" "PER , ""INTC"""
+            popup "PBridge;Peripheral Bridges"
+            (
+              menuitem "[:per]PBridge_A" "PER , ""PBridge,PBridge_A"""
+              menuitem "[:per]PBridge_B" "PER , ""PBridge,PBridge_B"""
+            )
+            menuitem "[:per]SEMA42;Semaphores" "PER , ""SEMA42"""
+            menuitem "[:per]SIUL2;System Integration Unit Lite2" "PER , ""SIUL2,SIUL2"""
+            popup "SMPU;System Memory Protection Units"
+            (
+              menuitem "[:per]SMPU0" "PER , ""SMPU,SMPU0"""
+              menuitem "[:per]SMPU1" "PER , ""SMPU,SMPU1"""
+            )
+            popup "XBAR;Crossbar Switch"
+            (
+              menuitem "[:per]XBAR_0" "PER , ""XBAR,XBAR_0"""
+              menuitem "[:per]XBAR_1" "PER , ""XBAR,XBAR_1"""
+            )
+            popup "XBIC;Crossbar Integrity Checkers"
+            (
+              menuitem "[:per]XBIC_0" "PER , ""XBIC,XBIC_0"""
+              menuitem "[:per]XBIC_1" "PER , ""XBIC,XBIC_1"""
+            )
+          )
+          popup "Clocking"
+          (
+            popup "CMU;Clock Monitor Units"
+            (
+              menuitem "[:per]CMU_ADCSAR" "PER , ""CMU,CMU_ADCSAR"""
+              menuitem "[:per]CMU_ADCSD" "PER , ""CMU,CMU_ADCSD"""
+              menuitem "[:per]CMU_FXBAR" "PER , ""CMU,CMU_FXBAR"""
+              menuitem "[:per]CMU_PBRIDGE" "PER , ""CMU,CMU_PBRIDGE"""
+              menuitem "[:per]CMU_PER" "PER , ""CMU,CMU_PER"""
+              menuitem "[:per]CMU_PLL" "PER , ""CMU,CMU_PLL"""
+              menuitem "[:per]CMU_PSI5_1US" "PER , ""CMU,CMU_PSI5_1US"""
+              menuitem "[:per]CMUPSI5_F125" "PER , ""CMU,CMUPSI5_F125"""
+              menuitem "[:per]CMUPSI5_F189" "PER , ""CMU,CMUPSI5_F189"""
+              menuitem "[:per]CMU_SENT" "PER , ""CMU,CMU_SENT"""
+              menuitem "[:per]CMU_SXBAR" "PER , ""CMU,CMU_SXBAR"""
+            )
+            menuitem "[:per]MC_CGM;Clock Generation Module" "PER , ""MC_CGM"""
+            menuitem "[:per]PLLDIG;Dual PLL Interface" "PER , ""PLLDIG"""
+            menuitem "[:per]IRCOSC;RC Oscillator" "PER , ""IRCOSC"""
+          )
+          popup "Memories and Memory Interfaces"
+          (
+            menuitem "[:per]C55FMC;Embedded Flash Memory" "PER , ""C55FMC"""
+            menuitem "[:per]PFLASH;Platform Flash Controller" "PER , ""PFLASH"""
+            menuitem "[:per]PRAM;Platform RAM Controller" "PER , ""PRAM"""
+          )
+          popup "Analog Modules"
+          (
+            popup "SARADC;Successive Approximation ADC"
+            (
+              menuitem "[:per]SARADC_0" "PER , ""SARADC,SARADC_0"""
+              menuitem "[:per]SARADC_2" "PER , ""SARADC,SARADC_2"""
+              menuitem "[:per]SARADC_4" "PER , ""SARADC,SARADC_4"""
+              menuitem "[:per]SARADC_6" "PER , ""SARADC,SARADC_6"""
+              menuitem "[:per]SARADC_7" "PER , ""SARADC,SARADC_7"""
+              menuitem "[:per]SARADC_B" "PER , ""SARADC,SARADC_B"""
+            )
+            popup "SDADC;Sigma-Delta ADC"
+            (
+              menuitem "[:per]SDADC_0" "PER , ""SDADC,SDADC_0"""
+              menuitem "[:per]SDADC_2" "PER , ""SDADC,SDADC_2"""
+              menuitem "[:per]SDADC_3" "PER , ""SDADC,SDADC_3"""
+            )
+          )
+          popup "Timers"
+          (
+            popup "PIT;Periodic Interval Timers"
+            (
+              menuitem "[:per]PIT_0" "PER , ""PIT,PIT_0"""
+              menuitem "[:per]PIT_1" "PER , ""PIT,PIT_1"""
+            )
+            popup "STM;System Timer Modules"
+            (
+              menuitem "[:per]STM_0" "PER , ""STM,STM_0"""
+              menuitem "[:per]STM_2" "PER , ""STM,STM_2"""
+            )
+            popup "SWT;Software Watchdog Timers"
+            (
+              menuitem "[:per]SWT_0" "PER , ""SWT,SWT_0"""
+              menuitem "[:per]SWT_2" "PER , ""SWT,SWT_2"""
+              menuitem "[:per]SWT_3" "PER , ""SWT,SWT_3"""
+            )
+          )
+          popup "Communication Interface Modules"
+          (
+            popup "DSPI;Deserial Serial Peripheral Interfaces"
+            (
+              menuitem "[:per]DSPI0" "PER , ""DSPI,DSPI0"""
+              menuitem "[:per]DSPI1" "PER , ""DSPI,DSPI1"""
+              menuitem "[:per]DSPI2" "PER , ""DSPI,DSPI2"""
+              menuitem "[:per]DSPI4" "PER , ""DSPI,DSPI4"""
+              menuitem "[:per]DSPI5" "PER , ""DSPI,DSPI5"""
+            )
+            menuitem "[:per]FEC;Fast Ethernet Controller" "PER , ""FEC"""
+            menuitem "[:per]FR;FlexRay Communication Controller" "PER , ""FlexRay"""
+            popup "I2C Controllers"
+            (
+              menuitem "[:per]I2C_0" "PER , ""I2C,I2C_0"""
+              menuitem "[:per]I2C_1" "PER , ""I2C,I2C_1"""
+            )
+            menuitem "[:per]LFAST;Interprocessor Communications" "PER , ""LFAST,LFAST"""
+            popup "LINFlexD Controllers"
+            (
+              menuitem "[:per]LINFlexD_0" "PER , ""LINFlexD,LINFlexD_0"""
+              menuitem "[:per]LINFlexD_1" "PER , ""LINFlexD,LINFlexD_1"""
+              menuitem "[:per]LINFlexD_2" "PER , ""LINFlexD,LINFlexD_2"""
+              menuitem "[:per]LINFlexD_14" "PER , ""LINFlexD,LINFlexD_14"""
+              menuitem "[:per]LINFlexD_15" "PER , ""LINFlexD,LINFlexD_15"""
+            )
+            popup "MCAN;Modular Controller Area Network Modules"
+            (
+              menuitem "[:per]MCAN_1" "PER , ""MCAN,MCAN_1"""
+              menuitem "[:per]MCAN_2" "PER , ""MCAN,MCAN_2"""
+            )
+            menuitem "[:per]M_TTCAN;Time Triggered CAN" "PER , ""M_TTCAN"""
+            popup "PSI;Peripheral Sensor Interfaces"
+            (
+              menuitem "[:per]PSI5_0" "PER , ""PSI,PSI5_0"""
+              menuitem "[:per]PSI5_1" "PER , ""PSI,PSI5_1"""
+            )
+            menuitem "[:per]SIPI;System Interprocessor Interface" "PER , ""SIPI"""
+            popup "SRX;SENT (SAE J2716) Receivers"
+            (
+              menuitem "[:per]SRX_0" "PER , ""SRX,SRX_0"""
+              menuitem "[:per]SRX_1" "PER , ""SRX,SRX_1"""
+            )
+          )
+          popup "Reset and Boot Modules"
+          (
+            menuitem "[:per]MC_RGM;Reset Generation Module" "PER , ""MC_RGM"""
+            menuitem "[:per]SSCM;System Status and Configuration Module" "PER , ""SSCM"""
+          )
+          popup "Power Management Modules"
+          (
+            menuitem "[:per]PMCDIG;Power Management Controller" "PER , ""PMCDIG"""
+            menuitem "[:per]MC_PCU;Power Control Unit" "PER , ""MC_PCU"""
+            menuitem "[:per]MC_ME;Mode Entry Module" "PER , ""MC_ME"""
+          )
+          popup "Calibration and Debug Modules"
+          (
+            menuitem "[:per]DTS;Development Trigger Semaphore" "PER , ""DTS"""
+          )
+          popup "Safety Modules"
+          (
+            popup "CRC;Cyclic Redundancy Check Units"
+            (
+              menuitem "[:per]CRC_0" "PER , ""CRC,CRC_0"""
+              menuitem "[:per]CRC_1" "PER , ""CRC,CRC_1"""
+            )
+            menuitem "[:per]FCCU;Fault Collection and Control Unit" "PER , ""FCCU"""
+            menuitem "[:per]IMA;Indirect Memory Access" "PER , ""IMA"""
+            menuitem "[:per]MEMU;Memory Error Management Unit" "PER , ""MEMU"""
+            menuitem "[:per]STCU2;Self-Test Control Unit" "PER , ""STCU2"""
+          )
+          popup "Security Modules"
+          (
+            menuitem "[:per]PASS;Password and Device Security Module" "PER , ""PASS"""
+            menuitem "[:per]TDM;Tamper Detection Module" "PER , ""TDM"""
+          )
+          popup "Other Modules"
+          (
+            menuitem "[:per]WKPU;Wakeup Unit" "PER , ""WKPU"""
+; ;          menuitem "[:per]GTMINT;GTM103 Integration Module" "PER , ""GTMINT"""
+          )
+; ;        popup "Buddy Device"
+; ;        (
+; ;          menuitem "[:per]LFASTdbg_BD;High Speed Debug" "PER , ""LFAST,LFASTdbg_BD"""
+; ;          menuitem "[:per]JTAGM_BD;JTAG Master" "PER , ""JTAGM_BD"""
+; ;          menuitem "[:per]SIUL2_BD;System Integration Unit Lite2" "PER , ""SIUL2,SIUL2_BD"""
+; ;          menuitem "[:per]XBAR_BD;Crossbar Switch" "PER , ""XBAR_BD"""
+; ;        )
+        )
+        if CPUIS(MPC5744P)
+        (
+          popup "ADC;Analog to Digital Converters"
+          (
+            menuitem "[:per]ADC_0" "PER , ""ADC,ADC_0"""
+            menuitem "[:per]ADC_1" "PER , ""ADC,ADC_1"""
+            menuitem "[:per]ADC_2" "PER , ""ADC,ADC_2"""
+            menuitem "[:per]ADC_3" "PER , ""ADC,ADC_3"""
+          )
+          popup "AIPS;Peripheral Bridges"
+          (
+            menuitem "[:per]AIPS_0" "PER , ""AIPS,AIPS_0"""
+            menuitem "[:per]AIPS_1" "PER , ""AIPS,AIPS_1"""
+          )
+          menuitem "[:per]C55FMC;Embedded Flash Memory" "PER , ""C55FMC"""
+          popup "CAN;FlexCAN Modules"
+          (
+            menuitem "[:per]CAN_0" "PER , ""CAN,CAN_0"""
+            menuitem "[:per]CAN_1" "PER , ""CAN,CAN_1"""
+            menuitem "[:per]CAN_2" "PER , ""CAN,CAN_2"""
+          )
+          popup "CMU;Clock Monitor Units"
+          (
+            menuitem "[:per]CMU_0" "PER , ""CMU,CMU_0"""
+            menuitem "[:per]CMU_1" "PER , ""CMU,CMU_1"""
+            menuitem "[:per]CMU_2" "PER , ""CMU,CMU_2"""
+            menuitem "[:per]CMU_3" "PER , ""CMU,CMU_3"""
+            menuitem "[:per]CMU_4" "PER , ""CMU,CMU_4"""
+          )
+          menuitem "[:per]CRC;Cyclic Redundancy Check Unit" "PER , ""CRC"""
+          popup "CTU;Cross-Triggering Units"
+          (
+            menuitem "[:per]CTU_0" "PER , ""CTU,CTU_0"""
+            menuitem "[:per]CTU_1" "PER , ""CTU,CTU_1"""
+          )
+          popup "DMA;Direct Memory Access"
+          (
+            menuitem "[:per]DMA" "PER , ""DMA,DMA"""
+            menuitem "[:per]DMAMUX_0" "PER , ""DMA,DMAMUX_0"""
+            menuitem "[:per]DMAMUX_1" "PER , ""DMA,DMAMUX_1"""
+          )
+          menuitem "[:per]EIM;Error Injection Module" "PER , ""EIM"""
+          menuitem "[:per]ENET;Ethernet" "PER , ""ENET_0"""
+          popup "eTIMER;Enhances Motor Control Timer Modules"
+          (
+            menuitem "[:per]eTIMER_0" "PER , ""eTIMER,eTIMER_0"""
+            menuitem "[:per]eTIMER_1" "PER , ""eTIMER,eTIMER_1"""
+            menuitem "[:per]eTIMER_2" "PER , ""eTIMER,eTIMER_2"""
+          )
+          menuitem "[:per]FCCU;Fault Collection and Control Unit" "PER , ""FCCU"""
+          popup "FlexPWM;Pulse Width Modulator Modules"
+          (
+            menuitem "[:per]FlexPWM0" "PER , ""FlexPWM,FlexPWM_0"""
+            menuitem "[:per]FlexPWM1" "PER , ""FlexPWM,FlexPWM_1"""
+          )
+          menuitem "[:per]FR;FlexRay Communication Controller" "PER , ""FlexRay"""
+          menuitem "[:per]INTC;Interrupt Controller" "PER , ""INTC"""
+          menuitem "[:per]IRCOSC;16 MHz internal RC Oscillator" "PER , ""IRCOSC"""
+          menuitem "[:per]LFAST;Interprocessor Communications" "PER , ""LFAST"""
+          popup "LINFlexD;LINFlexD Controllers"
+          (
+            menuitem "[:per]LINFlexD_0" "PER , ""LINFlexD,LINFlexD_0"""
+            menuitem "[:per]LINFlexD_1" "PER , ""LINFlexD,LINFlexD_1"""
+          )
+          menuitem "[:per]MC_CGM;Clock Generation Module" "PER , ""MC_CGM"""
+          menuitem "[:per]MC_ME;Mode Entry Module" "PER , ""MC_ME"""
+          menuitem "[:per]MC_RGM;Reset Generation Module" "PER , ""MC_RGM"""
+          menuitem "[:per]MEMU;Memory Error Management Unit" "PER , ""MEMU"""
+          menuitem "[:per]PCM;Platform Configuration Module" "PER , ""PCM"""
+          menuitem "[:per]PFLASH;Platform Flash Controller" "PER , ""PFLASH"""
+          menuitem "[:per]PIT;Periodic Interval Timer" "PER , ""PIT"""
+          menuitem "[:per]PLLDIG;PLL Digital Interface" "PER , ""PLLDIG"""
+          menuitem "[:per]PMC;Power Management Controller" "PER , ""PMC"""
+          menuitem "[:per]PRAMC;Platform RAM Controller" "PER , ""PRAMC"""
+          menuitem "[:per]SGEN;Sine Wave Generator" "PER , ""SGEN"""
+          menuitem "[:per]SIPI;System Interprocessor Interface" "PER , ""SIPI"""
+          menuitem "[:per]SIUL2;System Integration Unit Lite2" "PER , ""SIUL2"""
+          menuitem "[:per]SMPU;System Memory Protection Units" "PER , ""SMPU"""
+          popup "SPI;Serial Peripheral Interfaces"
+          (
+            menuitem "[:per]SPI_0" "PER , ""SPI,SPI_0"""
+            menuitem "[:per]SPI_1" "PER , ""SPI,SPI_1"""
+            menuitem "[:per]SPI_2" "PER , ""SPI,SPI_2"""
+            menuitem "[:per]SPI_3" "PER , ""SPI,SPI_3"""
+          )
+          popup "SRX;SENT (SAE J2716) Receivers"
+          (
+            menuitem "[:per]SRX_0" "PER , ""SRX,SRX_0"""
+            menuitem "[:per]SRX_1" "PER , ""SRX,SRX_1"""
+          )
+          menuitem "[:per]SSCM;System Status and Configuration Module" "PER , ""SSCM"""
+          menuitem "[:per]STCU;Self-Test Control Unit" "PER , ""STCU"""
+          menuitem "[:per]STM;System Timer Module" "PER , ""STM"""
+          menuitem "[:per]SWT;Software Watchdog Timer" "PER , ""SWT"""
+          menuitem "[:per]WKPU;Wakeup Unit" "PER , ""WKPU"""
+          menuitem "[:per]XBIC;Crossbar Integrity Checker" "PER , ""XBIC"""
+          menuitem "[:per]XOSC;External Oscillator" "PER , ""XOSC"""
+        )
+        if CPUIS(MPC5748G)
+        (
+          popup "ADC;Analog to Digital Converters"
+          (
+            menuitem "[:per]ADC_0" "PER , ""ADC,ADC_0"""
+            menuitem "[:per]ADC_1" "PER , ""ADC,ADC_1"""
+          )
+          popup "AIPS;Peripheral Bridges"
+          (
+            menuitem "[:per]AIPS_A" "PER , ""AIPS,AIPS_A"""
+            menuitem "[:per]AIPS_B" "PER , ""AIPS,AIPS_B"""
+          )
+          popup "AXBS;Crossbar Switch"
+          (
+            menuitem "[:per]AXBS_0" "PER , ""AXBS,AXBS_0"""
+            menuitem "[:per]AXBS_1" "PER , ""AXBS,AXBS_1"""
+          )
+          menuitem "[:per]BCTU;Body Cross-triggering Unit" "PER , ""BCTU"""
+          menuitem "[:per]C55FMC;Embedded Flash Memory" "PER , ""C55FMC"""
+          popup "CAN;FlexCAN Modules"
+          (
+            menuitem "[:per]CAN_0" "PER , ""CAN,CAN_0"""
+            menuitem "[:per]CAN_1" "PER , ""CAN,CAN_1"""
+            menuitem "[:per]CAN_2" "PER , ""CAN,CAN_2"""
+            menuitem "[:per]CAN_3" "PER , ""CAN,CAN_3"""
+            menuitem "[:per]CAN_4" "PER , ""CAN,CAN_4"""
+            menuitem "[:per]CAN_5" "PER , ""CAN,CAN_5"""
+            menuitem "[:per]CAN_6" "PER , ""CAN,CAN_6"""
+            menuitem "[:per]CAN_7" "PER , ""CAN,CAN_7"""
+          )
+          popup "CMP;Analog Comparators"
+          (
+            menuitem "[:per]CMP_0" "PER , ""CMP,CMP_0"""
+            menuitem "[:per]CMP_1" "PER , ""CMP,CMP_1"""
+            menuitem "[:per]CMP_2" "PER , ""CMP,CMP_2"""
+          )
+          popup "Clocks"
+          (
+            menuitem "[:per]CMU;Clock Monitor Unit"              "PER , ""Clocks,CMU"""
+            menuitem "[:per]FIRC;16 MHz Internal RC Oscillator"  "PER , ""Clocks,FIRC"""
+            menuitem "[:per]FXOSC;Fast External Oscillator"      "PER , ""Clocks,FXOSC"""
+            menuitem "[:per]PLLDIG;PLL Digital Interface"        "PER , ""Clocks,PLLDIG"""
+            menuitem "[:per]SIRC;128 KHz Internal RC Oscillator" "PER , ""Clocks,SIRC"""
+            menuitem "[:per]SXOSC;Slow External Oscillator"      "PER , ""Clocks,SXOSC"""
+          )
+          menuitem "[:per]CRC;Cyclic Redundancy Check Unit" "PER , ""CRC"""
+          popup "DMA;Direct Memory Access"
+           (
+             menuitem "[:per]eDMA"     "PER , ""DMA,eDMA"""
+             menuitem "[:per]DMAMUX_0" "PER , ""DMA,DMAMUX_0"""
+             menuitem "[:per]DMAMUX_1" "PER , ""DMA,DMAMUX_1"""
+           )
+          popup "DSPI;Deserial Serial Peripheral Interfaces"
+          (
+            menuitem "[:per]DSPI_0" "PER , ""DSPI,DSPI_0"""
+            menuitem "[:per]DSPI_1" "PER , ""DSPI,DSPI_1"""
+            menuitem "[:per]DSPI_2" "PER , ""DSPI,DSPI_2"""
+            menuitem "[:per]DSPI_3" "PER , ""DSPI,DSPI_3"""
+          )
+          popup "eMIOS;Configurable Enhanced Modular IO Subsystems"
+          (
+            menuitem "[:per]eMIOS_0" "PER , ""eMIOS,eMIOS_0"""
+            menuitem "[:per]eMIOS_1" "PER , ""eMIOS,eMIOS_1"""
+            menuitem "[:per]eMIOS_2" "PER , ""eMIOS,eMIOS_2"""
+          )
+          menuitem "[:per]ENET;10/100-Mbps Ethernet MAC" "PER , ""ENET_0"""
+          menuitem "[:per]FCCU;Fault Collection and Control Unit" "PER , ""FCCU"""
+          menuitem "[:per]FR;FlexRay Communication Controller" "PER , ""FlexRay"""
+          menuitem "[:per]GPR;General Programmable Registers" "PER , ""GPR"""
+          popup "I2C;Inter-Integrated Circuits"
+          (
+            menuitem "[:per]I2C_0" "PER , ""I2C,I2C_0"""
+            menuitem "[:per]I2C_1" "PER , ""I2C,I2C_1"""
+            menuitem "[:per]I2C_2" "PER , ""I2C,I2C_2"""
+            menuitem "[:per]I2C_3" "PER , ""I2C,I2C_3"""
+          )
+          popup "I2S-SAI;Integrated Interchip Sound/Synchronous Audio Interface"
+          (
+            menuitem "[:per]I2S_0" "PER , ""I2S,I2S_0"""
+            menuitem "[:per]I2S_1" "PER , ""I2S,I2S_1"""
+            menuitem "[:per]I2S_2" "PER , ""I2S,I2S_2"""
+            menuitem "[:per]I2S_3" "PER , ""I2S,I2S_3"""
+          )
+          menuitem "[:per]INTC;Interrupt Controller" "PER , ""INTC"""
+          menuitem "[:per]JDC;JTAG Data Communication" "PER , ""JDC"""
+          popup "LINFlexD;LINFlexD Controllers"
+          (
+            menuitem "[:per]LINFlexD_0" "PER , ""LINFlexD,LINFlexD_0"""
+            menuitem "[:per]LINFlexD_1" "PER , ""LINFlexD,LINFlexD_1"""
+            menuitem "[:per]LINFlexD_2" "PER , ""LINFlexD,LINFlexD_2"""
+            menuitem "[:per]LINFlexD_3" "PER , ""LINFlexD,LINFlexD_3"""
+            menuitem "[:per]LINFlexD_4" "PER , ""LINFlexD,LINFlexD_4"""
+            menuitem "[:per]LINFlexD_5" "PER , ""LINFlexD,LINFlexD_5"""
+            menuitem "[:per]LINFlexD_6" "PER , ""LINFlexD,LINFlexD_6"""
+            menuitem "[:per]LINFlexD_7" "PER , ""LINFlexD,LINFlexD_7"""
+            menuitem "[:per]LINFlexD_8" "PER , ""LINFlexD,LINFlexD_8"""
+            menuitem "[:per]LINFlexD_9" "PER , ""LINFlexD,LINFlexD_9"""
+            menuitem "[:per]LINFlexD_10" "PER , ""LINFlexD,LINFlexD_10"""
+            menuitem "[:per]LINFlexD_11" "PER , ""LINFlexD,LINFlexD_11"""
+            menuitem "[:per]LINFlexD_12" "PER , ""LINFlexD,LINFlexD_12"""
+            menuitem "[:per]LINFlexD_13" "PER , ""LINFlexD,LINFlexD_13"""
+            menuitem "[:per]LINFlexD_14" "PER , ""LINFlexD,LINFlexD_14"""
+            menuitem "[:per]LINFlexD_15" "PER , ""LINFlexD,LINFlexD_15"""
+            menuitem "[:per]LINFlexD_16" "PER , ""LINFlexD,LINFlexD_16"""
+            menuitem "[:per]LINFlexD_17" "PER , ""LINFlexD,LINFlexD_17"""
+          )
+          menuitem "[:per]LPU;Low Power Unit Subsystem" "PER , ""LPU"""
+          menuitem "[:per]MC_CGM;Clock Generation Module" "PER , ""MC_CGM"""
+          menuitem "[:per]MC_ME;Mode Entry Module" "PER , ""MC_ME"""
+          menuitem "[:per]MC_PCU;Power Control Unit" "PER , ""MC_PCU"""
+          menuitem "[:per]MC_RGM;Reset Generation Module" "PER , ""MC_RGM"""
+          popup "MEMU;Memory Error Management Unit"
+          (
+            menuitem "[:per]MEMU_0" "PER , ""MEMU,MEMU_0"""
+            menuitem "[:per]MEMU_1" "PER , ""MEMU,MEMU_1"""
+          )
+          menuitem "[:per]MLB;Media Local Bus" "PER , ""MLB"""
+          menuitem "[:per]PASS;Password and Device Security Module" "PER , ""PASS"""
+          menuitem "[:per]PFLASH;Platform Flash Controller" "PER , ""PFLASH"""
+          menuitem "[:per]PIT;Periodic Interval Timer" "PER , ""PIT"""
+          menuitem "[:per]PMCDIS;Power Management Controller Digital Interface" "PER , ""PMCDIG"""
+          popup "PRAMC;Platform RAM Controllers"
+          (
+            menuitem "[:per]PRAMC_0" "PER , ""PRAMC,PRAMC_0"""
+            menuitem "[:per]PRAMC_1" "PER , ""PRAMC,PRAMC_1"""
+            menuitem "[:per]PRAMC_2" "PER , ""PRAMC,PRAMC_2"""
+          )
+          menuitem "[:per]RTC;Real-Time Clock" "PER , ""RTC"""
+          menuitem "[:per]SEMA42;Semaphores2" "PER , ""SEMA42"""
+          menuitem "[:per]SIUL2;System Integration Unit Lite2" "PER , ""SIUL2"""
+          popup "SMPU;System Memory Protection Units"
+           (
+             menuitem "[:per]SMPU_0" "PER , ""SMPU,SMPU_0"""
+             menuitem "[:per]SMPU_1" "PER , ""SMPU,SMPU_1"""
+           )
+          popup "SPI;Serial Peripheral Interfaces"
+           (
+             menuitem "[:per]SPI_0" "PER , ""SPI,SPI_0"""
+             menuitem "[:per]SPI_1" "PER , ""SPI,SPI_1"""
+             menuitem "[:per]SPI_2" "PER , ""SPI,SPI_2"""
+             menuitem "[:per]SPI_3" "PER , ""SPI,SPI_3"""
+             menuitem "[:per]SPI_4" "PER , ""SPI,SPI_4"""
+             menuitem "[:per]SPI_5" "PER , ""SPI,SPI_5"""
+           )
+          menuitem "[:per]SSCM;System Status and Configuration Module" "PER , ""SSCM"""
+          menuitem "[:per]STCU2;Self-Test Control Unit" "PER , ""STCU2"""
+          popup "STM;System Timer Modules"
+          (
+            menuitem "[:per]STM_0" "PER , ""STM,STM_0"""
+            menuitem "[:per]STM_1" "PER , ""STM,STM_1"""
+            menuitem "[:per]STM_2" "PER , ""STM,STM_2"""
+          )
+          popup "SWT;Software Watchdog Timers"
+          (
+            menuitem "[:per]SWT_0" "PER , ""SWT,SWT_0"""
+            menuitem "[:per]SWT_1" "PER , ""SWT,SWT_1"""
+            menuitem "[:per]SWT_2" "PER , ""SWT,SWT_2"""
+          )
+          menuitem "[:per]USB;Universal Serial Bus" "PER , ""USB"""
+          menuitem "[:per]uSDHC;Ultra Secure Digital Host Controller" "PER , ""uSDHC"""
+          menuitem "[:per]WKPU;Wakeup Unit" "PER , ""WKPU"""
+        )
+      )
+    )
+  )
+)
+

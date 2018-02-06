@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<evidence_example version="1" ID="ESI_RISC_EE_MULTISTACK_TEST3">
+
+ <category>esi_risc/porting_examples/multistack</category>
+ <title>test3</title>
+   
+ <small_descr>
+ A minimal EE demo that demonstrates how to work with the MULTISTACK mode with nested interrupts.
+ </small_descr>
+
+ <long_descr>
+ Test3: A minimal EE demo that demonstrates how to work with the MULTISTACK mode with nested interrupts.
+ In this demo two tasks are activated inside two ISRs and work with different stacks.
+ With this demo you can test the ISR nesting mechanism with stack change. 
+ The compilation chain can start outside Eclipse environment from the Cygwin shell with the "make" 
+ command inside the Debug folder of the project.
+ The Debug folder can be created manually if you don't have the oil-based generator. 
+ The Debug folder must contain at least the following files (suitably modified...):
+ eecfg.h, eecfg.c and the makefile (see the examples of different architectures to begin...) 
+
+ </long_descr>
+
+ <file_section>
+  <file     name="conf.oil"/>
+  <file     name="main.c"/>
+ </file_section>
+
+</evidence_example>

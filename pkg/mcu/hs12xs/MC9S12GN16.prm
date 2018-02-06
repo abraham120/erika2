@@ -1,0 +1,52 @@
+/* This is a linker parameter file for the MC9S12GN16 */
+NAMES END /* CodeWarrior will pass all the needed files to the linker by command line. But here you may add your own files too. */
+
+SEGMENTS  /* Here all RAM/ROM areas of the device are listed. Used in PLACEMENT below. */
+
+/* Register space  */
+/*    IO_SEG        = PAGED         0x0000 TO   0x03FF; intentionally not defined */
+
+/* RAM */
+      RAM           = READ_WRITE    0x3C00 TO   0x3FFF;
+
+/* D-Flash */
+      DFLASH        = READ_ONLY     0x0400 TO   0x05FF;
+
+/* non-paged FLASHs */
+      ROM_C000      = READ_ONLY     0xC000 TO   0xFEFF;
+ /*   VECTORS       = READ_ONLY     0xFF00 TO   0xFFFF; intentionally not defined: used for VECTOR commands below */
+   //OSVECTORS      = READ_ONLY     0xFF80 TO   0xFFFF;   /* OSEK interrupt vectors (use your vector.o) */
+END
+
+PLACEMENT /* here all predefined and user segments are placed into the SEGMENTS defined above. */
+      _PRESTART,              /* Used in HIWARE format: jump to _Startup at the code start */
+      STARTUP,                /* startup data structures */
+      ROM_VAR,                /* constant variables */
+      STRINGS,                /* string literals */
+      VIRTUAL_TABLE_SEGMENT,  /* C++ virtual table segment */
+    //.ostext,                /* OSEK */
+      NON_BANKED,             /* runtime routines which must not be banked */
+      _CX_CODE_INTERRUPT,     /* ISRs handlers */
+      DEFAULT_ROM,
+      COPY              INTO  ROM_C000;
+
+    //.stackstart,            /* eventually used for OSEK kernel awareness: Main-Stack Start */
+      SSTACK,                 /* allocate stack first to avoid overwriting variables on overflow */
+    //.stackend,              /* eventually used for OSEK kernel awareness: Main-Stack End */
+    DEFAULT_RAM         INTO  RAM;
+
+
+  //.vectors            INTO  OSVECTORS; /* OSEK */
+END
+
+ENTRIES /* keep the following unreferenced variables */
+    /* OSEK: always allocate the vector table and all dependent objects */
+  //_vectab OsBuildNumber _OsOrtiStackStart _OsOrtiStart
+END
+
+STACKSIZE 0x100
+
+//VECTOR 0 _Startup /* reset vector: this is the default entry point for a C/C++ application. */
+//VECTOR 0 Entry  /* reset vector: this is the default entry point for an Assembly application. */
+//INIT Entry      /* for assembly applications: that this is as well the initialization entry point */
+

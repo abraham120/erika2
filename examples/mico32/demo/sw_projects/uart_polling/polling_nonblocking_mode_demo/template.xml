@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<evidence_example version="1" ID="fpg_eye_mico32_uart_polling_nonblocking">
+
+ <category>mico32/FPG-EYE/fpg_eye_mico32/Uart polling</category>
+ <title>Uart polling (non-blocking mode) test demo</title>
+
+ <small_descr>
+ This is the demo to test Uart polling (non-blocking mode) on FPG-EYE Board
+ devices.
+ </small_descr>
+
+ <long_descr>
+ Uart polling test(non-blocking mode).
+ &lt;br /&gt;
+ &lt;br /&gt;
+ This demo shows how to use UART driver for Lattice Mico32 device to send and
+ receive characters.
+ &lt;br /&gt;
+ &lt;br /&gt;
+ The UART controller is configured in polling mode and non-blocking mode.
+ &lt;br /&gt;
+ &lt;br /&gt;
+ When task calls EE_uart_receive_byte, the UART driver checks if there are
+ characters to be read. If yes the application sends the received character,
+ otherwise sends 'X'.
+ &lt;br /&gt;
+ &lt;br /&gt;
+ In case of error the application turns on the system led.
+ &lt;br /&gt;
+ &lt;br /&gt;
+ The demo requires a RS232 serial connection with a 115200 bps, 8N1
+ configuration.
+ </long_descr>
+
+ <file_section>
+  <file     name="conf.oil"/>
+  <file     name="test2_main.c"/>
+  <file     name="makefile"/>
+ </file_section>
+
+</evidence_example>

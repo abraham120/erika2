@@ -1,0 +1,70 @@
+/* ###*B*###
+ * ERIKA Enterprise - a tiny RTOS for small microcontrollers
+ *
+ * Copyright (C) 2002-2011  Evidence Srl
+ *
+ * This file is part of ERIKA Enterprise.  ERIKA Enterprise is free software;
+ * you can redistribute it and/or modify it under the terms of the
+ * GPLv2 + Linking Exception license (contained in the file `ee/LICENSE').
+ *
+ * ERIKA Enterprise is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE.  See the license for more details.
+ *
+ * ###*E*### */
+
+CPU example {
+
+	OS EE {
+		EE_OPT = "DEBUG";
+		EE_OPT = "__ASSERT__";
+		EE_OPT = "__E200ZX_EXECUTE_FROM_RAM__";
+		EE_OPT = "__EE_USE_MMU__";
+		EE_OPT = "__EE_CRT0_INIT_MMU__";
+		//EE_OPT = "__CODEWARRIOR__";
+		//EE_OPT = "VERBOSE";
+		//EE_OPT = "EEOPT_USE_DIAB_5_8";
+		EE_OPT = "EE_ISR_DYNAMIC_TABLE";
+
+		CFLAGS = "";
+		ASFLAGS = "";
+		LDFLAGS = "";
+
+		CPU_DATA = PPCE200ZX {
+			MODEL = E200Z7;
+			APP_SRC = "main.c";
+			MULTI_STACK = FALSE;
+			VLE = TRUE;
+		};
+
+		MCU_DATA = PPCE200ZX {
+			MODEL = MPC5674F;
+		};
+
+		STATUS = EXTENDED;
+		STARTUPHOOK = FALSE;
+		ERRORHOOK = FALSE;
+		SHUTDOWNHOOK = FALSE;
+		PRETASKHOOK = FALSE;
+		POSTTASKHOOK = FALSE;
+		USEGETSERVICEID = FALSE;
+		USEPARAMETERACCESS = FALSE;
+		USERESSCHEDULER = FALSE;
+	};
+
+	/* this is the OIL part for the first task */
+	TASK Task1 {
+		PRIORITY = 0x01;   /* Low priority */
+		AUTOSTART = FALSE;
+		STACK = SHARED;
+		ACTIVATION = 1;	   /* only one pending activation */
+	};
+	
+	OS EE { KERNEL_TYPE = FP; };
+
+	ISR DecrIsr {
+		CATEGORY = 2;
+		ENTRY = "DECREMENTER";
+		HANDLER = "timer_interrupt";
+	};
+};

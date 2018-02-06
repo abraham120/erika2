@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<evidence_example version="1" ID="nios2_2cpu">
+
+ <category>nios2/Multicore examples</category>
+ <title>2 CPU demo</title>
+   
+ <small_descr>
+ This is a simple demo that shows how to set the various options for a multicore design using ERIKA Enterprise.
+ </small_descr>
+
+ <long_descr>
+ This is a simple demo that shows how to set the various options for a multicore design using ERIKA Enterprise.
+ </long_descr>
+
+ <file_section>
+  <file     name="code.c"/> 
+  <file     name="conf.oil"/>
+  <file     name="cpu0_main.c"/>
+  <file     name="cpu1_main.c"/>
+  <file     name="resourcedata.h"/>
+  <file     name="resourcedata.c"/>
+  <file     name="readme.txt"/>
+  <file     name="shareddata.h"/>
+  <file     name="shareddata.c"/>
+  <file     name="task0.c"/>
+  <file     name="task1.c"/>
+  <file     name="task2.c"/>
+ </file_section>
+
+</evidence_example>

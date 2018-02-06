@@ -1,0 +1,13 @@
+;
+; OSEK/ORTI Example for TRACE32 multitask debugger, derived from the
+; example in demo/kernel/orti/orti.cmm
+;
+
+; initialize ORTI support
+print "initializing ORTI support..."
+
+TASK.ORTI system.orti      ; ORTI awareness
+
+print "load complete."
+
+enddo

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<evidence_example version="1" ID="pic30_libs">
+
+ <category>pic30/Libs</category>
+ <title>All Libraries</title>
+   
+ <small_descr>
+ Precompile all external libs.
+ </small_descr>
+
+ <long_descr>
+ This is not a demo but it is used to precompile all the external libraries that will be linked in other EEB projects.
+ </long_descr>
+
+ <file_section>
+  <file     name="conf.oil"/>
+ </file_section>
+
+</evidence_example>

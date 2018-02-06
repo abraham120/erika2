@@ -1,0 +1,189 @@
+/* ###*B*###
+ * ERIKA Enterprise - a tiny RTOS for small microcontrollers
+ *
+ * Copyright (C) 2002-2011  Evidence Srl
+ *
+ * This file is part of ERIKA Enterprise.
+ *
+ * ERIKA Enterprise is free software; you can redistribute it
+ * and/or modify it under the terms of the GNU General Public License
+ * version 2 as published by the Free Software Foundation, 
+ * (with a special exception described below).
+ *
+ * Linking this code statically or dynamically with other modules is
+ * making a combined work based on this code.  Thus, the terms and
+ * conditions of the GNU General Public License cover the whole
+ * combination.
+ *
+ * As a special exception, the copyright holders of this library give you
+ * permission to link this code with independent modules to produce an
+ * executable, regardless of the license terms of these independent
+ * modules, and to copy and distribute the resulting executable under
+ * terms of your choice, provided that you also meet, for each linked
+ * independent module, the terms and conditions of the license of that
+ * module.  An independent module is a module which is not derived from
+ * or based on this library.  If you modify this code, you may extend
+ * this exception to your version of the code, but you are not
+ * obligated to do so.  If you do not wish to do so, delete this
+ * exception statement from your version.
+ *
+ * ERIKA Enterprise is distributed in the hope that it will be
+ * useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License version 2 for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * version 2 along with ERIKA Enterprise; if not, write to the
+ * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ * Boston, MA 02110-1301 USA.
+ * ###*E*### */
+
+CPU mySystem {
+
+	OS myOs {
+		EE_OPT = "DEBUG";
+		
+		CPU_DATA = CORTEX_MX {
+			MODEL = M0;
+			APP_SRC = "code.c";
+			//JLINK = TRUE;
+			//COMPILER_TYPE = IAR;
+			COMPILER_TYPE = KEIL; 
+			MULTI_STACK = FALSE;
+		};
+
+		MCU_DATA = LPCXPRESSO {
+			MODEL = LPC12xx;
+		};
+		
+		STATUS = EXTENDED;
+		STARTUPHOOK = FALSE;
+		ERRORHOOK = FALSE;
+		SHUTDOWNHOOK = FALSE;
+		PRETASKHOOK = FALSE;
+		POSTTASKHOOK = FALSE;
+		USEGETSERVICEID = FALSE;
+		USEPARAMETERACCESS = FALSE;
+		USERESSCHEDULER = FALSE;
+		
+		KERNEL_TYPE = BCC1;
+
+		EE_OPT = "__ADD_LIBS__";
+		LIB = ENABLE {
+			NAME = "CMSIS";
+		};
+		EE_OPT = "__USE_LPC12XX_CMSIS_V2__";
+		/* Uncomment the following EE_OPT to include all library functions */
+		/*EE_OPT = "__USE_CMSIS_ALL__";*/
+		EE_OPT = "__USE_CMSIS_IOCON__";
+		EE_OPT = "__USE_CMSIS_SYSCTRL__";
+		EE_OPT = "__USE_CMSIS_GPIO__";
+		
+		};
+	
+	
+	/* this is the OIL part for the task */
+	TASK Task0 {
+		PRIORITY = 0x05; 
+		AUTOSTART = FALSE;
+		ACTIVATION = 1;    /* only one pending activation */
+		STACK = SHARED;
+		RESOURCE = EE_MUTEX_COM_MSG;
+		
+		/*This send the following message: */
+		MESSAGE = ABS;
+	};
+	/* this is the OIL part for the task */
+	TASK Task1 {
+		PRIORITY = 0x03; 
+		AUTOSTART = FALSE;
+		ACTIVATION = 1;    /* only one pending activation */
+		STACK = SHARED;
+		RESOURCE = EE_MUTEX_COM_MSG;
+		/*This send the following message: */
+		MESSAGE = RECEIVER1;
+	};
+	
+	TASK Task2 {
+		PRIORITY = 0x03; 
+		AUTOSTART = FALSE;
+		ACTIVATION = 1;    /* only one pending activation */
+		STACK = SHARED;
+		RESOURCE = EE_MUTEX_COM_MSG;
+		/*This send the following message: */
+		MESSAGE = RECEIVER2;
+	};
+
+	TASK Task3 {
+		PRIORITY = 0x03; 
+		AUTOSTART = FALSE;
+		ACTIVATION = 1;    /* only one pending activation */
+		STACK = SHARED;
+		RESOURCE = EE_MUTEX_COM_MSG;
+		/*This send the following message: */
+		MESSAGE = RECEIVER2;
+	};
+	
+	/* General purpose counter for all the needed alarms  */
+	COUNTER myCounter {
+		MAXALLOWEDVALUE = 65535;
+		TICKSPERBASE    = 1;
+		MINCYCLE        = 1;
+	};
+
+	/* Alarm to that cyclically activate Kitt effect */
+	ALARM AlarmTask0 {
+		COUNTER = myCounter;
+		ACTION = ACTIVATETASK { TASK = Task0; };
+	};
+	
+	RESOURCE EE_MUTEX_COM_MSG { RESOURCEPROPERTY = STANDARD; };
+
+	/*   
+	* OSEK COM sub-system properties.
+	* See "OIL: OSEK Implementation Language Specification 2.5", pag.31. 
+	*/
+	
+	COM myCom {
+			COMERRORHOOK = FALSE;
+			COMUSEGETSERVICEID =FALSE;
+			COMUSEPARAMETERACCESS = FALSE; 
+			COMSTARTCOMEXTENSION = FALSE; 
+			COMAPPMODE = EE_COM_MODE_A; 
+			COMSTATUS = COMSTANDARD;
+			
+			COMTYPE = CCCA;
+		};
+		
+	/*
+	* Message definitions;
+	*/
+
+	MESSAGE ABS {
+		MESSAGEPROPERTY = SEND_STATIC_INTERNAL {
+			CDATATYPE = "EE_UINT32";
+		};
+		NOTIFICATION = NONE; // IN CCCA, there isn't any notification for message transmission. 
+	};
+	
+	MESSAGE RECEIVER1 {
+		MESSAGEPROPERTY = RECEIVE_UNQUEUED_INTERNAL {
+			SENDINGMESSAGE = ABS;
+			FILTER = ALWAYS;
+			INITIALVALUE = 0;
+		};
+		NOTIFICATION = ACTIVATETASK { TASK = Task1; }; 
+	};
+	
+	MESSAGE RECEIVER2 {
+		MESSAGEPROPERTY = RECEIVE_UNQUEUED_INTERNAL {
+			SENDINGMESSAGE = ABS;
+			FILTER = ALWAYS;
+			INITIALVALUE = 0;
+		};
+		NOTIFICATION = COMCALLBACK { 
+			CALLBACKROUTINENAME = "callback"; 
+			MESSAGE = RECEIVER2;
+		};
+	};
+};

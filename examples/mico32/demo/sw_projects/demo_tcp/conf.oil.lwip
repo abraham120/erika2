@@ -1,0 +1,113 @@
+/* ###*B*###
+ * ERIKA Enterprise - a tiny RTOS for small microcontrollers
+ *
+ * Copyright (C) 2010  Evidence Srl
+ *
+ * This file is part of ERIKA Enterprise.
+ *
+ * ERIKA Enterprise is free software; you can redistribute it
+ * and/or modify it under the terms of the GNU General Public License
+ * version 2 as published by the Free Software Foundation, 
+ * (with a special exception described below).
+ *
+ * Linking this code statically or dynamically with other modules is
+ * making a combined work based on this code.  Thus, the terms and
+ * conditions of the GNU General Public License cover the whole
+ * combination.
+ *
+ * As a special exception, the copyright holders of this library give you
+ * permission to link this code with independent modules to produce an
+ * executable, regardless of the license terms of these independent
+ * modules, and to copy and distribute the resulting executable under
+ * terms of your choice, provided that you also meet, for each linked
+ * independent module, the terms and conditions of the license of that
+ * module.  An independent module is a module which is not derived from
+ * or based on this library.  If you modify this code, you may extend
+ * this exception to your version of the code, but you are not
+ * obligated to do so.  If you do not wish to do so, delete this
+ * exception statement from your version.
+ *
+ * ERIKA Enterprise is distributed in the hope that it will be
+ * useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License version 2 for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * version 2 along with ERIKA Enterprise; if not, write to the
+ * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ * Boston, MA 02110-1301 USA.
+ * ###*E*### */
+ 
+ /** 
+    @file      conf.oil.lwip
+    @author    Dario Di Stefano
+    @date      2010
+*/
+
+OS EE {
+	
+	/* LWIP Flags */
+	CFLAGS = "-DLWIP_TCP=1";
+	CFLAGS = "-DLWIP_DHCP=0"; 
+	//CFLAGS = "-DTCP_MSS=536";
+	
+	/* LWIP debug */
+	CFLAGS = "-D__LWIP_DEBUG__"; 
+	CFLAGS = "-D__LWIP_DEBUG_SERIAL__";
+	CFLAGS = "-DTCP_DEBUG=LWIP_DBG_ON";
+	CFLAGS = "-DTCP_INPUT_DEBUG=LWIP_DBG_ON";
+	CFLAGS = "-DTCP_OUTPUT_DEBUG=LWIP_DBG_ON";
+	
+	/* Other unused flags...
+	CFLAGS = "-DEE_LWIP_DEBUG=LWIP_DBG_ON";
+	CFLAGS = "-D__LWIP_TIME_DEBUG__";
+	CFLAGS = "-DETHARP_DEBUG=LWIP_DBG_ON";
+	CFLAGS = "-DNETIF_DEBUG=LWIP_DBG_ON";
+	CFLAGS = "-DPBUF_DEBUG=LWIP_DBG_ON";
+	CFLAGS = "-DIP_DEBUG=LWIP_DBG_ON";
+	CFLAGS = "-DTCP_DEBUG=LWIP_DBG_ON";
+	CFLAGS = "-DTCP_INPUT_DEBUG=LWIP_DBG_ON";
+	CFLAGS = "-DTCP_OUTPUT_DEBUG=LWIP_DBG_ON";
+	CFLAGS = "-DUDP_DEBUG=LWIP_DBG_ON";
+	*/
+	
+	/* LWIP options */
+	EE_OPT = "__LWIP_IPV4__";
+	
+	/* LWIP library enabling */
+	EE_OPT = "__ADD_LIBS__";
+	LIB = ENABLE { NAME = "LWIP"; };
+};
+
+/* ISRs list */
+ISR Timer_Lwip {
+	CATEGORY = 2;
+	LEVEL = "TIMER_UWL_IRQ";
+	HANDLER = "EE_timer_common_handler";
+};
+
+/* RESOURCEs list */
+RESOURCE LwipMutex { RESOURCEPROPERTY = STANDARD; };
+
+/* TASKs list */
+TASK LwipReceive {
+	PRIORITY = 30;
+	STACK = SHARED;
+	SCHEDULE = FULL;
+	RESOURCE = "LwipMutex";
+};
+
+TASK LwipPeriodic {
+	PRIORITY = 35;
+	STACK = SHARED;
+	SCHEDULE = FULL;
+	RESOURCE = "LwipMutex";
+};
+
+
+
+
+
+
+
+

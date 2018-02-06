@@ -1,0 +1,34 @@
+<html>
+<head>
+<title>FPG-EYE + ERIKA Enterprise Web demo - Evidence srl</title>
+</head>
+<script type="text/javascript">
+var cur_res = '160x120';
+function switch_image(res) {
+	if (document.images) {
+		cur_res = res;
+	}
+}
+function reload_image() {
+		res = cur_res;
+		now = new Date();
+		document.getElementById('cameraPng').src = '/img/camera_' + res + '.png?' + now.getTime();
+		document.getElementById('resdiv').innerHTML = res;
+}
+</script>
+
+<body bgcolor="white" text="black">
+<div>
+Current resolution: <span id="resdiv">160x120</span>
+</div>
+pippo
+<img src="/img/camera_160x120.png" border="0" id="cameraPng"
+     onload="window.setTimeout('reload_image()', 2000)">
+<p>Select the resolution here:</p>
+<ul>
+<li><a id="160x120" onclick="switch_image('160x120')">160x120</a></li>
+<li><a id="320x240" onclick="switch_image('320x240')">320x240</a></li>
+<li><a id="640x480" onclick="switch_image('640x480')">640x480</a></li>
+</ul>
+</body>
+</html>

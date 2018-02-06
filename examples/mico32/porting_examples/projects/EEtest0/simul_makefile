@@ -1,0 +1,101 @@
+# ###*B*###
+# ERIKA Enterprise - a tiny RTOS for small microcontrollers
+# 
+# Copyright (C) 2002-2010  Evidence Srl
+# 
+# This file is part of ERIKA Enterprise.
+# 
+# ERIKA Enterprise is free software; you can redistribute it
+# and/or modify it under the terms of the GNU General Public License
+# version 2 as published by the Free Software Foundation, 
+# (with a special exception described below).
+# 
+# Linking this code statically or dynamically with other modules is
+# making a combined work based on this code.  Thus, the terms and
+# conditions of the GNU General Public License cover the whole
+# combination.
+# 
+# As a special exception, the copyright holders of this library give you
+# permission to link this code with independent modules to produce an
+# executable, regardless of the license terms of these independent
+# modules, and to copy and distribute the resulting executable under
+# terms of your choice, provided that you also meet, for each linked
+# independent module, the terms and conditions of the license of that
+# module.  An independent module is a module which is not derived from
+# or based on this library.  If you modify this code, you may extend
+# this exception to your version of the code, but you are not
+# obligated to do so.  If you do not wish to do so, delete this
+# exception statement from your version.
+# 
+# ERIKA Enterprise is distributed in the hope that it will be
+# useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+# of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License version 2 for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# version 2 along with ERIKA Enterprise; if not, write to the
+# Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+# Boston, MA 02110-1301 USA.
+# ###*E*###
+
+## Makefile to setup files used in the ActiveHDL simulator
+## Author: 2010,  Bernardo  Dal Seno
+
+
+#
+# Environment variables
+#
+
+# By default work with the simulator contained in the repository
+ifndef SIMUL_DIR
+SIMUL_DIR=../../hw_projects/simulation_mico32
+endif
+
+# Set as default target
+.PHONY: meta-all
+meta-all: deploy globvars
+
+
+#
+# Include the main makefile
+#
+include makefile
+
+PROJECT_EXE=$(OUTPUT_DIR)/out.elf
+
+# 'project_exe' forces always the remake of 'all' for 'deploy' and 'globvars'
+.PHONY: project_exe
+$(PROJECT_EXE) project_exe: all
+
+#
+# My rules
+#
+ifneq ($(findstring clean,$(MAKECMDGOALS)),clean)
+include $(OUTPUT_DIR)/platform.mk
+# '-include' for myrules.mk, as its rule is valid only if platform.mk
+# exists and is included
+-include $(OUTPUT_DIR)/myrules.mk
+endif
+
+PLATFORM_LIB_MAKEFILE=$(PLATFORM_LIB_PATH)/$(PLATFORM_BLD_CFG)/makefile
+
+ifdef PLATFORM_LIB_PATH
+$(OUTPUT_DIR)/myrules.mk: $(PLATFORM_LIB_MAKEFILE)
+	grep -E '^(PLATFORM_FILE|PLATFORM_FILE_PATH|PLATFORM_PERL_FILE_PATH)[ ]*=' $< > $@
+endif
+
+REAL_PLATFORM_FILE_PATH=$(PLATFORM_LIB_PATH)/$(PLATFORM_BLD_CFG)/$(PLATFORM_FILE_PATH)
+
+PERLSCRIPTDIR=$(realpath $(PLATFORM_PERL_FILE_PATH)/..)
+PERLUTILDIR=$(realpath $(PERLSCRIPTDIR)/..)
+.PHONY: deploy globvars
+
+deploy: $(PROJECT_EXE) | project_exe
+	perl $(PERLSCRIPTDIR)/misc/multimem_deploy.pl $(PERLUTILDIR) $(abspath ../$(REAL_PLATFORM_FILE_PATH)/$(PLATFORM_FILE)) $< $(SIMUL_DIR)/ meminit
+
+GLOBVARSCRIPT=$(SIMUL_DIR)/global.do
+globvars: $(PROJECT_EXE) | project_exe
+	../../scripts/wavesymbol.py $< | sort >$(GLOBVARSCRIPT)
+
+printvalue = $(info $(1) is >$($(1))<)
+#$(call printvalue,CPPFLAGS)

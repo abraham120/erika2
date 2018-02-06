@@ -1,0 +1,98 @@
+/* ECC1 configuration for MISRA check under Lin */
+
+CPU test_application {
+
+	OS EE {
+		EE_OPT = "EE_DEBUG";
+		EE_OPT = "__OO_SEM__";
+		EE_OPT = "NODEPS";
+		EE_OPT = "__ASSERT__";
+        	EE_OPT = "EE_SAVE_TEMP_FILES";
+		EE_OPT="EE_MM_OPT";
+        	EE_OPT = "EE_FIND_COMPILER_IN_PATH";    /* Used by Lin */
+
+		CPU_DATA = TRICORE {
+			CPU_CLOCK = 200.0;
+            		COMPILER_TYPE = GNU;
+            		APP_SRC = "main.c";
+			MULTI_STACK = TRUE {
+				IRQ_STACK = TRUE {
+					SYS_SIZE = 512;
+				};
+			};
+			SYS_STACK_SIZE = 2048;
+		};
+
+		MCU_DATA = TRICORE {
+			MODEL = TC27x;
+		};
+
+		STATUS = EXTENDED;
+		STARTUPHOOK = TRUE;
+		ERRORHOOK = TRUE;
+		SHUTDOWNHOOK = TRUE;
+		PRETASKHOOK = FALSE;
+		POSTTASKHOOK = FALSE;
+		USEGETSERVICEID = FALSE;
+		USEPARAMETERACCESS = FALSE;
+		USERESSCHEDULER = FALSE;
+
+		ORTI_SECTIONS = ALL;
+	};
+
+    COUNTER SystemTimer {
+    MINCYCLE = 1;
+        MAXALLOWEDVALUE = 2147483647;
+        TICKSPERBASE = 1;
+        TYPE = HARDWARE {
+            DEVICE = "STM_SR0";
+            SYSTEM_TIMER = TRUE;
+            PRIORITY = 1;
+        };
+        SECONDSPERTICK = 0.001;
+    };
+
+	TASK Task1 {
+		PRIORITY = 0x01;
+		AUTOSTART = FALSE;
+		STACK = SHARED;
+		ACTIVATION = 1;
+		RESOURCE = MyResource;
+	};
+
+	TASK Task2 {
+		PRIORITY = 0x02;
+		SCHEDULE = FULL;
+		AUTOSTART = TRUE;
+		STACK = PRIVATE {
+			SYS_SIZE = 1024;
+		};
+		RESOURCE = MyResource;
+		EVENT = MyEvent;
+	};
+
+	EVENT MyEvent { MASK = AUTO; };
+
+	RESOURCE MyResource { RESOURCEPROPERTY = STANDARD; };
+
+	COUNTER MainTimer {
+		MINCYCLE = 2;
+		MAXALLOWEDVALUE = 100;
+		TICKSPERBASE = 1;
+	};
+
+	ALARM MyAlarm {
+		COUNTER = MainTimer;
+		ACTION = ACTIVATETASK {
+			TASK = Task1;
+		};
+		AUTOSTART = TRUE{
+			ALARMTIME = 12;
+			CYCLETIME = 12;
+		};
+	};
+
+	OS EE { KERNEL_TYPE = ECC1; EE_OPT = "__OO_STARTOS_OLD__";};
+	TASK Task1 { SCHEDULE = NON; };
+	TASK Task2 { ACTIVATION = 1; };
+};

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<evidence_example version="1" ID="pic30_MultiBus_Serial">
+
+ <category>pic30/FLEX MultiBus Board</category>
+ <title>Serial demo</title>
+   
+ <small_descr>
+ This example shows how to use the serial line RS232 both in polling and interrupt mode.
+ </small_descr>
+
+ <long_descr>
+ This example can be used to test the serial communication on RS232 ports. In polling mode it uses 2 functions to send and receive bytes. In interrupt modes the send function put data in a queue and the uses is acknowledged through a callback function. Another callback is in charge of incoming data. The demo supports both UART1 and UART2, and it works on the FLEX Multibus, Demo, and Motion board.
+ </long_descr>
+
+ <file_section>
+  <file     name="code.c"/> 
+  <file     name="eeuart.c"/> 
+  <file     name="eeuart.h"/> 
+  <file     name="conf.oil"/>
+ </file_section>
+
+</evidence_example>

@@ -1,0 +1,76 @@
+CPU test_application {
+
+  OS EE {
+    EE_OPT = "EE_DEBUG";
+    EE_OPT = "__ASSERT__";
+    EE_OPT = "EE_EXECUTE_FROM_RAM";
+    //EE_OPT = "EE_SAVE_TEMP_FILES";
+
+    MASTER_CPU = "master";
+
+    CPU_DATA = TRICORE {
+      CPU_CLOCK = 100.0;
+      ID = "master";
+      APP_SRC = "master.c";
+      MULTI_STACK = FALSE;
+      SYS_STACK_SIZE = 4096;
+      COMPILER_TYPE = GNU;
+    };
+
+    CPU_DATA = TRICORE {
+      ID = "slave";
+      APP_SRC = "slave.c";
+      MULTI_STACK = FALSE;
+      SYS_STACK_SIZE = 4096;
+      COMPILER_TYPE = GNU;
+    };
+
+    MCU_DATA = TRICORE {
+      MODEL = TC27x;
+    };
+
+    STATUS = EXTENDED;
+    USERESSCHEDULER = FALSE;
+
+    USEREMOTETASK = ALWAYS;
+
+    KERNEL_TYPE = FP;
+  };
+
+  /* this is the OIL part for the first task */
+  TASK TaskMaster {
+    CPU_ID = "master";
+    PRIORITY = 0x01;
+    AUTOSTART = FALSE;
+    STACK = SHARED;
+    ACTIVATION = 1;
+  };
+
+  /* this is the OIL part for the first task */
+  TASK Task1 {
+    CPU_ID = "slave";
+    PRIORITY = 0x01;
+    AUTOSTART = FALSE;
+    STACK = SHARED;
+    ACTIVATION = 1;
+  };
+
+  /* Priority 1 is already taken by IIPC (this demo emulate it) */
+  ISR timer_interrupt {
+    CPU_ID = "master";
+    CATEGORY = 2;
+    PRIORITY = 2;
+  };
+
+  ISR ipc_interrupt {
+    CPU_ID = "master";
+    CATEGORY = 2;
+    PRIORITY = 3;
+  };
+
+  ISR ext_interrupt {
+    CPU_ID = "slave";
+    CATEGORY = 2;
+    PRIORITY = 2;
+  };
+};

@@ -1,0 +1,151 @@
+; ###*B*###
+; ERIKA Enterprise - a tiny RTOS for small microcontrollers
+;
+; Copyright (C) 2002-2012  Evidence Srl
+;
+; This file is part of ERIKA Enterprise.
+;
+; ERIKA Enterprise is free software; you can redistribute it
+; and/or modify it under the terms of the GNU General Public License
+; version 2 as published by the Free Software Foundation, 
+; (with a special exception described below).
+;
+; Linking this code statically or dynamically with other modules is
+; making a combined work based on this code.  Thus, the terms and
+; conditions of the GNU General Public License cover the whole
+; combination.
+;
+; As a special exception, the copyright holders of this library give you
+; permission to link this code with independent modules to produce an
+; executable, regardless of the license terms of these independent
+; modules, and to copy and distribute the resulting executable under
+; terms of your choice, provided that you also meet, for each linked
+; independent module, the terms and conditions of the license of that
+; module.  An independent module is a module which is not derived from
+; or based on this library.  If you modify this code, you may extend
+; this exception to your version of the code, but you are not
+; obligated to do so.  If you do not wish to do so, delete this
+; exception statement from your version.
+;
+; ERIKA Enterprise is distributed in the hope that it will be
+; useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+; of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+; GNU General Public License version 2 for more details.
+;
+; You should have received a copy of the GNU General Public License
+; version 2 along with ERIKA Enterprise; if not, write to the
+; Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+; Boston, MA 02110-1301 USA. 
+; ###*E*### 
+
+;/** 
+;	@file ee_ccrx_multi_context.src
+;	@brief Context switch function for multistack on RX200 
+;	Implementation of EE_std_change_context_multi as described in
+;	pkg/cpu/common/inc/ee_context.h
+;	@author Gianluca Franchino
+;	@date 2012
+;*/ 
+
+;/*
+;
+;Pseudo code for void EE_std_change_context(EE_TID tid);:
+;     begin:
+;      tos_index = EE_std_thread_tos[tid+1];
+;      if is_not_the_current_stack(tos_index) {
+;          save_caller_saved_registers();
+;          switch_stacks(tos_index);
+;          restore_caller_saved_registers();
+;      }
+;      if (is_not_marked_stacked(tid)) {
+;          tid = EE_std_run_task_code(tid);
+;          goto begin;
+;      }
+;*/
+;*******************************************************************************
+;                         PUBLIC FUNCTIONS
+;*******************************************************************************
+	; Functions declared in this file 
+	.GLB	_EE_std_change_context
+
+	.GLB	_EE_std_run_task_code
+	.GLB	_EE_std_thread_tos
+	.GLB	_EE_rx200_active_tos
+	.GLB	_EE_rx200_system_tos
+
+	.SECTION   P,CODE
+
+;void EE_std_change_context(EE_TID tid);
+_EE_std_change_context:
+									;R1 == tid
+	; tos_index = EE_std_thread_tos[tid+1];
+	ADD	#1, R1, R2 					; R2 = tid+1
+	SHLL #2, R2, R2 				; R2 = (tid+1)*4= correct offset in  EE_std_thread_tos
+									; The last shift, also gets rid of the `stacked' mark
+	MOV.L #_EE_std_thread_tos, R3 	; R3 = &EE_std_thread_tos[0]
+	ADD R2, R3, R2
+	MOV.L [R2], R2 					;R2 == tos_index 
+	
+	;*
+	;* if is_not_the_current_stack(tos_index) { 
+	;*
+	MOV.L #_EE_rx200_active_tos, R3 ; R3 = &EE_rx200_active_tos;
+	MOV.L [R3], R4 					; R4 == EE_rx200_active_tos 
+	CMP R4, R2
+	BEQ end_change_stacks
+	
+	;save_caller_saved_registers();
+
+	;Save all callee-saved registers
+	; R1-R5 and R14-R15 are scratch registers, R0 ->(SP).
+	PUSHM R6-R13 					;Store registers from R6 to R13 into stack
+
+	;!!!!!!!!!!!!!!!
+	; At this point the non scratch registers (R6...R13) are pushed into stack,
+	; hence I can use them in the following.
+	;!!!!!!!!!!!!!!!!
+	
+	; switch_stacks(tos_index);
+	MOV.L #_EE_rx200_system_tos, R6
+									; EE_rx200_system_tos[R4] = SP;	
+	SHLL #2, R4, R4
+	ADD R4, R6, R4
+	;Note: SP is USP.
+	MOV.L SP, [R4] 					; save stack pointer
+									; EE_rx200_active_tos = tos_index;
+	MOV.L R2, [R3]
+									; SP= EE_rx200_system_tos[R2];
+	SHLL #2, R2, R2
+	ADD R2, R6, R2
+	MOV.L [R2], R2
+	MOV.L R2, SP
+									; restore_caller_saved_registers();
+	POPM R6-R13 					;Restore registers R6 to R13 from stack
+	; *
+	; * } 
+	; *
+
+end_change_stacks:
+	; R1 == tid
+	; *
+	; *if (is_not_marked_stacked(tid)) {
+	; *
+	CMP	#0, R1
+	BLT	end_run_thread
+	
+	; tid = EE_std_run_task_code(tid);
+	MOV.L #_EE_std_run_task_code, R2
+	JSR R2
+	;R1 = tid
+	BRA _EE_std_change_context
+	; goto begin
+	
+	; *
+	; * } 
+	; *
+	
+end_run_thread:
+
+	RTS ; Return
+
+	.END	

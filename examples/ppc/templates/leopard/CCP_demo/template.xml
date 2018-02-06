@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<evidence_example version="1" ID="E200Z7_EE_MONOSTACK_TASK_DEMO_MPC5643L">
+
+ <category>e200zx/MPC56XX_EVB(Leopard)</category>
+ <title>CCP_demo</title>
+   
+ <small_descr>
+ Can Calibration Protocol (CCP) demo
+ </small_descr>
+
+ <long_descr>
+ CCP_demo: A minimal CCP demo using MPC5643L evaluation board.
+ The voltage in the potentiometer output of the Evaluation Board can be
+ monitored by using CCP. A correct sequence of CCP commands can be found
+ in readme.txt file.
+ Another useful resource is the file "PCAN_CCP_TEST_LEOPARD_ADC.xmt".
+ This is a PCAN-View profile configuration to send ALL CCP command necessary
+ to test the demo. The implementation of CCP provided by the ECU is also
+ supported by and succesfully tested under other CCP commercial tools.
+ The demo uses the following peripherals: ADC, PWM, CAN and CTU
+ The demo is configured as OSEK BCC1 kernel.
+ To test this demo, simply connect CAN_H channel of the Leopard evaluation
+ board to your favorite CAN-dongle on your PC and then send the sequence
+ of CCP commands shown in readme.txt file present in this folder. The
+ START_STOP command of such sequence enables "sample and send" on a variable
+ located at 0x40000010 (check WRITE_DAQ command for details). This variable
+ holds the tensione measured at potentiometer output (expressed in mV).
+ Furthermore, this demo shows the use of PWM and ADC driven by the CTU module.
+ For details about pinout and drivers please consider Freescale support or 
+ check our wiki at:
+ http://erika.tuxfamily.org/wiki/index.php?title=ERIKA_Enterprise_Device_Dr
+ ivers_for_Leopard_MPC5643L
+ </long_descr>
+
+ <file_section>
+  <file     name="Main.c"/> 
+  <file     name="conf.oil"/>
+  <file     name="ee_boot.c"/>
+  <file     name="mpc5643l_custom_flash.lcf"/>
+ </file_section>
+
+</evidence_example>

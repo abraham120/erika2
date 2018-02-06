@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<evidence_example version="1" ID="STM32_uwl_coord">
+
+ <category>Cortex-MX/STM32F4 Discovery Board</category>
+ <title>uWireless Demo - Coordinator</title>
+   
+ <small_descr>
+ This is a simple demo that shows the coordinator side of the uWireless  (IEEE 802.15.4) stack.
+ </small_descr>
+
+<long_descr>
+ This is a simple demo that shows the coordinator side of the uWireless  (IEEE 802.15.4) stack.
+ </long_descr>
+
+ <file_section>
+  <file     name="code.c"/> 
+  <file     name="lcd_log_conf.h"/> 
+  <file     name="conf.oil"/>
+ </file_section>
+
+</evidence_example>

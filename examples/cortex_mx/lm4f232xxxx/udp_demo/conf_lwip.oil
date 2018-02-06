@@ -1,0 +1,407 @@
+/* ###*B*###
+ * ERIKA Enterprise - a tiny RTOS for small microcontrollers
+ *
+ * Copyright (C) 2002-2012  Evidence Srl
+ *
+ * This file is part of ERIKA Enterprise.
+ *
+ * ERIKA Enterprise is free software; you can redistribute it
+ * and/or modify it under the terms of the GNU General Public License
+ * version 2 as published by the Free Software Foundation, 
+ * (with a special exception described below).
+ *
+ * Linking this code statically or dynamically with other modules is
+ * making a combined work based on this code.  Thus, the terms and
+ * conditions of the GNU General Public License cover the whole
+ * combination.
+ *
+ * As a special exception, the copyright holders of this library give you
+ * permission to link this code with independent modules to produce an
+ * executable, regardless of the license terms of these independent
+ * modules, and to copy and distribute the resulting executable under
+ * terms of your choice, provided that you also meet, for each linked
+ * independent module, the terms and conditions of the license of that
+ * module.  An independent module is a module which is not derived from
+ * or based on this library.  If you modify this code, you may extend
+ * this exception to your version of the code, but you are not
+ * obligated to do so.  If you do not wish to do so, delete this
+ * exception statement from your version.
+ *
+ * ERIKA Enterprise is distributed in the hope that it will be
+ * useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License version 2 for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * version 2 along with ERIKA Enterprise; if not, write to the
+ * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ * Boston, MA 02110-1301 USA.
+ * ###*E*### */
+
+/** @file	conf_lwip.oil
+ *  @author	Errico Guidieri
+ *  @author	Giuseppe Serano
+ *  @date	2012
+ */
+
+OS EE {
+
+  /* LWIP options */
+  EE_OPT = "__LWIP_IPV4__";
+  EE_OPT = "__USE_ETHERNET_ENC28J60__";
+
+  /**
+   * LWIP Flags:
+   * contrib/lwip/lwip_1_3_2/src/include/lwip/opt.h and
+   * contrib/lwip/lwip_1_3_2/abstraction/inc/lwipopts.h overrides.
+   */
+
+  /**
+   *  ETH_PAD_SIZE: Ethernet Header Pad Size.
+   *  Added by Dario Di Stefano.
+   *
+   * lwipopts.h -> 2
+   */
+  CFLAGS = "-DETH_PAD_SIZE=0";
+
+  /**
+   * ---------- Memory options ---------- 
+   */
+
+  /**
+   * MEM_SIZE:
+   * the size of the lwIp heap memory. If the application will send a lot of
+   * data that needs to be copied, this should be set high.
+   *
+   * opt.h -> 1600
+   * lwipopts.h -> 64*1024
+   */
+  CFLAGS = "-DMEM_SIZE=1024";
+
+  /**
+   * MEMP_OVERFLOW_CHECK: memp overflow protection reserves a configurable
+   * amount of bytes before and after each memp element in every pool and fills
+   * it with a prominent default value.
+   *    MEMP_OVERFLOW_CHECK == 0 no checking
+   *    MEMP_OVERFLOW_CHECK == 1 checks each element when it is freed
+   *    MEMP_OVERFLOW_CHECK >= 2 checks each element in every pool every time
+   *
+   * opt.h -> 0
+   */
+  CFLAGS = "-DMEMP_OVERFLOW_CHECK=2";
+
+  /**
+   * MEMP_SANITY_CHECK==1: run a sanity check after each memp_free() to make
+   * sure that there are no cycles in the linked lists.
+   *
+   * opt.h -> 0
+   */
+  CFLAGS = "-DMEMP_SANITY_CHECK=1";
+
+  /**
+   * MEMP_NUM_PBUF:
+   * the number of memp struct pbufs (used for PBUF_ROM and PBUF_REF).
+   * If the application sends a lot of data out of ROM (or other static memory),
+   * this should be set high.
+   *
+   * opt.h -> 16 with MEM_SIZE=1600
+   * lwipopts.h -> 32 with MEM_SIZE=64*1024
+   */
+  CFLAGS = "-DMEMP_NUM_PBUF=3";
+
+  /**
+   * MEMP_NUM_REASSDATA: the number of simultaneously IP packets queued for
+   * reassembly (whole packets, not fragments!)
+   *
+   * opt.h -> 5
+   */
+  /* CFLAGS = "-DMEMP_NUM_REASSDATA=1"; */
+
+  /**
+   * MEMP_NUM_ARP_QUEUE: the number of simulateously queued outgoing
+   * packets (pbufs) that are waiting for an ARP request (to resolve
+   * their destination address) to finish.
+   * (requires the ARP_QUEUEING option)
+   *
+   * opt.h -> 30
+   */
+  CFLAGS = "-DMEMP_NUM_ARP_QUEUE=2";
+
+  /*
+   * PBUF_POOL_SIZE: the number of buffers in the pbuf pool. 
+   *
+   * opt.h -> 16 with MEM_SIZE=1600
+   * lwipopts.h -> 32 with MEM_SIZE=64*1024
+   */
+  CFLAGS = "-DPBUF_POOL_SIZE=3";
+
+  /** 
+   * ---------- ARP options ---------- 
+   */
+
+  /**
+   * ARP_TABLE_SIZE: Number of active MAC-IP address pairs cached.
+   *
+   * opt.h -> 10
+   */
+  CFLAGS = "-DARP_TABLE_SIZE=8";
+
+  /**
+   * ARP_QUEUEING==1: Outgoing packets are queued during hardware address
+   * resolution.
+   *
+   * opt.h -> 1
+   * lwipopts.h -> 0
+   */
+  CFLAGS = "-DARP_QUEUEING=1";
+
+  /** 
+   * ---------- IP options ---------- 
+   */
+
+  /**
+   * IP_FRAG==1: Fragment outgoing IP packets if their size exceeds MTU. Note
+   * that this option does not affect incoming packet sizes, which can be
+   * controlled via IP_REASSEMBLY.
+   *
+   * opt.h -> 1
+   */
+  CFLAGS = "-DIP_FRAG=0";
+
+  /**
+   * IP_REASSEMBLY==1: Reassemble incoming fragmented IP packets. Note that
+   * this option does not affect outgoing packet sizes, which can be controlled
+   * via IP_FRAG.
+   *
+   * opt.h -> 1
+   * lwipopts.h -> 0
+   */
+  /* CFLAGS = "-DIP_REASSEMBLY=1"; */
+
+  /**
+   * IP_REASS_MAX_PBUFS:
+   * Total maximum amount of pbufs waiting to be reassembled.
+   * Since the received pbufs are enqueued, be sure to configure
+   * PBUF_POOL_SIZE > IP_REASS_MAX_PBUFS so that the stack is still able to
+   * receive packets even if the maximum amount of fragments is enqueued for
+   * reassembly!
+   *
+   * opt.h -> 10 with PBUF_POOL_SIZE=16
+   */
+  /* CFLAGS = "-DIP_REASS_MAX_PBUFS=3"; */
+
+  /** 
+   * ---------- ICMP options ---------- 
+   */
+
+  /**
+   * LWIP_ICMP==1: Enable ICMP module inside the IP stack.
+   * Be careful, disable that make your product non-compliant to RFC1122
+   *
+   * opt.h -> 1
+   */
+  /* CFLAGS = "-DLWIP_ICMP=0"; */
+
+  /** 
+   * ---------- UDP options ---------- 
+   */
+
+  /**
+   * LWIP_UDP==1: Turn on UDP.
+   *
+   * opt.h -> 1
+   * lwipopts.h -> 0
+   */
+  CFLAGS = "-DLWIP_UDP=1";
+
+  /** 
+   * ---------- Pbuf options ---------- 
+   */
+
+  /**
+   * PBUF_LINK_HLEN: the number of bytes that should be allocated for a
+   * link level header. The default is 14, the standard value for
+   * Ethernet.
+   * opt.h -> 14
+   * lwipopts.h -> 16 with ETH_PAD_SIZE=2
+   */
+  CFLAGS = "-DPBUF_LINK_HLEN=14";
+
+  /* PBUF_POOL_BUFSIZE: the size of each pbuf in the pbuf pool. The default is
+   * designed to accomodate single full size TCP frame in one pbuf, including
+   * TCP_MSS, IP header, and link header.
+   *
+   * opt.h -> LWIP_MEM_ALIGN_SIZE(TCP_MSS+40+PBUF_LINK_HLEN) with TCP_MSS=536
+   * and PBUF_LINK_HLEN=14
+   * lwipopts.h -> 1536 with TCP_MSS=1460 and PBUF_LINK_HLEN=16
+   */
+  CFLAGS = "-DPBUF_POOL_BUFSIZE=1514";
+
+  /**
+   * ---------- Checksum options ---------- 
+   */
+
+  /**
+   * CHECKSUM_GEN_UDP==1:
+   * Generate checksums in software for outgoing UDP packets.   *
+   * opt.h -> 1
+   * lwipopts.h -> 0
+   */
+  CFLAGS = "-DCHECKSUM_GEN_UDP=1";
+
+  /**
+   * CHECKSUM_CHECK_UDP==1:
+   * Check checksums in software for incoming UDP packets.
+   *
+   * opt.h -> 1
+   * lwipopts.h -> 0
+   */
+  CFLAGS = "-DCHECKSUM_CHECK_UDP=1";
+
+  /** 
+   * ---------- DEBUG options ---------- 
+   */
+  EE_OPT = "__LWIP_DEBUG__";
+  EE_OPT = "__LWIP_DEBUG_SERIAL__";
+  EE_OPT = "__LWIP_TIME_DEBUG__";
+  CFLAGS = "-DEE_LWIP_DEBUG=LWIP_DBG_ON";
+
+  /**
+   * ETHARP_DEBUG: Enable debugging in etharp.c.
+   *
+   * opt.h -> LWIP_DBG_OFF
+   */
+  CFLAGS = "-DETHARP_DEBUG=LWIP_DBG_ON";
+
+  /**
+   * NETIF_DEBUG: Enable debugging in netif.c.
+   *
+   * opt.h -> LWIP_DBG_OFF
+   */
+  CFLAGS = "-DNETIF_DEBUG=LWIP_DBG_ON";
+
+  /**
+   * PBUF_DEBUG: Enable debugging in pbuf.c.
+   *
+   * opt.h -> LWIP_DBG_OFF
+   */
+  CFLAGS = "-DPBUF_DEBUG=LWIP_DBG_ON";
+
+  /**
+   * SOCKETS_DEBUG: Enable debugging in sockets.c.
+   *
+   * opt.h -> LWIP_DBG_OFF
+   */
+  CFLAGS = "-DSOCKETS_DEBUG=LWIP_DBG_ON";
+
+  /**
+   * ICMP_DEBUG: Enable debugging in icmp.c.
+   *
+   * opt.h -> LWIP_DBG_OFF
+   */
+  CFLAGS = "-DICMP_DEBUG=LWIP_DBG_ON";
+
+  /**
+   * INET_DEBUG: Enable debugging in inet.c.
+   *
+   * opt.h -> LWIP_DBG_OFF
+   */
+  CFLAGS = "-DINET_DEBUG=LWIP_DBG_ON";
+
+  /**
+   * IP_DEBUG: Enable debugging for IP.
+   *
+   * opt.h -> LWIP_DBG_OFF
+   */
+  CFLAGS = "-DIP_DEBUG=LWIP_DBG_ON";
+
+  /**
+   * IP_REASS_DEBUG: Enable debugging in ip_frag.c for both frag & reass.
+   *
+   * opt.h -> LWIP_DBG_OFF
+   */
+  CFLAGS = "-DIP_REASS_DEBUG=LWIP_DBG_ON";
+
+  /**
+   * MEM_DEBUG: Enable debugging in mem.c.
+   *
+   * opt.h -> LWIP_DBG_OFF
+   */
+  CFLAGS = "-DMEM_DEBUG=LWIP_DBG_ON";
+
+  /**
+   * MEMP_DEBUG: Enable debugging in memp.c.
+   *
+   * opt.h -> LWIP_DBG_OFF
+   */
+  CFLAGS = "-DMEMP_DEBUG=LWIP_DBG_ON";
+
+  /**
+   * SYS_DEBUG: Enable debugging in sys.c.
+   *
+   * opt.h -> LWIP_DBG_OFF
+   */
+  CFLAGS = "-DSYS_DEBUG=LWIP_DBG_ON";
+
+  /**
+   * UDP_DEBUG: Enable debugging in UDP.
+   *
+   * opt.h -> LWIP_DBG_OFF
+   */
+  CFLAGS = "-DUDP_DEBUG=LWIP_DBG_ON";
+
+  /*                        !!!WARNING!!!
+   * Needed because LWIP will not compile otherwise (ip.c for sure at least).
+   * Maybe this option could be activated by default inside Erika makefiles
+   */
+  CFLAGS = "--c99";	/* COMPILER_TYPE = KEIL; */
+
+  /* To chanege EE_LWIP_TIMER_PERIOD_MS from default (5ms) */
+  /* CFLAGS="EE_LWIP_TIMER_PERIOD_MS=1"; */
+
+  /* ********************************************************** */
+  /*                Contrib Library Inclusion                   */
+  /* ********************************************************** */
+
+  LIB = ENABLE { NAME = "LWIP"; };
+
+};
+
+/* RESOURCEs list */
+RESOURCE LwipMutex { RESOURCEPROPERTY = STANDARD; };
+
+/* TASKs list */
+TASK LwipReceive {
+  PRIORITY = 30;
+  STACK = SHARED;
+  SCHEDULE = FULL;
+  RESOURCE = "LwipMutex";
+  ACTIVATION = 2;
+};
+
+TASK LwipPeriodic {
+  PRIORITY = 35;
+  STACK = SHARED;
+  SCHEDULE = FULL;
+  RESOURCE = "LwipMutex";
+  ACTIVATION = 1;
+};
+
+TASK LwipTimer {
+  PRIORITY = 40;
+  STACK = SHARED;
+  SCHEDULE = FULL;
+  RESOURCE = "LwipMutex";
+  ACTIVATION = 1;
+};
+
+/* ALARMs list */
+ALARM LwipTimerAlarm {
+  COUNTER = system_timer;
+  ACTION = ACTIVATETASK { TASK = LwipTimer; };
+  /*ACTION = ALARMCALLBACK { ALARMCALLBACKNAME = EE_lwip_timer_cb; };*/
+  AUTOSTART = TRUE {
+    ALARMTIME = 5;
+    CYCLETIME = 5;
+  };
+};

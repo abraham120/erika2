@@ -1,0 +1,68 @@
+CPU mySystem {
+	OS myOs {
+		EE_OPT = "DEBUG";
+
+		CPU_DATA = PIC30 {
+			APP_SRC = "code.c";
+			MULTI_STACK = FALSE;
+			ICD2 = TRUE;
+		};
+
+		MCU_DATA = PIC30 {
+			MODEL = PIC33FJ256MC710;
+		};
+		
+		BOARD_DATA = EE_FLEX {
+			USELEDS = TRUE;
+		};
+		
+		KERNEL_TYPE = FP;
+		
+		EE_OPT="__ADD_LIBS__";
+	    EE_OPT="__USE_MOTIONBOARD__";
+
+	    EE_OPT="__USE_LEDS__";		
+		EE_OPT="__USE_BUTTONS__";
+	    EE_OPT="__USE_SWITCH__";
+/* needed by touch driver */
+		EE_OPT="__USE_TOUCH__";
+/* ---------------------- */
+
+		EE_OPT="USE_CONSOLE";
+		EE_OPT="USE_CONSOLE_SERIAL";
+		EE_OPT="__USE_UART__";
+
+/* needed by touch driver */
+		LIB = ENABLE { NAME = "TOUCH"; };
+/* ---------------------- */
+		
+		LIB = ENABLE { NAME = "CONSOLE"; };
+	};
+
+/* needed by touch driver */
+	TASK TASK_TOUCH_MANAGER_1 {
+		PRIORITY = 3;
+		STACK = SHARED;
+		SCHEDULE = FULL;
+	};
+	TASK TASK_TOUCH_MANAGER_2 {
+		PRIORITY = 3;
+		STACK = SHARED;
+		SCHEDULE = FULL;
+	};
+/* ---------------------- */
+		
+	TASK TASK_SEND {
+		PRIORITY = 10;
+		STACK = SHARED;
+		SCHEDULE = FULL;
+	};
+
+	COUNTER DUMMY_COUNTER;
+	COUNTER TASK_COUNTER;
+
+	ALARM Alarm_Send {
+		COUNTER = DUMMY_COUNTER;
+		ACTION = ACTIVATETASK { TASK = TASK_SEND; };
+	};
+};

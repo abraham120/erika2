@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<evidence_example version="1" ID="tricore_hello">
+
+ <category>tricore1/base</category>
+ <title>Hello</title>
+   
+ <small_descr>
+ An Hello World demo.
+ </small_descr>
+
+ <long_descr>
+ This is a very simple demo, without tasks.
+ It just print "hello".
+ 
+ </long_descr>
+
+ <file_section>
+  <file     name="app.mk"/> 
+  <file     name="code.c"/> 
+  <file     name="conf.oil"/>
+ </file_section>
+
+</evidence_example>

@@ -1,0 +1,44 @@
+;
+; Script to run ERIKA from RAM, derived from the flashing example in
+; demo/powerpc/flash/mpc5668.cmm
+;
+; For t32 ver (4/12/2009)
+;
+
+; evi - ERIKA binary object and VLE setting (from the makefile)
+&filename="#EXE_NAME#"
+&use_vle=#USE_VLE#
+
+
+SYStem.RESet
+SYStem.BdmClock 4.0MHz
+SYStem.CPU MPC5668
+NExus.PORTSIze MDO12
+NExus.Dtm ReadWrite
+NExus.PORTMode 1/1
+SYStem.Option.WATCHDOG OFF
+SYStem.Up
+
+; initialize SRAM
+Data.Set EA:0x40000000--0x40093fff %Quad 0
+
+; setup MMU for flash, RAM and register access, as BAM does
+GOSUB setup_mmu &use_vle
+
+d.load.elf &filename /PlusVM
+
+#ORTICMD#
+
+ENDDO
+
+setup_mmu:
+	ENTRY &set_vle
+	if &set_vle==1
+		&vle_flag=0x20
+	else
+		&vle_flag=0
+	MMU.TLB1.SET 0x0 0xC0000500 0xFFF0002A 0xFFF0003F
+	MMU.TLB1.SET 0x1 0xC0000900 0x00000000+&vle_flag 0x0000003F
+	MMU.TLB1.SET 0x2 0xC0000900 0x20000000+&vle_flag 0x2000003F
+	MMU.TLB1.SET 0x3 0xC0000400 0x40000008+&vle_flag 0x4000003F
+	RETURN

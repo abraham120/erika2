@@ -1,0 +1,91 @@
+CPU test_application {
+
+	OS EE {
+		EE_OPT = "__ASSERT__";
+		EE_OPT = "DEBUG_STACK";
+		EE_OPT = "__SEM__";
+		CFLAGS = "-g2";
+		ASFLAGS = "";
+		LDFLAGS = "";
+
+		CPU_DATA = LM32 {
+			APP_SRC = "main.c";
+			APP_SRC = "dirty_regs.S";
+			MULTI_STACK = TRUE;
+			USESTANDALONEPRINTF = TRUE; // Optional, default is FALSE
+			USESMALLC = FALSE; // Optional, default is FALSE
+		};
+		
+		MCU_DATA = LATTICE_PLATFORM {
+   			MODEL = LIBRARY {
+				PLATFORM_LIB_PATH = "../onchipram2timers_lib";
+				PLATFORM_NAME = "onchipram2timers";
+				PLATFORM_BLD_CFG = "Release"; // Optional, default is ""
+   			};
+  		};
+
+		STATUS = EXTENDED;
+		STARTUPHOOK = FALSE;
+		ERRORHOOK = FALSE;
+		SHUTDOWNHOOK = FALSE;
+		PRETASKHOOK = FALSE;
+		POSTTASKHOOK = FALSE;
+		USEGETSERVICEID = FALSE;
+		USEPARAMETERACCESS = FALSE;
+		USERESSCHEDULER = FALSE;
+	};
+
+	TASK Task1 {
+		PRIORITY = 1;
+		AUTOSTART = FALSE;
+		STACK = SHARED;
+		ACTIVATION = 1;
+		SCHEDULE = FULL;
+	};
+	
+	TASK Task2 {
+		PRIORITY = 2;
+		AUTOSTART = FALSE;
+		STACK = PRIVATE {
+			SYS_SIZE = 512;
+		};
+		ACTIVATION = 1;
+		SCHEDULE = FULL;
+	};
+	
+	TASK Task3 {
+		PRIORITY = 3;
+		AUTOSTART = FALSE;
+		STACK = PRIVATE {
+			SYS_SIZE = 512;
+		};
+		ACTIVATION = 1;
+		SCHEDULE = FULL;
+	};
+	
+	TASK Task4 {
+		PRIORITY = 4;
+		AUTOSTART = FALSE;
+		STACK = SHARED;
+		ACTIVATION = 1;
+		SCHEDULE = FULL;
+	};
+	
+	TASK Task5 {
+		PRIORITY = 5;
+		AUTOSTART = FALSE;
+		STACK = SHARED;
+		ACTIVATION = 1;
+		SCHEDULE = FULL;
+	};
+	
+	TASK Task6 {
+		PRIORITY = 10;
+		AUTOSTART = FALSE;
+		STACK = SHARED;
+		ACTIVATION = 1;
+		SCHEDULE = FULL;
+	};
+
+	OS EE { KERNEL_TYPE = FP; }; 	
+};

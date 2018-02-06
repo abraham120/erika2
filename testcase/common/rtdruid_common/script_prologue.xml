@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="rtdruid" default="all" basedir=".">
+
+<!-- This ANT Build script have been automatically generated. The
+original files can be found in testcases/common/rtdruid_common/* -->
+
+ <target name="all">

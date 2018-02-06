@@ -1,0 +1,141 @@
+;
+; Script for programming of MPC5668 internal flash.
+;
+; Internal Flash Memory 1.5 MByte:
+;   Flash A low address range   256 kByte (8 * 16, 2 * 64 kByte)
+;                               0x00000000--0x0003ffff
+;   Flash A Mid address range   256 kByte (2 * 128 kByte)
+;                               0x00040000--0x0007ffff
+;   High address range          1.5 MByte (6 * 256 kByte)
+;                               0x00080000--0x001fffff
+;   Shadow row 0 (flash A)      16 kByte
+;                               0x00ffc000--0x00ffffff
+;
+; Internal SRAM                 592 kByte
+;                               0x40000000--0x40093fff
+;
+; Flash register base address is
+;   Flash A                     0xffff8000
+;
+; NOTES:
+; 
+;   Flash register base addresses cannot be remapped, because target
+;   program does currently not support another base address.
+;
+; wrd - 01.10.2008
+; evi - 18.05.2010 Evidence Modifications, for t32 ver (4/12/2009)
+; evi - 19.04.2012 Evidence Modifications
+; evi - 08.03.2012 Evidence Modifications, for MPC5643L porting
+;
+
+; evi - ERIKA binary object and VLE setting (from the makefile)
+&filename_master="master/myProject_master.elf"
+&filename_slave="slave/myProject_slave.elf"
+
+&flashbase=0x00000000
+&flashsize=0x00100000 ; 1 MByte
+&shadowbase=0x00F00000
+&shadowsize=0x00100000  ; 1 MByte
+&rambase=0x40000000
+
+;========================================================================
+; CPU setup
+
+SYStem.RESet
+SYStem.BdmClock 4.0MHz
+SYStem.CPU MPC5643L
+
+; evi - configure the NEXUS port
+NExus.PORTSIze MDO4
+NExus.Dtm ReadWrite
+NExus.PORTMode 1/2
+
+SYStem.Option.WATCHDOG OFF
+SYStem.Up
+
+; setup MMU for flash, RAM and register access, as BAM does
+; Flash programming wants the VLE flag cleared
+GOSUB setup_mmu 0
+
+; initialize internal SRAM
+Data.Set EA:0x40000000--0x4000FFFF %quad 0
+Data.Set EA:0x50000000--0x5000FFFF %quad 0
+
+;========================================================================
+; Flash declaration
+
+FLASH.RESet
+
+; Low address blocks (256 KB)
+FLASH.Create 1. (&flashbase+0x00000000)++0x03FFF TARGET Quad 0. ; L0 - 16 kB
+
+DIALOG.YESNO "Would you like to preserve NvRam flash area?"
+entry &nvram
+
+; Erase nvram if required by the user
+if !&nvram
+(
+    FLASH.Create 1. (&flashbase+0x00004000)++0x0BFFF TARGET Quad 1. ; L1 - 48 kB
+    FLASH.Create 1. (&flashbase+0x00010000)++0x0BFFF TARGET Quad 2. ; L2 - 48 kB
+    FLASH.Create 1. (&flashbase+0x0001c000)++0x03FFF TARGET Quad 3. ; L3 - 16 kB
+)
+
+FLASH.Create 1. (&flashbase+0x00020000)++0x0FFFF TARGET Quad 4. ; L4 - 64 kB
+FLASH.Create 1. (&flashbase+0x00030000)++0x0FFFF TARGET Quad 5. ; L5 - 64 kB
+
+; Mid address blocks (256 KB)
+DIALOG.YESNO "Would you like to preserve calibrations flash area?"
+entry &calibration
+
+; Erase calibrations if required by the user
+if !&calibration
+(
+    FLASH.Create 2. (&flashbase+0x00040000)++0x1FFFF TARGET Quad 0. ; L6 - 128 kB
+    FLASH.Create 2. (&flashbase+0x00060000)++0x1FFFF TARGET Quad 1. ; L7 - 128 kB
+)
+
+; Mid address blocks (512 KB)
+FLASH.Create 3. (&flashbase+0x00080000)++0x3FFFF TARGET Quad 0. ; L8 - 256 kB
+FLASH.Create 3. (&flashbase+0x000C0000)++0x3FFFF TARGET Quad 1. ; L9 - 256 kB
+FLASH.Create 4. (&flashbase+0x00F00000)++0xFFFFF NOP Quad ; L10 - 1024 kB
+; Flash-memory emulation mapping: 507904 kB (reserved)
+
+; Inform the debugger about the location of FLASH programming routine
+FLASH.TARGET E:&rambase E:&rambase+0x2000 0x1000 ~~/demo/powerpc/flash/quad/c90fl564xl.bin /STACKSIZE 0x0200
+
+;========================================================================
+; Flash programming example
+;
+; Flash programming speed is about three times faster when memory class E:
+; is used for data buffer (DUALPORT memory access). For DUALPORT access it
+; is required to setup MemAccess NEXUS for both, NEXUS and JTAG debugger. 
+
+DIALOG.YESNO "Flash programming prepared. Program flash memory now?"
+entry &progflash
+
+if &progflash 
+(
+    FLASH.ReProgram ALL /Erase
+; Francesco: notice that master flashing starts from 0x0 since in such
+; a location there are the RCHW word and the reset vector
+    Data.LOAD.auto &filename_master E:0x00000000--(0x000C0000-1)
+    Data.LOAD.auto &filename_slave  E:0x000C0000--(0x00100000-1)
+    FLASH.ReProgram OFF
+)
+
+; close t32 after flash-write
+QUIT
+
+setup_mmu:
+	ENTRY &set_vle
+	if &set_vle==1
+		&vle_flag=0x20
+	else
+		&vle_flag=0
+	MMU.TLB1.SET 0x0 0x00000000 0x00000000+&vle_flag 0x00000000
+    MMU.TLB1.SET 0x1 0xC0000500 0xFFF0000A+&vle_flag 0xFFF0003F
+    MMU.TLB1.SET 0x2 0xC0000700 0x20000000+&vle_flag 0x2000003F
+    MMU.TLB1.SET 0x3 0xC0000400 0x40000008+&vle_flag 0x4000003F
+    MMU.TLB1.SET 0x4 0xC0000500 0xC3F00008+&vle_flag 0xC3F0003F
+    MMU.TLB1.SET 0x5 0xC0000700 0x00000000+&vle_flag 0x0000003F
+	RETURN

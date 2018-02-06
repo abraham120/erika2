@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<evidence_example version="1" ID="fpg_eye_mico32_uwl_device">
+
+ <category>mico32/FPG-EYE/fpg_eye_mico32</category>
+ <title>UWL device test demo</title>
+
+ <small_descr>
+ This is the demo to test UWL device on FPG-EYE Board devices.
+ </small_descr>
+
+ <long_descr>
+ This is the demo to test UWL device on FPG-EYE Board devices.
+ </long_descr>
+
+ <file_section>
+  <file     name="conf.oil"/>
+  <file     name="main.c"/>
+  <file     name="makefile"/>
+ </file_section>
+
+</evidence_example>

@@ -1,0 +1,152 @@
+/* ###*B*###
+ * ERIKA Enterprise - a tiny RTOS for small microcontrollers
+ *
+ * Copyright (C) 2002-2012  Evidence Srl
+ *
+ * This file is part of ERIKA Enterprise.
+ *
+ * ERIKA Enterprise is free software; you can redistribute it
+ * and/or modify it under the terms of the GNU General Public License
+ * version 2 as published by the Free Software Foundation, 
+ * (with a special exception described below).
+ *
+ * Linking this code statically or dynamically with other modules is
+ * making a combined work based on this code.  Thus, the terms and
+ * conditions of the GNU General Public License cover the whole
+ * combination.
+ *
+ * As a special exception, the copyright holders of this library give you
+ * permission to link this code with independent modules to produce an
+ * executable, regardless of the license terms of these independent
+ * modules, and to copy and distribute the resulting executable under
+ * terms of your choice, provided that you also meet, for each linked
+ * independent module, the terms and conditions of the license of that
+ * module.  An independent module is a module which is not derived from
+ * or based on this library.  If you modify this code, you may extend
+ * this exception to your version of the code, but you are not
+ * obligated to do so.  If you do not wish to do so, delete this
+ * exception statement from your version.
+ *
+ * ERIKA Enterprise is distributed in the hope that it will be
+ * useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License version 2 for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * version 2 along with ERIKA Enterprise; if not, write to the
+ * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ * Boston, MA 02110-1301 USA.
+ * ###*E*### */
+
+/*
+ * Author: 2012  Gianluca Franchino
+ */
+
+CPU mySystem {
+
+	OS myOs {
+		//EE_OPT = "DEBUG";
+		EE_OPT = "RELEASE";
+		/*
+		 * SystemInit(); -> This routine is called by the startup module 
+		 *			(startup_LPC12xx.s) if the symbol 
+		 *			__EE_DEF_SYS_INIT__ is defined.
+		 */			
+		ASFLAGS = "--cpreproc_opts=-D,__EE_DEF_SYS_INIT__";
+		
+		CFLAGS = "-O3";
+		CFLAGS = "--apcs=interwork";
+		
+		CFLAGS = "-W"; /* Disable warning.*/
+		CFLAGS = "-D__BM_ERIKA__";
+		CFLAGS = "-DTIMINGTEST_NUM_RECORDS=50";
+		CFLAGS = "-DTEST_TIMING";
+		CFLAGS = "-D__BM_CORTEX_M0__"; 
+		CFLAGS = "-D__LPC1227__";
+		
+		CFLAGS = "-DUSE_PRINT_OUT";
+		CFLAGS = "-DBM_USE_UART";
+
+
+		
+		CPU_DATA = CORTEX_MX {
+			MODEL = M0;
+			APP_SRC = "code.c";
+			APP_SRC = "timingtest.c";
+			APP_SRC = "bm_erika.c";
+			APP_SRC = "bm_cortex_m0_log_header.c";
+			
+			//JLINK = TRUE;
+			COMPILER_TYPE = KEIL; 
+			MULTI_STACK = TRUE {
+				IRQ_STACK = TRUE {
+					SYS_SIZE=512;
+				};
+			};
+		};
+
+		MCU_DATA = LPCXPRESSO {
+			MODEL = LPC12xx;
+		};
+
+		STATUS = EXTENDED;
+		STARTUPHOOK = FALSE;
+		ERRORHOOK = FALSE;
+		SHUTDOWNHOOK = TRUE;
+		PRETASKHOOK = FALSE;
+		POSTTASKHOOK = FALSE;
+		USEGETSERVICEID = FALSE;
+		USEPARAMETERACCESS = FALSE;
+		USERESSCHEDULER = FALSE;
+/*
+		KERNEL_TYPE = FP {
+			NESTED_IRQ = TRUE;
+		};
+*/
+		KERNEL_TYPE = BCC1;
+		EE_OPT = "__ADD_LIBS__";
+		LIB = ENABLE {
+			NAME = "CMSIS";
+		};
+		EE_OPT = "__USE_LPC12XX_CMSIS_V2__";
+		/* Uncomment the following EE_OPT to include all library functions */
+		/*EE_OPT = "__USE_CMSIS_ALL__";*/
+		EE_OPT = "__USE_CMSIS_IOCON__";
+		EE_OPT = "__USE_CMSIS_SYSCTRL__";
+		EE_OPT = "__USE_CMSIS_UART__";
+	//	EE_OPT = "__USE_CMSIS_TIMER32__";
+		
+		
+	};
+
+	TASK BM_task {
+		PRIORITY = 0x01;   /* Lowest priority */
+		AUTOSTART = TRUE;
+		STACK = PRIVATE {
+			SYS_SIZE = 512;
+		};
+		ACTIVATION = 1;    /* only one pending activation */
+		SCHEDULE = FULL;
+	};
+
+	TASK Task1 {
+		PRIORITY = 0x03;   /* High priority */
+		AUTOSTART = FALSE;
+		STACK = PRIVATE {
+			SYS_SIZE = 512;
+		};
+		ACTIVATION = 1;    /* only one pending activation */
+		SCHEDULE = FULL;
+	};
+
+	TASK Task2 {
+		PRIORITY = 0x02;   /* Low priority */
+		AUTOSTART = FALSE;
+		STACK = PRIVATE {
+			SYS_SIZE = 512;
+		};
+		ACTIVATION = 1;    /* only one pending activation */
+		SCHEDULE = FULL;
+	};
+
+};

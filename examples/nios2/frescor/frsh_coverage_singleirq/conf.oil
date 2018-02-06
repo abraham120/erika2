@@ -1,0 +1,158 @@
+CPU test_application {
+
+	OS EE {
+		CFLAGS = "-DALT_DEBUG -O0 -g";
+		CFLAGS = "-Wall";
+		ASFLAGS = "-g";
+		LDFLAGS = "-Wl,-Map -Wl,project.map";
+		LDDEPS = "\\";
+		LIBS = "-lm";
+		NIOS2_SYS_CONFIG = "Debug";
+		NIOS2_APP_CONFIG = "Debug";
+		NIOS2_DO_MAKE_OBJDUMP = TRUE;
+		NIOS2_JAM_FILE = "C:/altera/81/nios2eds/examples/verilog/niosII_stratixII_2s60_RoHS/frsh_small/fpga.jam";
+		NIOS2_PTF_FILE = "C:/altera/81/nios2eds/examples/verilog/niosII_stratixII_2s60_RoHS/frsh_small/NiosII_stratixII_2s60_RoHS_small_sopc.ptf";
+
+		CPU_DATA = NIOSII {
+			STACK_TOP = "__alt_stack_pointer";
+			SYS_SIZE = 8096;
+			/* The full_featured example is useful if you have the tracer support! */
+			SYSTEM_LIBRARY_NAME = "frsh_small_syslib";
+			SYSTEM_LIBRARY_PATH = "/cygdrive/c/Users/pj/workspaceFRSH81/frsh_small_syslib";
+
+			MULTI_STACK = TRUE {
+				IRQ_STACK = TRUE {
+					SYS_SIZE=512;
+				};
+				DUMMY_STACK = SHARED;
+			};
+
+			APP_SRC = "code.c";
+			
+			TIMER_FREERUNNING = "HIGH_RES_TIMER_0";
+			FRSH_TIMERS = SINGLE {
+				TIMER_IRQ = "TIMER_CAPACITY_0";
+		     };
+		};
+	  
+		STATUS = EXTENDED;
+		STARTUPHOOK = TRUE; // this demo is using the StartupHook!
+		ERRORHOOK = TRUE;
+		SHUTDOWNHOOK = FALSE;
+		PRETASKHOOK = FALSE;
+		POSTTASKHOOK = FALSE;
+		USEGETSERVICEID = FALSE;
+		USEPARAMETERACCESS = FALSE;
+		USERESSCHEDULER = TRUE;
+
+        KERNEL_TYPE = FRSH {
+        		TICK_TIME = "20ns";
+        		USE_SYNC_OBJ = TRUE;
+        		CONTRACTS = CONTRACT {
+        				NAME = "c1";
+        				BUDGET = 20000;
+        				PERIOD = 100000;
+        			};
+        		CONTRACTS = CONTRACT {
+        				NAME = "c2";
+        				BUDGET = 20000;
+        				PERIOD = 100000;
+        			};
+        		CONTRACTS = CONTRACT {
+        				NAME = "c3";
+        				BUDGET = 20000;
+        				PERIOD = 100000;
+        			};
+        		CONTRACTS = CONTRACT {
+        				NAME = "c4";
+        				BUDGET = 20000;
+        				PERIOD = 100000;
+        			};
+        		CONTRACTS = CONTRACT {
+        				NAME = "c5";
+        				BUDGET = 40000;
+        				PERIOD = 800000;
+        			};
+        		CONTRACTS = CONTRACT {
+        				NAME = "c6";
+        				BUDGET = 40000;
+        				PERIOD = 800000;
+        			};
+        		CONTRACTS = CONTRACT {
+        				NAME = "c7";
+        				BUDGET = 40000;
+        				PERIOD = 800000;
+        			};
+        		CONTRACTS = CONTRACT {
+        				NAME = "clong";
+        				BUDGET = 40000;
+        				PERIOD = 80000000;
+        			};
+        	};
+		
+		/* This generates the ORTI File used by lauterbach Trace32! */
+		ORTI_SECTIONS = ALL;
+    };
+
+    TASK Task1 {
+    	CONTRACT = "c1";
+		PRIORITY = 0x01;
+		STACK = PRIVATE {
+			SYS_SIZE = 1024;
+		};
+		RESOURCE = myRes;
+		RESOURCE = myRes2;
+    };
+
+    TASK Task2 {
+    	CONTRACT = "c2";
+		PRIORITY = 0x01;
+		STACK = PRIVATE {
+			SYS_SIZE = 1024;
+		};
+    };
+    
+    TASK Task3 {
+    	CONTRACT = "c3";
+		PRIORITY = 0x01;
+		STACK = PRIVATE {
+			SYS_SIZE = 1024;
+		};
+    };
+    
+    TASK Task4 {
+    	CONTRACT = "c4";
+		PRIORITY = 0x01;
+		STACK = PRIVATE {
+			SYS_SIZE = 1024;
+		};
+    };
+
+    TASK Task5 {
+    	CONTRACT = "clong";
+		PRIORITY = 0x01;
+		STACK = PRIVATE {
+			SYS_SIZE = 1024;
+		};
+    };
+    
+    RESOURCE myRes { RESOURCEPROPERTY = STANDARD; };
+    RESOURCE myRes2 { RESOURCEPROPERTY = STANDARD; };
+
+    COUNTER Counter1;
+
+    ALARM AlarmTask2 {
+                COUNTER = Counter1;
+                ACTION = ACTIVATETASK { TASK = Task2; };
+    };
+    ALARM AlarmTask3 {
+                COUNTER = Counter1;
+                ACTION = ACTIVATETASK { TASK = Task3; };
+    };
+    ALARM AlarmTask4 {
+                COUNTER = Counter1;
+                ACTION = ACTIVATETASK { TASK = Task4; };
+    };
+
+};
+

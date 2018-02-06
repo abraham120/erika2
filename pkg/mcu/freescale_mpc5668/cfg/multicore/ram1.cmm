@@ -1,0 +1,18 @@
+;
+; Script to run ERIKA from RAM, derived from the flashing example in
+; demo/powerpc/flash/mpc5668.cmm
+;
+; For t32 ver (4/12/2009)
+;
+
+; evi - ERIKA binary object and VLE setting (from the makefile)
+&filename="#EXE_NAME#"
+&use_vle=#USE_VLE#
+
+
+; The program has been already loaded in memory
+d.load.elf &filename /NOCODE
+
+#ORTICMD#
+
+ENDDO

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<evidence_example version="1" ID="e7t_oil_resource">
+
+ <category>ARM Evaluator 7T/OSEK API</category>
+ <title>OIL Resource</title>
+   
+ <small_descr>
+ This example shows the following task related primitives:
+ GetActiveApplicationMode, ReleaseResource, GetResource
+ </small_descr>
+
+ <long_descr>
+ This example shows the following task related primitives:
+ GetActiveApplicationMode, ReleaseResource, GetResource
+ </long_descr>
+
+ <file_section>
+  <file     name="code.c"/> 
+  <file     name="conf.oil"/>
+ </file_section>
+
+</evidence_example>

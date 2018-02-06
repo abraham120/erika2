@@ -1,0 +1,67 @@
+;setting up dual core debugging for MPC5643L
+&nodename=NODENAME()
+
+;set up intercom for communication between the debuggers
+&core2="intercom localhost:10001"
+
+;Test is etpu software is already running or not
+if !intercom.ping(localhost:10001)
+(
+	if "&nodename"==""
+	(
+		print "assuming connection is USB"
+		os t32mppc -c config-mc.t32 10001 e200z4-Slave USB CORE=2 &
+	)
+	else
+	(
+		print "connection is ETH"
+		os t32mppc -c config-mc.t32 10001 e200z4-Slave NET NODE=&nodename PACKLEN=1024 CORE=2 &
+	)
+	;wait some time until the software finished booting
+	;if you get and intercom timeout error on the following framepos commands
+	;increase time
+	wait 3.s
+	
+	;multicore settings ==========================================================
+	intercom.wait localhost:10001
+	intercom.wait localhost:10001
+	
+	SYStem.CPU MPC5643L
+	&core2 SYStem.CPU MPC5643L
+	
+	SYStem.CONFIG.CORE 1. 1.
+	&core2 SYStem.CONFIG.CORE 2. 1.
+
+	&core2 cd #CPU1_DIR#
+)
+
+
+;wait for startup of debugger 2
+intercom.wait localhost:10001
+
+
+SYStem.RESet
+&core2 SYStem.RESet
+
+SYNCH.RESet
+&core2 SYNCH.RESET
+
+print "*** hello main Z4 ***"
+&core2 print "*** hello secondary Z4 ***"
+
+
+
+; ============================================================================
+
+cd #MASTER_DIR#
+&slavefilename="#CPU1_EXE_NAME#"
+
+DO t32.cmm
+
+; Load the code of slave processor (just the code!)
+d.load.elf ../#CPU1_DIR#/&slavefilename /NosYmbol /NoReg /NoBreak /NoClear
+; Initialize the other debugger (the script doesn't touch any register, so
+; it's okay to run it even if the core is still in reset)
+&core2 DO t32.cmm
+
+ENDDO

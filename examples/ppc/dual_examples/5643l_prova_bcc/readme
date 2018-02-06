@@ -1,0 +1,53 @@
+This demo handles the case of a multicore application characterized 
+by two core (Z6 and Z0) communicating each other by using spinlock 
+and remote task activation.
+
+One of the key point of this demo is to provide a simple application
+able to show how to migrate a task among CPUs by providing a
+different configuration file (conf.oil) and no need to modify the
+application code.
+
+According with this objective the application can be featured in
+two different modes:
+ 
+1) Single-core: a set of tasks execute in the main core (Z6) and 
+a disturbing task is activated in the same core of the other tasks and 
+interferes with them by accessing shared memory protected by a resource;
+
+2) Multi-core: the same set of tasks previously mentioned concurrently
+execute with a disturbing task running in the slave core (Z0). The 
+concurrent access to a portion of shared memory is guaranteed by 
+using spinlock and the disturbing task is activated in the slave core
+by using a remote activation performed in the main core.
+
+The application performs two checks, the first one is handled by
+TaskZ6_2 in Z6 core. If the check is ok, the activation chain continue by
+activating TaskZ6_3. The second check is performed by disturbing_task,
+if the check is ok, the CheckOK_task is activated. In the single core
+case ALL these tasks reside in Z6 main core, in case of multicore 
+both disturbing_task and CheckOK_task migrate into Z0.
+
+As previously said, the application can be built as single or multicore
+with no need to modify the source code in this ways:
+
+1) make (for single core case)
+2) make clean (clean project)
+3) make MULTICORE=1 (for multicore case)
+
+Prerequisites:
+
+set the following enviromental variables in your current terminal:
+
+export ERIKA_FILES=PATH_TO_ERIKA_FILES
+export RTDRUID_ECLIPSE_HOME=PATH_TO_RTDRUID
+export PPC_CW_BASEDIR=PATH_TO_CODEWARRIOR_COMPILER
+
+or set them once and for all in your terminal configuration 
+file (e.g., .bashrc)
+
+If RT-Druid is not available, this demo can also exploit a fake
+rtdruid in rhis way:
+
+make FAKE_RTDRUID=1 MULTICORE=1
+
+In this way a multicore application is built with no RT-Druid support

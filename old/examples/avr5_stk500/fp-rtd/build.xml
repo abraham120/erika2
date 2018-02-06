@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="rtdruid" default="all" basedir=".">
+
+ <target name="all">
+<rtdruid.Oil.Configurator inputfile="conf.oil" outputdir="Debug" />
+ </target>
+</project>

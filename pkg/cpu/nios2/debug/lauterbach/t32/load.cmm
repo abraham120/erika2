@@ -1,0 +1,35 @@
+; Start debugging
+print "Start debugging"
+
+; Note: sys.up resets ALL cores!
+sys.up
+sys.jc 10Mhz
+r.res
+
+; no interrupts while single stepping
+system.option.imaskasm on
+system.option.imaskhll on
+
+; this is to support the old Nios versions. comment it if the tracer
+; does not work!
+system.option FSS ON
+
+; get rid of cygwin pathnames
+;symbol.spath.reset
+symbol.spath.set "C:\"
+&SOPC_KIT_NIOS2=OS.ENV(SOPC_KIT_NIOS2)
+symbol.spath.set &SOPC_KIT_NIOS2
+symbol.spath.set ..
+
+; load the ELF file
+data.load.elf &EE_NIOS2_ELF_FILE /plusvm /spart 3
+
+enddo
+
+
+
+
+
+
+
+

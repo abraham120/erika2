@@ -1,0 +1,94 @@
+CPU test_application {
+
+  OS EE {
+    EE_OPT = "EE_DEBUG";
+    EE_OPT = "__ASSERT__";
+    EE_OPT = "EE_EXECUTE_FROM_RAM";
+    EE_OPT = "EE_SAVE_TEMP_FILES";
+    //EE_OPT = "EE_MM_OPT";
+    EE_OPT = "EE_ICACHE_ENABLED";
+    EE_OPT = "EE_DCACHE_ENABLED";
+
+    /* EE_OPT = "EE_SHUTDOWN_ALL_CORES_FROM_CORE2"; */
+
+    REMOTENOTIFICATION = USE_RPC;
+
+    //SPINLOCKS = QUEUED;
+
+    MASTER_CPU = "master";
+
+    CPU_DATA = TRICORE {
+      ID = "master";
+      CPU_CLOCK = 200.0;
+      APP_SRC = "master.c";
+      MULTI_STACK = TRUE;
+      SYS_STACK_SIZE = 4096;
+      COMPILER_TYPE = GNU;
+      //COMPILER_TYPE = TASKING;
+    };
+
+    CPU_DATA = TRICORE {
+      ID = "slave1";
+      APP_SRC = "slave1.c";
+      MULTI_STACK = TRUE;
+      SYS_STACK_SIZE = 4096;
+      COMPILER_TYPE = GNU;
+      //COMPILER_TYPE = TASKING;
+    };
+
+    CPU_DATA = TRICORE {
+      ID = "slave2";
+      APP_SRC = "slave2.c";
+      MULTI_STACK = TRUE;
+      SYS_STACK_SIZE = 4096;
+      COMPILER_TYPE = GNU;
+      //COMPILER_TYPE = TASKING;
+    };
+
+    MCU_DATA = TRICORE {
+      MODEL = TC27x;
+    };
+
+    STATUS = EXTENDED;
+    PRETASKHOOK  = TRUE;
+    SHUTDOWNHOOK = TRUE;
+
+    ORTI_SECTIONS = ALL;
+
+    KERNEL_TYPE = ECC1;
+  };
+
+  TASK TaskMaster {
+    CPU_ID = "master";
+    PRIORITY = 1;
+    AUTOSTART = TRUE;
+    STACK = PRIVATE {
+      SYS_SIZE = 128;
+    };
+    ACTIVATION = 1;
+    SCHEDULE = FULL;
+  };
+
+  TASK TaskSlave1 {
+    CPU_ID = "slave1";
+    PRIORITY = 1;
+    AUTOSTART = FALSE;
+    STACK = PRIVATE {
+      SYS_SIZE = 128;
+    };
+    ACTIVATION = 1;
+    SCHEDULE = FULL;
+  };
+
+  TASK TaskSlave2 {
+    CPU_ID = "slave2";
+    PRIORITY = 1;
+    AUTOSTART = FALSE;
+    STACK = SHARED;
+    ACTIVATION = 1;
+    SCHEDULE = FULL;
+  };
+
+  SPINLOCK spinlock_1 { };
+  SPINLOCK spinlock_2 { };
+};

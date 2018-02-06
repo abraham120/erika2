@@ -1,0 +1,43 @@
+/***********************/
+/* Declaration Section */
+/***********************/
+
+VERSION {
+    KOIL = "2.1";
+    OSSEMANTICS = "ORTI", "2.1";
+};
+
+IMPLEMENTATION OSTEST1_ORTI {
+
+    RESOURCE {
+        ENUM "unsigned char" [
+            "UNLOCKED" = 0,
+            "LOCKED" = 1
+        ] STATE, "Resource State";
+        ENUM "int" [
+            "Thread0" = 0,
+            "Thread1" = 1,
+            "Thread2" = 2,
+            "Thread3" = 3,
+            "No task" = "-1"
+        ] LOCKER, "Resource Locker";
+        STRING PRIORITY, "Ceiling priority";
+    }, "Resources";
+ 
+}; /* END OF IMPLEMENTATION */
+
+/***********************/
+/* Information Section */
+/***********************/
+
+RESOURCE Resource0 {
+    STATE = "EE_resource_locked[0]";
+    LOCKER = "EE_resource_locked[0] ? EE_ORTI_res_locker[0] : -1";
+    PRIORITY = "TASK: 8";
+};
+
+RESOURCE Resource1 {
+    STATE = "EE_resource_locked[1]";
+    LOCKER = "EE_resource_locked[1] ? EE_ORTI_res_locker[1] : -1";
+    PRIORITY = "TASK: 4";
+};

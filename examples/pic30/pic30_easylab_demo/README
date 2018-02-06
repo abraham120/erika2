@@ -1,0 +1,59 @@
+=======================
+    Easylab Library    
+=======================
+
+Copyright (C) 2002-2011  Evidence Srl
+
+Web Site: evidence.eu.com
+Contact: info@evidence.eu.com
+Authors: Dario di Stefano, Errico Guidieri
+Date: 07-2011
+Version: 1.0
+
+== Description ==
+
+Easylab board is cheap easy to use prototyping board that let you develop 
+with Microchip Microstick for dsPIC33F and PIC24H. The board give you 
+two connectors to access to all Microcontroller I/O pins, a bounch of 
+leds to visually test Digital I/O, a buzzer to play with and an USB port 
+to interact with the microcontroller, through serial over USB protocol.
+Power supply and serial communication come both through the same USB cable.
+
+== Microcontroller ==
+
+dsPIC33FJ64MC802 is the only completly supported and tested target, even 
+though Microstick packages come with a PIC24FJ64GP too.
+
+== Board an Mcu ApPI == 
+
+Erika enterprise contains API for:
+
+* Configure dspic pins in realation with board layout (ee_board.h [included by default]) 
+* Set/Get actual clock frequency (with internal FRC with PLL) (mcu/microchip_dspic/inc/ee_utils.h)
+* Turn on/off & toggle leds (ee_board.h [included by default])
+* Read/Write DIO pins (ee_board.h [included by default])
+* Configure up to 2 General Purpose Timers (mcu/microchip_dspic/inc/ee_timer.h)
+* Start and stop a buzzer with a given forcing frequency (ee_board.h [included by default]);
+* Configure one of 4 ADC channels and sample that synchronously (mcu/microchip_dspic/inc/ee_adc.h)
+* Configure 2 couple of PWM pins in any combination of PWM/override, 
+  with given frequency and duty cycle (mcu/microchip_dspic/inc/ee_pwm.h)   
+* Serial comunication with UART serial over USB (mcu/microchip_dspic/inc/ee_uart.h)
+ 
+== The Example ==
+
+Easylab Library come with a complete example that shows the usage of some features of the board 
+like PWM, ADC, Buzzer, USB/Serial, and leds. At the beginning the User configure the PWM 
+and the ADC channels, and the desired voltage value that analog input should match, through serial 
+communication.
+Then, using a simple cable, the user can connect the analogic output (AOx for PWM channel x) to 
+the AD converter (ANx for ADC channel x). The value measured by the AD converter is then 
+transmitted to the PC (tested with putty.exe).
+    
+    Step 1: Select the PWM channel.
+    Step 2: Select the ADC channel.
+    Step 3: Set the desired voltage value.
+    Step 4: Connect the cable and measure the output voltage.
+    
+You can send ESC char to restart the demo.
+
+== EOD ==

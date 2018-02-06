@@ -1,0 +1,92 @@
+;
+; Script to run ERIKA from RAM, derived from the flashing example in
+; demo/powerpc/flash/mpc5668.cmm
+;
+; For t32 ver (4/12/2009)
+;
+
+; evi - ERIKA binary object and VLE setting (from the makefile)
+&filename="#EXE_NAME#"
+&use_vle=#USE_VLE#
+
+
+SYStem.RESet
+&core2 SYStem.RESet
+
+SYNCH.RESet
+&core2 SYNCH.RESET
+
+;system settings
+;1. detect CPU type
+SYStem.CPU 55XX
+SYStem.UP
+&cpu=CPU()
+
+;1.configure both PowerView instances for detected CPU
+SYStem.CPU &cpu
+SYStem.BdmClock 4.MHz
+
+&core2 SYStem.CPU &cpu
+&core2 SYStem.BdmClock 4.MHz
+
+;setup for multi-core debugging
+SYStem.CONFIG.CORE 1. 1.
+&core2 SYStem.CONFIG.CORE 2. 1.
+&core2 SYStem.CONFIG.SLAVE ON
+
+if POWERNEXUS()
+(
+  Trace.Method Analyzer
+  Trace.AutoArm ON
+  
+  &core2 Trace.Method Analyzer
+  &core2 Trace.AutoArm ON
+  
+  Trace.XTRACK localhost:10001
+  &core2 Trace.XTRACK localhost:10000
+)
+
+;Z6: halt on POR 
+SYStem.Up
+
+;Z0: still in reset, attach only
+&core2 SYStem.Mode.Attach
+
+;Z0: on a Break while in reset, the debugger will stop Z0 as soon as
+; the Z6 program wakes Z0 up from reset
+&core2 Break
+
+
+; initialize SRAM
+Data.Set EA:0x40000000--0x40093fff %Quad 0
+
+; setup MMU for flash, RAM and register access, as BAM does
+GOSUB setup_mmu &use_vle
+
+;disable mmu bypass
+Data.Set SPR:0x3F4 %LONG 0x00000000
+
+if POWERNEXUS()
+(
+  Trace.INIT
+  &core2 Trace.INIT
+)
+
+
+d.load.elf &filename /PlusVM
+
+#ORTICMD#
+
+ENDDO
+
+setup_mmu:
+	ENTRY &set_vle
+	if &set_vle==1
+		&vle_flag=0x20
+	else
+		&vle_flag=0
+	MMU.TLB1.SET 0x0 0xC0000500 0xFFF0002A 0xFFF0003F
+	MMU.TLB1.SET 0x1 0xC0000900 0x00000000+&vle_flag 0x0000003F
+	MMU.TLB1.SET 0x2 0xC0000900 0x20000000+&vle_flag 0x2000003F
+	MMU.TLB1.SET 0x3 0xC0000400 0x40000008+&vle_flag 0x4000003F
+	RETURN

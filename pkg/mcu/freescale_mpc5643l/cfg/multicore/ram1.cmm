@@ -1,0 +1,38 @@
+;
+; Script to run ERIKA from RAM, derived from the flashing example in
+; demo/powerpc/flash/mpc5668.cmm
+;
+; For t32 ver (4/12/2009)
+;
+
+; evi - ERIKA binary object and VLE setting (from the makefile)
+&filename="#EXE_NAME#"
+&use_vle=#USE_VLE#
+
+
+; The program has been already loaded in memory
+d.load.elf &filename /NOCODE
+
+#ORTICMD#
+
+; Evidence - Francesco E: check if the symbol exist
+if symbol.exist(mem_write_code)
+(
+    if &use_vle==1
+    (
+        ; Evidence - Francesco E. Mark 3 crazy instructions in boot code
+        ; as VLE to prevent Lauterbach from uncorrect VLE decoding
+        sYmbol.NEW.ATTRibute VLE mem_write_code++0xB
+    )
+    else
+    (
+        ; Evidence - Francesco E. Mark 3 crazy instructions in boot code
+        ; as FLE to prevent Lauterbach from uncorrect FLE decoding
+        sYmbol.NEW.ATTRibute FLE mem_write_code++0xB
+    )
+)
+
+; Francesco E: enable HTM feature
+NEXUS.HTM ON
+
+ENDDO

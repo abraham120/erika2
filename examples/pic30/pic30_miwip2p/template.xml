@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<evidence_example version="1" ID="pic30_MiWiP2P">
+
+ <category>pic30/Flex MiWiP2P</category>
+ <title>MiWi P2P Demo</title>
+   
+ <small_descr>
+ This example shows how to use the MiWi P2P protocol with the Flex Demoboard.
+ </small_descr>
+
+ <long_descr>
+This demo can be used to show the usage of the MiWi P2P protocol in combination with the Erika RTOS, the FLEX Demo Daughter Board and the PICDEM Z 2.4 GHz daughter card.
+&lt;p&gt;
+MiWi 2P2 is a wireless protocol developed by Microchip (www.microchip.com) and based on the IEEE802.15.4 standard.
+&lt;/p&gt;
+&lt;p&gt;
+This example is derived from that provided by Microchip in the MiWiP2P distribution.
+&lt;/p&gt;
+Usage:
+&lt;ul&gt;
+ &lt;li&gt;Button S1 is used to change the message to transmit: "Hello" or "P2P";&lt;/li&gt;
+ &lt;li&gt;Button S2 is used to send a message;&lt;/li&gt;
+ &lt;li&gt;Button S3 is used to initialize a periodic transmission of messages.&lt;/li&gt;
+&lt;/p&gt;
+</long_descr>
+
+ <file_section>
+  <file     name="code.c"/>
+  <file     name="P2PDefs.h"/> 
+  <file     name="conf.oil"/>
+ </file_section>
+
+</evidence_example>

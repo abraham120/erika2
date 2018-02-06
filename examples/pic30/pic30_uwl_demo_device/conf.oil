@@ -1,0 +1,208 @@
+CPU mySystem {
+
+	OS myOs {
+		EE_OPT = "DEBUG";
+
+		CPU_DATA = PIC30 {
+			APP_SRC = "code.c";
+			APP_SRC = "check.S";
+			MULTI_STACK = FALSE;
+			ICD2 = TRUE;
+		};
+
+		MCU_DATA = PIC30 {
+			MODEL = PIC33FJ256MC710;
+		};
+		EE_OPT = "__USE_SPI__";
+		//EE_OPT = "__USE_UART__";
+		
+		BOARD_DATA = EE_FLEX {
+			USELEDS = TRUE;
+			TYPE = DEMO {
+				OPTIONS = ALL;
+			};
+		};
+		KERNEL_TYPE = FP;
+
+		/* ********************************************************** */
+		/*                Contrib Library Inlcusion                   */
+		/* ********************************************************** */
+		EE_OPT = "__ADD_LIBS__";
+
+		LIB = ENABLE { NAME = "MEMORY"; };	
+		
+		LIB = ENABLE { NAME = "CC2420"; };	
+		EE_OPT = "USE_CC2420";
+		
+		//LIB = ENABLE { NAME = "CONSOLE"; };	
+		//EE_OPT = "USE_CONSOLE";
+		//EE_OPT = "USE_CONSOLE_SERIAL";
+		
+		LIB = ENABLE { NAME = "UWIRELESS"; };	
+		EE_OPT = "EE_TYPETICK=EE_INT32"; /* Mandatory! */
+		EE_OPT = "UWL_USE_SIMPLE_802154";
+		EE_OPT = "UWL_GTS_MANIPULATION"; /* Makes sense if Coord. */
+		EE_OPT = "UWL_NO_DYN_ASS"; /* Avoid dynamic association */
+		//EE_OPT = "UWL_DEBUG";
+		//EE_OPT = "UWL_DEBUG_LOG";
+		//EE_OPT = "UWL_DEBUG_LOG_SERIAL";
+		//EE_OPT = "UWL_DEBUG_LOG_SERIAL_PORT=1";
+		//EE_OPT = "UWL_DEBUG_LOG_HAS_PRINT";
+        LDFLAGS = "--heap=512";
+	};
+
+	COUNTER TASK_COUNTER;
+	
+	/* ****************************************************************** */
+	/*                      Application TASKs                             */
+	/* ****************************************************************** */
+	TASK CHAT_SEND {
+		PRIORITY = 4;
+		STACK = SHARED;
+		SCHEDULE = FULL;
+		RESOURCE = LCD_MUTEX;
+		RESOURCE = UWL_EE_RESOURCE_MAC_MUTEX;
+		RESOURCE = UWL_EE_RESOURCE_MAC_SEND_MUTEX;
+	};
+	ALARM CHAT_SEND_ALARM {
+		COUNTER = TASK_COUNTER;
+		ACTION = ACTIVATETASK { TASK =  CHAT_SEND; };
+	};
+
+	TASK CHAT_RECEIVE {
+		PRIORITY = 4;
+		STACK = SHARED;
+		SCHEDULE = FULL;
+		RESOURCE = LCD_MUTEX;
+	};
+	
+	/* ****************************************************************** */
+	/*                        Utility TASKs                               */
+	/* ****************************************************************** */
+	TASK LCD_WRITE {
+		PRIORITY = 5;		// Log Priority 
+		//PRIORITY = 1000;	// Debug Priority
+		STACK = SHARED;
+		SCHEDULE = FULL;
+		RESOURCE = LCD_MUTEX;
+	};
+	ALARM LCD_WRITE_ALARM {
+		COUNTER = TASK_COUNTER;
+		ACTION = ACTIVATETASK { TASK =  LCD_WRITE; };
+	};
+	
+	/* ****************************************************************** */
+	/*                    Resources Declaration                           */
+	/* ****************************************************************** */
+	RESOURCE LCD_MUTEX { RESOURCEPROPERTY = STANDARD; };
+
+
+	/* -------------------------------------------------------------------- 
+	|                  --  OpenZB OIL Section  --                          |
+	|                                                                      |
+	|  - 1 PHY Task (read from radio)                                      |
+	|  - 7 MAC Tasks (superframe management)                               |
+	 -------------------------------------------------------------------- */
+
+	COUNTER UWL_EE_TASK_COUNTER;
+	
+	TASK UWL_EE_TASK_PHY_READ_DISPATCHER {
+		PRIORITY = 30;
+		STACK = SHARED;
+		SCHEDULE = FULL;
+		RESOURCE = UWL_EE_RESOURCE_MAC_RX_BEACON_MUTEX;
+		RESOURCE = UWL_EE_RESOURCE_MAC_RX_DATA_MUTEX;
+		RESOURCE = UWL_EE_RESOURCE_MAC_RX_COMMAND_MUTEX;
+		RESOURCE = UWL_EE_RESOURCE_MAC_SEND_MUTEX;
+	};
+
+	TASK UWL_EE_TASK_MAC_PROCESS_RX_BEACON {
+		PRIORITY = 25;
+		STACK = SHARED;
+		SCHEDULE = FULL;
+		RESOURCE = UWL_EE_RESOURCE_MAC_RX_BEACON_MUTEX;
+	};
+
+	TASK UWL_EE_TASK_MAC_PROCESS_RX_DATA {
+		PRIORITY = 20;
+		STACK = SHARED;
+		SCHEDULE = FULL;
+		RESOURCE = UWL_EE_RESOURCE_MAC_RX_DATA_MUTEX;
+	};
+
+	TASK UWL_EE_TASK_MAC_PROCESS_RX_COMMAND {
+		PRIORITY = 20;
+		STACK = SHARED;
+		SCHEDULE = FULL;
+		RESOURCE = UWL_EE_RESOURCE_MAC_RX_COMMAND_MUTEX;
+		RESOURCE = UWL_EE_RESOURCE_MAC_SEND_MUTEX;
+	};
+
+	TASK UWL_EE_TASK_MAC_TIMESLOT {
+		PRIORITY = 20;
+		STACK = SHARED;
+		SCHEDULE = FULL;
+		RESOURCE = UWL_EE_RESOURCE_MAC_MUTEX;
+		RESOURCE = UWL_EE_RESOURCE_MAC_GTS_SEND_MUTEX;
+	};
+	ALARM UWL_EE_ALARM_MAC_TIMESLOT {
+		COUNTER = UWL_EE_TASK_COUNTER;
+		ACTION = ACTIVATETASK {TASK=UWL_EE_TASK_MAC_TIMESLOT;};
+	};
+
+	TASK UWL_EE_TASK_MAC_BEFORE_TIMESLOT {
+		PRIORITY = 20;
+		STACK = SHARED;
+		SCHEDULE = FULL;
+		RESOURCE = UWL_EE_RESOURCE_MAC_MUTEX;
+	};
+	ALARM UWL_EE_ALARM_MAC_BEFORE_TIMESLOT {
+		COUNTER = UWL_EE_TASK_COUNTER;
+		ACTION = ACTIVATETASK {TASK=UWL_EE_TASK_MAC_BEFORE_TIMESLOT;};
+	};
+
+	TASK UWL_EE_TASK_MAC_BACKOFF_PERIOD {
+		PRIORITY = 20;
+		STACK = SHARED;
+		SCHEDULE = FULL;
+		RESOURCE = UWL_EE_RESOURCE_MAC_SEND_MUTEX;
+	};
+	ALARM UWL_EE_ALARM_MAC_BACKOFF_PERIOD {
+		COUNTER = UWL_EE_TASK_COUNTER;
+		ACTION = ACTIVATETASK {TASK=UWL_EE_TASK_MAC_BACKOFF_PERIOD;};
+	};
+
+	TASK UWL_EE_TASK_MAC_GTS_SEND {
+		PRIORITY = 15;
+		STACK = SHARED;
+		SCHEDULE = FULL;
+		RESOURCE = UWL_EE_RESOURCE_MAC_GTS_SEND_MUTEX;
+	};
+	ALARM UWL_EE_ALARM_MAC_GTS_SEND {
+		COUNTER = UWL_EE_TASK_COUNTER;
+		ACTION = ACTIVATETASK {TASK=UWL_EE_TASK_MAC_GTS_SEND;};
+	};
+	
+	/* ****************************************************************** */
+	/*                    Resources Declaration                           */
+	/* ****************************************************************** */
+	RESOURCE UWL_EE_RESOURCE_MAC_MUTEX { 
+		RESOURCEPROPERTY = STANDARD; 
+	};
+	RESOURCE UWL_EE_RESOURCE_MAC_GTS_SEND_MUTEX { 
+		RESOURCEPROPERTY = STANDARD; 
+	};
+	RESOURCE UWL_EE_RESOURCE_MAC_RX_BEACON_MUTEX { 
+		RESOURCEPROPERTY = STANDARD; 
+	};
+	RESOURCE UWL_EE_RESOURCE_MAC_RX_DATA_MUTEX { 
+		RESOURCEPROPERTY = STANDARD; 
+	};
+	RESOURCE UWL_EE_RESOURCE_MAC_RX_COMMAND_MUTEX { 
+		RESOURCEPROPERTY = STANDARD; 
+	};
+	RESOURCE UWL_EE_RESOURCE_MAC_SEND_MUTEX { 
+		RESOURCEPROPERTY = STANDARD; 
+	};
+};
+

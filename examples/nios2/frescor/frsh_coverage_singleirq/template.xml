@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<evidence_example version="1" ID="nios2_frsh_coverage_singleirq">
+
+ <category>nios2/FRESCOR</category>
+ <title>FRSH Coverage test - single IRQ</title>
+   
+ <small_descr>
+ This test calls all the FRSH primitives obtaining a good coverage.
+ </small_descr>
+
+ <long_descr>
+ This test calls all the FRSH primitives obtaining a good coverage. It
+ can be used to learn how to program a FRSH application. It contains 6
+ tests each one stressing a part of the source code. The coverage and
+ timings have been taken using lauterbach trace32. The demo uses one
+ single multiplexed IRQ sources for the FRSH timers.
+ </long_descr>
+
+ <file_section>
+  <file     name="code.c"/> 
+  <file     name="conf.oil"/>
+ </file_section>
+
+</evidence_example>

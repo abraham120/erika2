@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<evidence_example version="1" ID="board_flex_openzb_demo">
+
+ <category>pic30/FLEX Demo Board</category>
+ <title>Simple OpenZB demo</title>
+   
+ <small_descr>
+ This is a simple OpenZB demo showing the features of the communication library.
+ </small_descr>
+
+ <long_descr>
+ This demo is a self running application of IEEE 802.15.4. The cordinator and the end device 
+ communicate some useful measurements which are displayed on the LCD : 
+ a) number of packets sent;   
+ b) number of loss packets;
+ c) number of corrupted packets.
+
+ These measurements helps to understand the nature of the environment where the devices are deployed.  
+
+ WARNING: the application code is the same for coordinator and end-device. To select the device type make the appropriate change in the conf.oil
+ </long_descr>
+
+ <file_section>
+  <file     name="code.c"/>
+  <file     name="conf.oil"/>
+  <file     name="types.h"/>
+ </file_section>
+
+</evidence_example>

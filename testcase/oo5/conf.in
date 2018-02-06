@@ -1,0 +1,2 @@
+conf = "CONF=e7tB1multi,e7tB1multi2,e7tB1mono,e7tB2multi,e7tB2multi2,e7tB2mono,e7tE1multi,e7tE1multi2,e7tE2multi,e7tE2multi2"
+worksfor = e7t_manual

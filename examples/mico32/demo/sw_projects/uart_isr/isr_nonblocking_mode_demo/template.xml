@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<evidence_example version="1" ID="fpg_eye_mico32_uart_isr_isr_nonblocking">
+
+ <category>mico32/FPG-EYE/fpg_eye_mico32/Uart isr</category>
+ <title>Uart isr (isr, non-blocking mode) test demo</title>
+
+ <small_descr>
+ This is the demo to test Uart isr (isr, non-blocking mode) on FPG-EYE Board
+ devices.
+ </small_descr>
+
+ <long_descr>
+ Uart isr test(isr, non-blocking mode).
+ &lt;br /&gt;
+ &lt;br /&gt;
+ This demo shows how to use UART driver for Lattice Mico32 device to send
+ and receive characters.
+ &lt;br /&gt;
+ &lt;br /&gt;
+ The UART controller is configured in ISR mode and in non-blocking mode for tx
+ and rx.
+ &lt;br /&gt;
+ &lt;br /&gt;
+ The demo is as shown in test1 but the led is turned on/off in the
+ ISR callbacks.
+ &lt;br /&gt;
+ &lt;br /&gt;
+ The demo requires a RS232 serial connection with a 115200 bps, 8N1
+ configuration.
+ </long_descr>
+
+ <file_section>
+  <file     name="conf.oil"/>
+  <file     name="test4_main.c"/>
+  <file     name="makefile"/>
+ </file_section>
+
+</evidence_example>

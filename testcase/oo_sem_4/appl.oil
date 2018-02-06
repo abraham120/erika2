@@ -1,0 +1,142 @@
+/* ###*B*###
+ * ERIKA Enterprise - a tiny RTOS for small microcontrollers
+ *
+ * Copyright (C) 2002-2008  Evidence Srl
+ *
+ * This file is part of ERIKA Enterprise.
+ *
+ * ERIKA Enterprise is free software; you can redistribute it
+ * and/or modify it under the terms of the GNU General Public License
+ * version 2 as published by the Free Software Foundation, 
+ * (with a special exception described below).
+ *
+ * Linking this code statically or dynamically with other modules is
+ * making a combined work based on this code.  Thus, the terms and
+ * conditions of the GNU General Public License cover the whole
+ * combination.
+ *
+ * As a special exception, the copyright holders of this library give you
+ * permission to link this code with independent modules to produce an
+ * executable, regardless of the license terms of these independent
+ * modules, and to copy and distribute the resulting executable under
+ * terms of your choice, provided that you also meet, for each linked
+ * independent module, the terms and conditions of the license of that
+ * module.  An independent module is a module which is not derived from
+ * or based on this library.  If you modify this code, you may extend
+ * this exception to your version of the code, but you are not
+ * obligated to do so.  If you do not wish to do so, delete this
+ * exception statement from your version.
+ *
+ * ERIKA Enterprise is distributed in the hope that it will be
+ * useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License version 2 for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * version 2 along with ERIKA Enterprise; if not, write to the
+ * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ * Boston, MA 02110-1301 USA.
+ * ###*E*### */
+
+// BCC1, BCC2, ECC1, ECC2, standard & extended status
+
+#include "../common/rtdruid_common/ee_oil_defs.h"
+
+CPU test_application {
+
+	OS EE {
+		// da rimpiazzare poi con qualcosa di + sensato
+		EE_OPT = "__OO_SEM__";
+		EE_OPT = "__ASSERT__";
+#ifndef	tricore
+		EE_OPT = "DEBUG";
+#endif
+		EE_OPT = "EE_DEBUG";
+
+#ifdef e200zx
+		EE_OPT = "EE_ISR_DYNAMIC_TABLE";
+#endif
+		#ifdef s12
+			EE_OPT = "__USE_TIMER__";
+		#endif
+		
+#ifdef cortex_m4
+		EE_OPT = "__USE_SYSTICK__";
+#endif
+
+#include "../common/rtdruid_common/ee_oil_nios2_os.h"
+#include "../common/rtdruid_common/ee_oil_s12_os.h"
+#include "../common/rtdruid_common/ee_oil_e200zx_os.h"
+#include "../common/rtdruid_common/ee_oil_cortex_mx_os.h"
+#include "../common/rtdruid_common/ee_oil_tricore_os.h"
+
+			MULTI_STACK = TRUE {
+				IRQ_STACK = TRUE {
+					SYS_SIZE=512;
+				};
+// Default behaviour, not needed
+//#if !defined(pic30) && !defined(s12) && !defined(e200zx)  && !defined(cortex_mx)
+//						DUMMY_STACK = SHARED;
+//#endif
+			};
+
+		};
+	  
+#ifdef STD
+                STATUS = STANDARD;
+#endif
+#ifdef EXT
+                STATUS = EXTENDED;
+#endif
+
+		STARTUPHOOK = TRUE;
+		ERRORHOOK = TRUE;
+		SHUTDOWNHOOK = FALSE;
+		PRETASKHOOK = FALSE;
+		POSTTASKHOOK = FALSE;
+		USEGETSERVICEID = FALSE;
+		USEPARAMETERACCESS = FALSE;
+		USERESSCHEDULER = TRUE;
+
+        EE_OPT = "__OO_STARTOS_OLD__";
+#ifdef B1
+        KERNEL_TYPE = BCC1;
+#endif
+#ifdef B2
+        KERNEL_TYPE = BCC2;
+#endif
+#ifdef E1
+        KERNEL_TYPE = ECC1;
+#endif
+#ifdef E2
+        KERNEL_TYPE = ECC2;
+#endif
+		
+		/* This generates the ORTI File used by lauterbach Trace32! */
+		//ORTI_SECTIONS = ALL;
+    };
+
+    TASK BasTask {
+		PRIORITY = 0x02;
+		ACTIVATION = 1;
+		SCHEDULE = FULL;
+		AUTOSTART = FALSE;
+		STACK = SHARED;
+    };
+
+#ifdef cortex_m4
+	ISR SysTick_Handler {
+		CATEGORY = 2;
+		ENTRY = "SYSTICK";
+	};
+#endif
+
+#ifdef tricore
+	ISR STM_handler {
+		CATEGORY = 2;
+		PRIORITY = 1;
+	};
+#endif
+
+};
+

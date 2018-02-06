@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<evidence_example version="1" ID="lpc12xx_base_demo">
+
+ <category>Cortex-MX/STM32F4 Discovery Board</category>
+ <title>Demo GPIO</title>
+   
+ <small_descr>
+ This is a basic demo showing the use of digital IO pins.
+ </small_descr>
+
+ <long_descr>
+This example describes how to toggle the GPIO pins connected on AHB bus.&lt;br&gt;
+&lt;br&gt;
+PD12, PD13, PD14 and PD15 (configured in output pushpull mode) toggles in a forever loop.
+&lt;ul&gt;
+&lt;li&gt;Set PD12, PD13, PD14 and PD15 by setting corresponding bits in BSRRL register.&lt;/li&gt;
+&lt;li&gt;Reset PD12, PD13, PD14 and PD15  by setting corresponding bits in BSRRH register.&lt;/li&gt;
+&lt;/ul&gt;
+ </long_descr>
+
+ <file_section>
+  <file     name="code.c"/> 
+  <file     name="conf.oil"/>
+ </file_section>
+
+</evidence_example>

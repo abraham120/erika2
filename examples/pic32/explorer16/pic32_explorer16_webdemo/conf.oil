@@ -1,0 +1,52 @@
+CPU mySystem {
+
+
+	OS myOs {
+		EE_OPT = "DEBUG";
+		LDFLAGS = "-Wl,--defsym,_min_heap_size=1024";
+
+		/* To select the Microchip TCPIIP Stack 5.31 */
+		EE_OPT = "__USE_MCHP_TCPIP_531__";
+		
+		/* Application path */
+		CFLAGS = "-I ";
+		CFLAGS = "-I$(call native_path,../)";
+
+		CPU_DATA = PIC32 {
+			/* Application related sources */
+			APP_SRC = "BerkeleyTCPClientDemo.c BerkeleyTCPServerDemo.c BerkeleyUDPClientDemo.c";
+			APP_SRC = "CustomHTTPApp.c CustomSNMPApp.c GenericTCPClient.c";
+			APP_SRC = "GenericTCPServer.c IperfApp.c  SMTPDemo.c";
+			APP_SRC = "LegacyHTTPApp.c MPFSImg.c MPFSImg2.c";
+			APP_SRC = "UARTConfig.c WF_Config.c PingDemo.c";
+			APP_SRC = "MainDemo.c";
+			
+			MULTI_STACK = FALSE;
+			ICD2 = TRUE;
+		};
+
+		MCU_DATA = PIC32 {
+			MODEL = PIC32MX795F512L;
+		};	
+		
+		KERNEL_TYPE = FP;
+		
+		BOARD_DATA = MICROCHIP_EXPLORER16 {
+			USELEDS = TRUE;
+			USEBUTTONS = TRUE;
+			USELCD = TRUE;
+			USEANALOG = FALSE;
+		};
+		
+		EE_OPT = "__ADD_LIBS__"; 
+		EE_OPT = "__USE_TIMER__";
+		
+		LIB = ENABLE {
+			NAME = "TCPIP";
+		};
+		EE_OPT = "__PIC32__";
+		EE_OPT = "__PIC32MX__";	
+		EE_OPT = "__32MXPOCONO__";		/* if using __PIC32MX795F512L__ */
+	};
+
+};

@@ -1,0 +1,25 @@
+export ASSERTADDR=$(grep " EE_assertions" ../out/out/*.map | cut -b '17 18 19 20 21 22 23 24 25 26')
+export ASSERTLAST=$(grep "EE_assert_last" ../out/out/*.map | cut -b '17 18 19 20 21 22 23 24 25 26')
+echo $ASSERTADDR
+echo $ASSERTLAST
+csoc debug -dev TA7S20-60Q \
+bpcode 1=$ASSERTLAST \
+bpfunc one \
+go \
+wait \
+verifymem $ASSERTADDR:b=0x1 >temp
+if grep OK temp
+then
+echo ----------------------------------------------------------------------
+echo                            TEST OK
+echo ----------------------------------------------------------------------
+else
+while grep Failed temp
+do
+echo ----------------------------------------------------------------------
+echo                            TEST FAILED
+echo ----------------------------------------------------------------------
+done
+echo SOMETHING WRONG!!!!!
+fi
+rm temp

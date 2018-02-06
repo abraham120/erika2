@@ -1,0 +1,44 @@
+CPU test_application {
+
+	OS EE {
+		EE_OPT = "DEBUG";
+		EE_OPT = "__ASSERT__";
+		EE_OPT = "__E200ZX_EXECUTE_FROM_RAM__";
+		//EE_OPT = "__CODEWARRIOR__";
+
+		CFLAGS = "";
+		ASFLAGS = "";
+		LDFLAGS = "";
+
+		CPU_DATA = PPCE200ZX {
+			MODEL = E200Z7;
+			APP_SRC = "main.c";
+			MULTI_STACK = FALSE;
+			VLE = TRUE;
+		};
+
+		MCU_DATA = PPCE200ZX {
+			MODEL = MPC5674F;
+		};
+
+		STATUS = EXTENDED;
+		STARTUPHOOK = FALSE;
+		ERRORHOOK = FALSE;
+		SHUTDOWNHOOK = FALSE;
+		PRETASKHOOK = FALSE;
+		POSTTASKHOOK = FALSE;
+		USEGETSERVICEID = FALSE;
+		USEPARAMETERACCESS = FALSE;
+		USERESSCHEDULER = FALSE;
+	};
+
+	/* this is the OIL part for the first task */
+	TASK Task1 {
+		PRIORITY = 0x01;   /* Low priority */
+		AUTOSTART = FALSE;
+		STACK = SHARED;
+		ACTIVATION = 1;	   /* only one pending activation */
+	};
+	
+	OS EE { KERNEL_TYPE = FP; };	
+};

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<evidence_example version="1" ID="ESI_RISC_EE_MONOSTACK_TEST1">
+
+ <category>esi_risc/porting_examples/monostack</category>
+ <title>test1</title>
+   
+ <small_descr>
+ A minimal EE demo that demonstrates how the ActivateTask function works.
+ </small_descr>
+
+ <long_descr>
+ A minimal EE demo that demonstrates how to create and activate a TASK.
+ The compilation uses the conf.oil file to create Debug folder. 
+ Debug folder contains:
+ &lt;ul&gt;
+ &lt;li&gt;the makefile; &lt;/li&gt;
+ &lt;li&gt;the obj folder that contains the object files organized in a EE-like tree; &lt;/li&gt;
+ &lt;li&gt;the executable file (.exe); &lt;/li&gt;
+ &lt;li&gt;other files useful for debug; &lt;/li&gt;
+ &lt;/ul&gt;
+ </long_descr>
+
+ <file_section>
+  <file     name="conf.oil"/>
+  <file     name="main.c"/>
+ </file_section>
+
+</evidence_example>

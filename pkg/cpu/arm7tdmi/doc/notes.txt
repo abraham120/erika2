@@ -1,0 +1,60 @@
+#include chart for ARM7TDMI
+---------------------------
+
+quite simple:
+- ee.h in the main include directory includes arch.h that includes
+  eecfg.h, arm7defs.h, compiler.h
+
+- internal.h in the main include directory includes internal.h that in turn
+  includes arch.h
+
+content of each file:
+- arm7defs.h contains some #defines related to flags and other constants of the
+  ARM7TDMI
+
+- compiler.h contains some compiler-dependent initializations like for
+  __INLINE__, NORETURN and others
+
+- arch.h contains types, data structures and functions (IRQ disabling) needed
+  for system configuration
+
+- internal.h contains all the functions used in the primitives
+
+
+
+
+
+
+
+Differences between DIAB, GCC and ADS
+-------------------------------------
+
+Inline functions
+-----------------------------------
+ADS:
+#define __INLINE__ __inline
+
+GCC:
+ifdef __NO_INLINE__
+#define __INLINE__ static
+#else
+#define __INLINE__ static inline
+#endif
+
+DIAB:
+#define __INLINE__ __inline__
+
+Thumb functions
+--------------------------------------
+ADS:
+#ifdef __thumb
+
+GCC:
+#ifdef __thumb__
+
+DIAB:
+#ifdef __THUMB__
+
+Assembler inline
+-------------------------------------
+Totally different

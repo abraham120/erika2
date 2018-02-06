@@ -1,0 +1,19 @@
+GENERAL
+ME(NOIRAM)
+NOWA(176)
+FPS(FP 10)
+RE(SY(0))
+PL(60)
+PW(132)
+
+RESERVE MEMORY
+(
+	00200h to 00FFFh	; Monitor code and data
+
+	0FCC0h to 0FCDFh	; Monitor register bank
+
+	0FD00h to 0FD4Bh	; Reserved area when using EVA166
+
+	0FC20h to 0FCBFh	; Threads register banks
+	0FCE0h to 0FCFFh
+)
